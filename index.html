@@ -1273,7 +1273,7 @@ function switchTab(tab) {
   document.getElementById('tabCorlima').classList.toggle('active',isCorlima);
   
   document.getElementById('dropZone').style.display=isCorlima?'none':'block';
-  document.getElementById('sharedControls').style.display=isCorlima?'none':'block';
+  const sharedControls=document.getElementById('sharedControls'); if(sharedControls) sharedControls.style.display=isCorlima?'none':'block';
   
   if (isCorlima) {
       document.getElementById('globalExportArea').style.display = corlimaImages.length > 0 ? 'block' : 'none';
