@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DOSA TOOLS</title>
+<link rel="icon" type="image/svg+xml" href="dosa_favicon.svg">
+<link rel="shortcut icon" href="dosa_favicon.svg">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -27,9 +29,9 @@ body {
   margin-bottom: 2rem; padding-bottom: 1.25rem;
   border-bottom: .5px solid var(--border);
 }
-.header-dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: var(--accent); box-shadow: 0 0 10px var(--accent); flex-shrink: 0;
+.header-logo {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 4px; overflow: hidden;
 }
 .header h1 { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: .04em; text-transform: uppercase; }
 .header-ver {
@@ -280,7 +282,7 @@ button:disabled { opacity: .3; cursor: default; }
 <div class="wrap">
 
 <div class="header">
-  <div class="header-dot"></div>
+  <img class="header-logo" src="dosa_favicon.svg" alt="DOSA logo">
   <h1>DOSA TOOLS</h1>
   <span class="header-ver">v5</span>
 </div>
