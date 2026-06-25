@@ -696,12 +696,12 @@ button:disabled { opacity: .3; cursor: default; }
     <div class="ctrl-lbl" style="margin-bottom:6px;">1. Selecciona el tipo de actualización</div>
     <div style="display:flex;gap:0;background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content;margin-bottom:1.25rem;">
       <button type="button" id="modePrecios" onclick="autoSetMode('precios')"
-        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:var(--bg4);color:#fff;font-weight:500;letter-spacing:.03em;">
-        💰 Actualizar Precios
+        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:var(--bg4);color:#4ade80;font-weight:500;letter-spacing:.03em;">
+        Actualizar Precios
       </button>
       <button type="button" id="modeStock" onclick="autoSetMode('stock')"
         style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);letter-spacing:.03em;">
-        📦 Actualizar Stock
+        Actualizar Stock
       </button>
     </div>
 
@@ -731,11 +731,11 @@ button:disabled { opacity: .3; cursor: default; }
         <select id="mapRef" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
       </div>
       <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Precio Original</div>
+        <div style="font-size:10px;color:#4ade80;margin-bottom:4px;font-weight:600;">Precio Original</div>
         <select id="mapPrecio" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
       </div>
       <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Precio con Descuento</div>
+        <div style="font-size:10px;color:#86efac;margin-bottom:4px;font-weight:600;">Precio con Descuento</div>
         <select id="mapDescuento" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
       </div>
     </div>
@@ -743,11 +743,11 @@ button:disabled { opacity: .3; cursor: default; }
     <!-- Modo Stock -->
     <div id="mapStock" style="display:none;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
       <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Código de Referencia (REF)</div>
+        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Código de Referencia (REF)</div>
         <select id="mapRefStock" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
       </div>
       <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Stock</div>
+        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Stock</div>
         <select id="mapStockCol" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
       </div>
     </div>
@@ -764,23 +764,22 @@ button:disabled { opacity: .3; cursor: default; }
       <div style="display:flex;gap:8px;align-items:center;">
         <span id="autoStats" style="font-size:10px;color:var(--muted);"></span>
 
-        <!-- Botón exportar con dropdown -->
+        <!-- Botón exportar dinámico según modo -->
         <div style="position:relative;display:inline-block;">
           <button type="button" onclick="autoToggleExportMenu()" class="small-btn accent"
             style="display:flex;align-items:center;gap:5px;padding-right:10px;">
             &#8595; Exportar CSV &nbsp;<span style="font-size:9px;opacity:.7;">&#9660;</span>
           </button>
-          <div id="autoExportMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;min-width:190px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:100;overflow:hidden;">
-            <button type="button" onclick="autoExportar('precios')"
-              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;"
+          <div id="autoExportMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:100;overflow:hidden;">
+            <button type="button" id="exportOptPrecios" onclick="autoExportar('precios')"
+              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;"
               onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-              💰 Exportar Precios
+              Exportar Precios
             </button>
-            <div style="height:1px;background:var(--border);margin:0 8px;"></div>
-            <button type="button" onclick="autoExportar('stock')"
-              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:8px;"
+            <button type="button" id="exportOptStock" onclick="autoExportar('stock')"
+              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;display:none;"
               onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-              📦 Exportar Stock
+              Exportar Stock
             </button>
           </div>
         </div>
@@ -1978,16 +1977,23 @@ document.getElementById('autoFileInput').addEventListener('change', function(e) 
 function autoSetMode(mode) {
   autoMode = mode;
   const isP = mode === 'precios';
+  // Tabs — verde activo/inactivo para Precios, rosa activo/inactivo para Stock
   document.getElementById('modePrecios').style.background = isP ? 'var(--bg4)' : 'transparent';
-  document.getElementById('modePrecios').style.color      = isP ? '#fff' : 'var(--muted)';
+  document.getElementById('modePrecios').style.color      = isP ? '#4ade80' : 'var(--muted)';
   document.getElementById('modePrecios').style.fontWeight = isP ? '500' : 'normal';
   document.getElementById('modeStock').style.background   = isP ? 'transparent' : 'var(--bg4)';
-  document.getElementById('modeStock').style.color        = isP ? 'var(--muted)' : '#fff';
+  document.getElementById('modeStock').style.color        = isP ? 'var(--muted)' : '#f9a8d4';
   document.getElementById('modeStock').style.fontWeight   = isP ? 'normal' : '500';
+  // Formularios
   document.getElementById('mapPrecios').style.display     = isP ? 'grid' : 'none';
   document.getElementById('mapStock').style.display       = isP ? 'none' : 'grid';
+  // Tablas
   document.getElementById('tablePreciosWrap').style.display = isP ? 'block' : 'none';
   document.getElementById('tableStockWrap').style.display   = isP ? 'none'  : 'block';
+  // Opción de exportar — solo la del modo activo
+  document.getElementById('exportOptPrecios').style.display = isP ? 'block' : 'none';
+  document.getElementById('exportOptStock').style.display   = isP ? 'none' : 'block';
+  // Ocultar preview
   document.getElementById('autoPreviewSection').style.display = 'none';
 }
 
