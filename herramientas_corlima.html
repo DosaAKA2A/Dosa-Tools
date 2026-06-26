@@ -20,9 +20,9 @@
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   background: var(--bg); color: var(--text);
-  min-height: 100vh; line-height: 1.5;
+  min-height: 100vh; padding: 2rem 1rem 3rem; line-height: 1.5;
 }
-.wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
+.wrap { max-width: 1020px; margin: 0 auto; }
 
 /* HEADER */
 .header {
@@ -327,6 +327,9 @@ button:disabled { opacity: .3; cursor: default; }
   transition: color 0.3s ease;
 }
 
+/* Max-width centrado */
+body { padding: 0; }
+.page-wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
 </style>
 </head>
 <body>
@@ -334,13 +337,14 @@ button:disabled { opacity: .3; cursor: default; }
 if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.html'; }
 </script>
 
-<div class="wrap">
+<div class="page-wrap">
+
 <div class="header">
   <div class="header-logo">
     <img src="dosa_favicon.svg" alt="DOSA" style="width:32px;height:32px;border-radius:4px;">
     <span class="header-title">DOSA TOOLS</span>
   </div>
-  <span class="header-ver">v6.8</span>
+  <span class="header-ver">v7.0</span>
 </div>
 <div class="header-line"></div>
 
@@ -656,7 +660,9 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   </div>
 </div>
 
-</div><!-- /.wrap -->
+</div><!-- /.content -->
+
+</div><!-- /.page-wrap -->
 
 <div id="successOverlay" class="success-overlay">
   <div class="success-box">
@@ -668,20 +674,87 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
     <div class="success-text" style="color:#c9a227;">Firma Copiada</div>
   </div>
 </div>
+<div id="multiImageWarning" class="success-overlay" style="z-index:10000; pointer-events:none;">
+  <div class="success-box" style="pointer-events:all; border-color: #e3a341; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 40px rgba(227,163,65,0.15);">
+    <div class="success-text" style="color: #e3a341; margin-bottom: 15px; opacity:1; transform:none; text-transform:none; font-size: 14px; font-weight: 500; letter-spacing: normal;">
+      &#9888; Para descargar varias imágenes, debes aceptar la solicitud de múltiples descargas de tu navegador.
+    </div>
+    <button class="small-btn accent" onclick="document.getElementById('multiImageWarning').classList.remove('show')" style="border-color:#e3a341; color:#e3a341; font-size:12px; padding:6px 14px;">Entendido</button>
+  </div>
+</div>
+
 
 <script>
-// ════════════════════════════════════════════
-// VARIABLES GLOBALES
-// ════════════════════════════════════════════
-let corlimaUnlocked = true;
-let corlimaImages   = [];
-let corlimaActive   = 0;
-let corlimaInitDone = false;
-let autoData        = [];
-let autoHeaders     = [];
-let autoMode        = 'precios';
-let currentTab      = 'corlima';
+// ═══════════════════════════════════════════════
+// VARIABLES GLOBALES (del INDEX_FUNCIONAL)
+// ═══════════════════════════════════════════════
 
+// GIF encoder
+window.addEventListener('error', function(e) {
+  console.error('[DosaTools] Error global:', e.message, 'en', e.filename, 'línea', e.lineno);
+});
+const GIFEncoder = (() => {
+  function ByteArray() { this.data = []; }
+  ByteArray.prototype.writeByte = function(b) { this.data.push(b & 0xFF); };
+  ByteArray.prototype.writeUint16 = function(w) { this.writeByte(w & 0xFF); this.writeByte((w >> 8) & 0xFF); };
+  ByteArray.prototype.writeBytes = function(arr) { for (let b of arr) this.writeByte(b); };
+  ByteArray.prototype.toUint8Array = function() { return new Uint8Array(this.data); };
+  function lzwEncode(width, height, pixels, colorDepth) {
+    const out = []; const minCode = Math.max(colorDepth, 2);
+    const clearCode = 1 << minCode; const eofCode = clearCode + 1;
+    let curCode, prevCode; let table = new Map(); let nextCode = clearCode + 2;
+    let bitBuf = 0, bitLen = 0; let buf = new Uint8Array(256); let bufLen = 0;
+    function flush() { out.push(bufLen); for (let i=0;i<bufLen;i++) out.push(buf[i]); bufLen=0; }
+    function writeBits(code, len) {
+      bitBuf |= code << bitLen; bitLen += len;
+      while (bitLen >= 8) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; bitBuf >>= 8; bitLen -= 8; }
+    }
+    let codeLen = minCode + 1; writeBits(clearCode, codeLen); prevCode = pixels[0];
+    for (let i=1; i<pixels.length; i++) {
+      curCode = pixels[i]; const key = (prevCode << 8) | curCode;
+      if (table.has(key)) { prevCode = table.get(key); }
+      else {
+        writeBits(prevCode, codeLen);
+        if (nextCode < 4096) { table.set(key, nextCode++); if (nextCode > (1 << codeLen)) codeLen++; }
+        else { writeBits(clearCode, codeLen); table = new Map(); nextCode = clearCode + 2; codeLen = minCode + 1; }
+        prevCode = curCode;
+      }
+    }
+    writeBits(prevCode, codeLen); writeBits(eofCode, codeLen);
+    if (bitLen > 0) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; }
+    if (bufLen > 0) flush(); out.push(0); return out;
+  }
+  return {
+    encode(frames, opts = {}) {
+      const { width, height, delay = 100, loop = 0 } = opts;
+      const ba = new ByteArray();
+      ba.writeBytes([0x47,0x49,0x46,0x38,0x39,0x61]); ba.writeUint16(width); ba.writeUint16(height);
+      ba.writeByte(0xF7); ba.writeByte(0); ba.writeByte(0);
+      const gct = new Uint8Array(256 * 3); const firstPal = frames[0].palette;
+      for (let i=0;i<Math.min(firstPal.length,256);i++) { gct[i*3]=firstPal[i][0]; gct[i*3+1]=firstPal[i][1]; gct[i*3+2]=firstPal[i][2]; }
+      ba.writeBytes(gct);
+      ba.writeBytes([0x21,0xFF,0x0B,0x4E,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2E,0x30,0x03,0x01]);
+      ba.writeUint16(loop); ba.writeByte(0);
+      for (const frame of frames) {
+        const pal = frame.palette; const lctSize = Math.ceil(Math.log2(Math.max(pal.length,2)));
+        const lctCount = 1 << lctSize; const lct = new Uint8Array(lctCount * 3);
+        for (let i=0;i<pal.length;i++) { lct[i*3]=pal[i][0]; lct[i*3+1]=pal[i][1]; lct[i*3+2]=pal[i][2]; }
+        ba.writeBytes([0x21,0xF9,0x04,0x04]); ba.writeUint16(Math.round(delay/10)); ba.writeByte(0); ba.writeByte(0);
+        ba.writeByte(0x2C); ba.writeUint16(0); ba.writeUint16(0); ba.writeUint16(width); ba.writeUint16(height);
+        ba.writeByte(0x80 | (lctSize - 1)); ba.writeBytes(lct);
+        const encoded = lzwEncode(width, height, frame.indices, lctSize);
+        ba.writeByte(lctSize); ba.writeBytes(encoded);
+      }
+      ba.writeByte(0x3B); return ba.toUint8Array();
+    }
+  };
+})();
+
+// ZIP for Sequence Generator
+const crcTable = new Uint32Array(256);
+for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); crcTable[i] = c; }
+
+// DB externa
 let CAT_DB = {};      // { cod: cat_string }
 let PROD_DB = {};     // { cod: { nombre, marca, cat, cat_names, cat_padre } }
 let CATS_DICT = {};   // { id: nombre_categoria }
@@ -701,10 +774,13 @@ let CATS_DICT = {};   // { id: nombre_categoria }
     .catch(function(e) { console.warn('[DosaTools] No se pudo cargar productos_db.json:', e); });
 })();
 
-// ════════════════════════════════════════════
-// SWITCH TAB
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// SWITCH TAB — solo 3 tabs
+// ═══════════════════════════════════════════════
+let corlimaUnlocked = true; // protección en el landing
+
 function switchTab(tab) {
+  corlimaUnlocked = true;
   currentTab = tab;
   const isCorlima = tab === 'corlima';
   const isFirma   = tab === 'firma';
@@ -723,8 +799,6 @@ function switchTab(tab) {
   const brc = document.getElementById('btnRowCorlima');
 
   if (isCorlima) {
-    initCorlimaElements();
-    initCorlimaResListener();
     if (gea) gea.style.display = corlimaImages.length > 0 ? 'block' : 'none';
     if (br)  br.style.display  = 'none';
     if (brc) brc.style.display = 'flex';
@@ -741,165 +815,9 @@ function switchTab(tab) {
   }
 }
 
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // FUNCIONES
-// ════════════════════════════════════════════
-// ── showSuccessAnimation
-function showSuccessAnimation() {
-    const overlay = document.getElementById('successOverlay');
-    overlay.classList.add('show');
-    setTimeout(() => { overlay.classList.remove('show'); }, 2000);
-}
-
-// ── hashStr
-async function hashStr(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
-
-// ── setStatus
-function setStatus(msg, type) {
-  const el=document.getElementById('statusBar'); if(!el) return;
-  if(msg){el.innerHTML='<span class="status-dot"></span>'+msg;el.className='status'+(type?' '+type:'');}
-  else{el.innerHTML='';el.className='status';}
-}
-
-// ── initCorlimaElements
-function initCorlimaElements() {
-    // Registrar eventos del dropzone (independiente del canvas)
-    if (!corlimaInputListenerSet) {
-        const cFileInput = document.getElementById('corlimaFileInput');
-        const cDropZone  = document.getElementById('corlimaDropZone');
-        if (cFileInput && cDropZone) {
-            cFileInput.addEventListener('change', handleCorlimaUpload);
-            cDropZone.addEventListener('click', () => cFileInput.click());
-            cDropZone.addEventListener('dragover', e => { e.preventDefault(); cDropZone.classList.add('drag-over'); });
-            cDropZone.addEventListener('dragleave', () => cDropZone.classList.remove('drag-over'));
-            cDropZone.addEventListener('drop', e => {
-                e.preventDefault(); cDropZone.classList.remove('drag-over');
-                if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
-            });
-            corlimaInputListenerSet = true;
-        }
-    }
-
-    // Inicializar canvas (solo cuando ya existe en el DOM — aparece al subir primera imagen)
-    if (!cCanvas) {
-        cCanvas = document.getElementById('corlimaCanvas');
-        if (cCanvas) {
-            cCtx = cCanvas.getContext('2d');
-            cWrap = document.getElementById('corlimaCanvasWrap');
-            if (cWrap) {
-                cWrap.addEventListener('mousedown', e => {
-                    if (corlimaActiveIndex < 0) return;
-                    cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
-                });
-                cWrap.addEventListener('touchstart', e => {
-                    if (corlimaActiveIndex < 0) return;
-                    cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
-                }, { passive: true });
-            }
-
-            // Zoom
-            const zoomSlider = document.getElementById('corlimaZoom');
-            if (zoomSlider) {
-                zoomSlider.addEventListener('input', e => {
-                    if (corlimaActiveIndex < 0) return;
-                    const data = corlimaImages[corlimaActiveIndex];
-                    const factor = parseFloat(e.target.value);
-                    const newScale = data.baseScale * factor;
-                    const cx = data.x + (data.img.width * data.scale) / 2;
-                    const cy = data.y + (data.img.height * data.scale) / 2;
-                    data.scale = newScale;
-                    data.x = cx - (data.img.width * data.scale) / 2;
-                    data.y = cy - (data.img.height * data.scale) / 2;
-                    document.getElementById('corlimaZoomVal').textContent = Math.round(factor * 100) + '%';
-                    clampCorlimaData(data);
-                    drawCorlimaCanvas();
-                });
-            }
-
-            // Radios de fondo fit
-            document.querySelectorAll('input[name="corlimaFitBg"]').forEach(r => {
-                r.addEventListener('change', drawCorlimaCanvas);
-            });
-        }
-    }
-}
-function initCorlimaResListener() {
-    if (corlimaResListenerSet) return;
-    const sel = getResSelect();
-    if (!sel) return;
-    sel.addEventListener('change', () => { updateResNote(); updateCorlimaWorkspace(); });
-    updateResNote();
-    corlimaResListenerSet = true;
-}
-
-// ── setAjusteMode
-function setAjusteMode(mode) {
-  ajusteMode = mode;
-  const isAuto = mode === 'auto';
-
-  // Tabs
-  document.getElementById('tabAjusteManual').style.background = isAuto ? 'transparent' : 'var(--bg4)';
-  document.getElementById('tabAjusteManual').style.color     = isAuto ? 'var(--muted)' : '#fff';
-  document.getElementById('tabAjusteManual').style.fontWeight = isAuto ? 'normal' : '500';
-  document.getElementById('tabAjusteAuto').style.background  = isAuto ? 'var(--bg4)' : 'transparent';
-  document.getElementById('tabAjusteAuto').style.color       = isAuto ? '#fff' : 'var(--muted)';
-  document.getElementById('tabAjusteAuto').style.fontWeight  = isAuto ? '500' : 'normal';
-
-  // Paneles
-  document.getElementById('ajusteManualPanel').style.display  = isAuto ? 'none' : 'flex';
-  document.getElementById('ajusteAutoPanel').style.display    = isAuto ? 'flex' : 'none';
-  document.getElementById('ajusteAutoWarning').style.display  = isAuto ? 'flex' : 'none';
-  document.getElementById('corlimaHelperText').style.display  = isAuto ? 'none' : 'block';
-
-  drawCorlimaCanvas();
-}
-
-// ── getResSelect
-function getResSelect() { return document.getElementById('corlimaRes'); }
-
-// ── getTargetRes
-function getTargetRes() {
-    const val = getResSelect() ? getResSelect().value : '1000x1000';
-    if (val === '2000x2000') return { w: 2000, h: 2000 };
-    if (val === '1080x1350') return { w: 1080, h: 1350 };
-    return { w: 1000, h: 1000 };
-}
-
-// ── getResNote
-function getResNote()   { return document.getElementById('corlimaResNote'); }
-
-// ── updateResNote
-function updateResNote() {
-    const sel = getResSelect(); const note = getResNote();
-    if (!sel || !note) return;
-    const val = sel.value;
-    if (val === '1000x1000') {
-        note.textContent = 'Este formato es el adecuado para corlima.pe';
-        note.style.color = '#3fb950';
-    } else if (val === '1080x1350') {
-        note.textContent = 'Este formato es el adecuado para Instagram';
-        note.style.color = '#e3a341';
-    } else {
-        note.textContent = 'Este formato es el adecuado para otras plataformas';
-        note.style.color = '#ffb6c1';
-    }
-}
-
-// ── isFitMode
-function isFitMode() {
-  return ajusteMode === 'auto';
-}
-
-// ── getFitBg
-function getFitBg() {
-  const sel = document.querySelector('input[name="corlimaFitBg"]:checked');
-  return sel ? sel.value : 'transparent';
-}
-
-// ── handleCorlimaUpload
+// ═══════════════════════════════════════════════
 function handleCorlimaUpload(e) {
   const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
   if (files.length === 0) return;
@@ -936,44 +854,6 @@ function handleCorlimaUpload(e) {
   document.getElementById('btnRowCorlima').style.display = 'flex';
   e.target.value = '';
 }
-
-// ── removeCorlimaImage
-function removeCorlimaImage(idx) {
-    URL.revokeObjectURL(corlimaImages[idx].url);
-    corlimaImages.splice(idx, 1);
-    
-    if (corlimaImages.length === 0) {
-        corlimaActiveIndex = -1;
-        document.getElementById('corlimaWorkspace').style.display = 'none';
-        document.getElementById('globalExportArea').style.display = 'none';
-        cCtx.clearRect(0, 0, baseW, baseH);
-    } else {
-        if (corlimaActiveIndex === idx) {
-            setCorlimaActive(Math.max(0, idx - 1));
-        } else if (corlimaActiveIndex > idx) {
-            corlimaActiveIndex--;
-            updateCorlimaGallery();
-        } else {
-            updateCorlimaGallery();
-        }
-    }
-}
-
-// ── setCorlimaActive
-function setCorlimaActive(idx) {
-  corlimaActiveIndex = idx;
-  updateCorlimaGallery();
-  const data = corlimaImages[idx];
-  
-  const zoomSlider = document.getElementById('corlimaZoom');
-  zoomSlider.value = data.scale / data.baseScale;
-  document.getElementById('corlimaZoomVal').textContent = Math.round((data.scale / data.baseScale) * 100) + '%';
-  
-  clampCorlimaData(data);
-  drawCorlimaCanvas();
-}
-
-// ── updateCorlimaGallery
 function updateCorlimaGallery() {
   const gal = document.getElementById('corlimaGallery');
   gal.innerHTML = '';
@@ -1017,8 +897,38 @@ function updateCorlimaGallery() {
       gal.appendChild(wrapper);
   });
 }
-
-// ── updateCorlimaWorkspace
+function setCorlimaActive(idx) {
+  corlimaActiveIndex = idx;
+  updateCorlimaGallery();
+  const data = corlimaImages[idx];
+  
+  const zoomSlider = document.getElementById('corlimaZoom');
+  zoomSlider.value = data.scale / data.baseScale;
+  document.getElementById('corlimaZoomVal').textContent = Math.round((data.scale / data.baseScale) * 100) + '%';
+  
+  clampCorlimaData(data);
+  drawCorlimaCanvas();
+}
+function removeCorlimaImage(idx) {
+    URL.revokeObjectURL(corlimaImages[idx].url);
+    corlimaImages.splice(idx, 1);
+    
+    if (corlimaImages.length === 0) {
+        corlimaActiveIndex = -1;
+        document.getElementById('corlimaWorkspace').style.display = 'none';
+        document.getElementById('globalExportArea').style.display = 'none';
+        cCtx.clearRect(0, 0, baseW, baseH);
+    } else {
+        if (corlimaActiveIndex === idx) {
+            setCorlimaActive(Math.max(0, idx - 1));
+        } else if (corlimaActiveIndex > idx) {
+            corlimaActiveIndex--;
+            updateCorlimaGallery();
+        } else {
+            updateCorlimaGallery();
+        }
+    }
+}
 function updateCorlimaWorkspace() {
     const { w, h } = getTargetRes();
     baseW = 1000;
@@ -1035,10 +945,7 @@ function updateCorlimaWorkspace() {
     });
     drawCorlimaCanvas();
 }
-
-// ── drawCorlimaCanvas
 function drawCorlimaCanvas() {
-  if (!cCtx) return;
   if (corlimaActiveIndex < 0 || !corlimaImages[corlimaActiveIndex]) return;
   const data = corlimaImages[corlimaActiveIndex];
   
@@ -1061,8 +968,6 @@ function drawCorlimaCanvas() {
     cCtx.drawImage(data.img, data.x, data.y, data.img.width * data.scale, data.img.height * data.scale);
   }
 }
-
-// ── clampCorlimaData
 function clampCorlimaData(data) {
   if (isFitMode()) return; // En modo fit no se clampea — la imagen puede ser más pequeña que el canvas
   if (data.scale < data.baseScale) data.scale = data.baseScale;
@@ -1073,8 +978,121 @@ function clampCorlimaData(data) {
   data.x = Math.max(minX, Math.min(0, data.x));
   data.y = Math.max(minY, Math.min(0, data.y));
 }
+function setAjusteMode(mode) {
+  ajusteMode = mode;
+  const isAuto = mode === 'auto';
 
-// ── exportCorlimaQueue
+  // Tabs
+  document.getElementById('tabAjusteManual').style.background = isAuto ? 'transparent' : 'var(--bg4)';
+  document.getElementById('tabAjusteManual').style.color     = isAuto ? 'var(--muted)' : '#fff';
+  document.getElementById('tabAjusteManual').style.fontWeight = isAuto ? 'normal' : '500';
+  document.getElementById('tabAjusteAuto').style.background  = isAuto ? 'var(--bg4)' : 'transparent';
+  document.getElementById('tabAjusteAuto').style.color       = isAuto ? '#fff' : 'var(--muted)';
+  document.getElementById('tabAjusteAuto').style.fontWeight  = isAuto ? '500' : 'normal';
+
+  // Paneles
+  document.getElementById('ajusteManualPanel').style.display  = isAuto ? 'none' : 'flex';
+  document.getElementById('ajusteAutoPanel').style.display    = isAuto ? 'flex' : 'none';
+  document.getElementById('ajusteAutoWarning').style.display  = isAuto ? 'flex' : 'none';
+  document.getElementById('corlimaHelperText').style.display  = isAuto ? 'none' : 'block';
+
+  drawCorlimaCanvas();
+}
+function getResSelect() { return document.getElementById('corlimaRes'); }
+function getTargetRes() {
+    const val = getResSelect() ? getResSelect().value : '1000x1000';
+    if (val === '2000x2000') return { w: 2000, h: 2000 };
+    if (val === '1080x1350') return { w: 1080, h: 1350 };
+    return { w: 1000, h: 1000 };
+}
+function getResNote()   { return document.getElementById('corlimaResNote'); }
+function updateResNote() {
+    const sel = getResSelect(); const note = getResNote();
+    if (!sel || !note) return;
+    const val = sel.value;
+    if (val === '1000x1000') {
+        note.textContent = 'Este formato es el adecuado para corlima.pe';
+        note.style.color = '#3fb950';
+    } else if (val === '1080x1350') {
+        note.textContent = 'Este formato es el adecuado para Instagram';
+        note.style.color = '#e3a341';
+    } else {
+        note.textContent = 'Este formato es el adecuado para otras plataformas';
+        note.style.color = '#ffb6c1';
+    }
+}
+function isFitMode() {
+  return ajusteMode === 'auto';
+}
+function getFitBg() {
+  const sel = document.querySelector('input[name="corlimaFitBg"]:checked');
+  return sel ? sel.value : 'transparent';
+}
+function initCorlimaElements() {
+    if (cCanvas) return; // ya inicializado
+    cCanvas = document.getElementById('corlimaCanvas');
+    if (!cCanvas) return;
+    cCtx = cCanvas.getContext('2d');
+    cWrap = document.getElementById('corlimaCanvasWrap');
+
+    const cFileInput = document.getElementById('corlimaFileInput');
+    const cDropZone  = document.getElementById('corlimaDropZone');
+
+    if (!corlimaInputListenerSet && cFileInput && cDropZone) {
+        cFileInput.addEventListener('change', handleCorlimaUpload);
+        cDropZone.addEventListener('click', () => cFileInput.click());
+        cDropZone.addEventListener('dragover', e => { e.preventDefault(); cDropZone.classList.add('drag-over'); });
+        cDropZone.addEventListener('dragleave', () => cDropZone.classList.remove('drag-over'));
+        cDropZone.addEventListener('drop', e => {
+            e.preventDefault(); cDropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
+        });
+
+        // Touch/mouse drag en canvas wrap
+        cWrap.addEventListener('mousedown', e => {
+            if (corlimaActiveIndex < 0) return;
+            cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
+        });
+        cWrap.addEventListener('touchstart', e => {
+            if (corlimaActiveIndex < 0) return;
+            cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        corlimaInputListenerSet = true;
+
+        // Zoom
+        const zoomSlider = document.getElementById('corlimaZoom');
+        if (zoomSlider) {
+            zoomSlider.addEventListener('input', e => {
+                if (corlimaActiveIndex < 0) return;
+                const data = corlimaImages[corlimaActiveIndex];
+                const factor = parseFloat(e.target.value);
+                const newScale = data.baseScale * factor;
+                const cx = data.x + (data.img.width * data.scale) / 2;
+                const cy = data.y + (data.img.height * data.scale) / 2;
+                data.scale = newScale;
+                data.x = cx - (data.img.width * data.scale) / 2;
+                data.y = cy - (data.img.height * data.scale) / 2;
+                document.getElementById('corlimaZoomVal').textContent = Math.round(factor * 100) + '%';
+                clampCorlimaData(data);
+                drawCorlimaCanvas();
+            });
+        }
+
+        // Radios de fondo fit
+        document.querySelectorAll('input[name="corlimaFitBg"]').forEach(r => {
+            r.addEventListener('change', drawCorlimaCanvas);
+        });
+    }
+}
+function initCorlimaResListener() {
+    if (corlimaResListenerSet) return;
+    const sel = getResSelect();
+    if (!sel) return;
+    sel.addEventListener('change', () => { updateResNote(); updateCorlimaWorkspace(); });
+    updateResNote();
+    corlimaResListenerSet = true;
+}
 async function exportCorlimaQueue(format) {
   if (corlimaImages.length === 0) return;
   
@@ -1143,8 +1161,6 @@ async function exportCorlimaQueue(format) {
   pL.textContent = '¡Descarga masiva completada!';
   setTimeout(() => { pW.style.display = 'none'; showSuccessAnimation(); }, 500);
 }
-
-// ── buildZip
 function buildZip(files) {
   const entries = []; let offset = 0; const enc = new TextEncoder();
   for (const { name, data } of files) {
@@ -1180,11 +1196,7 @@ function buildZip(files) {
   for (const r of cd) { zip.set(r, pos); pos += r.length; }
   zip.set(eocd, pos); return zip;
 }
-
-// ── ByteArray
 function ByteArray() { this.data = []; }
-
-// ── lzwEncode
 function lzwEncode(width, height, pixels, colorDepth) {
     const out = []; const minCode = Math.max(colorDepth, 2);
     const clearCode = 1 << minCode; const eofCode = clearCode + 1;
@@ -1210,17 +1222,21 @@ function lzwEncode(width, height, pixels, colorDepth) {
     if (bitLen > 0) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; }
     if (bufLen > 0) flush(); out.push(0); return out;
   }
-
-// ── flush
 function flush() { out.push(bufLen); for (let i=0;i<bufLen;i++) out.push(buf[i]); bufLen=0; }
-
-// ── writeBits
 function writeBits(code, len) {
       bitBuf |= code << bitLen; bitLen += len;
       while (bitLen >= 8) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; bitBuf >>= 8; bitLen -= 8; }
     }
-
-// ── firmaGetTemplate
+function setStatus(msg, type) {
+  const el=document.getElementById('statusBar'); if(!el) return;
+  if(msg){el.innerHTML='<span class="status-dot"></span>'+msg;el.className='status'+(type?' '+type:'');}
+  else{el.innerHTML='';el.className='status';}
+}
+function showSuccessAnimation() {
+    const overlay = document.getElementById('successOverlay');
+    overlay.classList.add('show');
+    setTimeout(() => { overlay.classList.remove('show'); }, 2000);
+}
 function firmaGetTemplate(NOMBRE, CARGO, MOVIL, FIJO, EMAIL, MOVIL_RAW, FIJO_RAW) {
   return `<table width="700" cellpadding="0" cellspacing="0" border="0" style="width:700px;max-width:700px;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
 
@@ -1310,8 +1326,6 @@ function firmaGetTemplate(NOMBRE, CARGO, MOVIL, FIJO, EMAIL, MOVIL_RAW, FIJO_RAW
 
 </table>`;
 }
-
-// ── firmaActualizar
 function firmaActualizar() {
   const NOMBRE    = document.getElementById('firmaNombre').value || 'Nombre del Trabajador';
   const CARGO     = document.getElementById('firmaCargo').value  || 'Cargo';
@@ -1325,8 +1339,6 @@ function firmaActualizar() {
   preview.innerHTML = firmaGetTemplate(NOMBRE, CARGO, MOVIL, FIJO, EMAIL, MOVIL_RAW, FIJO_RAW);
   document.getElementById('firmaPreviewWrap').style.display = 'block';
 }
-
-// ── firmaCopiar
 async function firmaCopiar() {
   const NOMBRE    = document.getElementById('firmaNombre').value || 'Nombre del Trabajador';
   const CARGO     = document.getElementById('firmaCargo').value  || 'Cargo';
@@ -1366,8 +1378,6 @@ async function firmaCopiar() {
     showFirmaCopiadaAnim();
   }
 }
-
-// ── autoSetMode
 function autoSetMode(mode) {
   autoMode = mode;
   const isP = mode === 'precios';
@@ -1390,22 +1400,16 @@ function autoSetMode(mode) {
   // Ocultar preview
   document.getElementById('autoPreviewSection').style.display = 'none';
 }
-
-// ── autoToggleExportMenu
 function autoToggleExportMenu() {
   const menu = document.getElementById('autoExportMenu');
   menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
 }
-
-// ── autoHandleDrop
 function autoHandleDrop(e) {
   e.preventDefault();
   document.getElementById('autoDropZone').style.borderColor = 'var(--border2)';
   const f = e.dataTransfer.files[0];
   if (f) autoLoadFile(f);
 }
-
-// ── autoLoadFile
 function autoLoadFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
   document.getElementById('autoFileName').textContent = 'archivo: ' + file.name;
@@ -1428,8 +1432,6 @@ function autoLoadFile(file) {
     alert('Formato no soportado. Usa .xlsx, .xls o .csv');
   }
 }
-
-// ── autoParseCSV
 function autoParseCSV(text) {
   const lines = text.split(/\r?\n/).filter(function(l) { return l.trim(); });
   const sep = (lines[0].split(';').length > lines[0].split(',').length) ? ';' : ',';
@@ -1438,8 +1440,6 @@ function autoParseCSV(text) {
   });
   autoParseRows(rows);
 }
-
-// ── autoParseRows
 function autoParseRows(rows) {
   if (!rows || rows.length < 2) { alert('El archivo no tiene datos suficientes.'); return; }
   autoHeaders = rows[0].map(function(h) { return String(h).trim(); });
@@ -1447,8 +1447,6 @@ function autoParseRows(rows) {
   autoFillSelects();
   document.getElementById('autoMapSection').style.display = 'block';
 }
-
-// ── autoFillSelects
 function autoFillSelects() {
   const allSelects = [
     { id: 'mapRef',       kws: ['cod', 'ref', 'codigo', 'sap', 'sku', 'id'] },
@@ -1471,8 +1469,6 @@ function autoFillSelects() {
     if (match >= 0) sel.value = match;
   });
 }
-
-// ── autoProcesar
 function autoProcesar() {
   const isP = autoMode === 'precios';
   let matched = 0, unmatched = 0;
@@ -1549,8 +1545,6 @@ function autoProcesar() {
   info.style.border = '1px solid ' + (matched > unmatched ? 'rgba(63,185,80,0.3)' : 'rgba(224,82,82,0.3)');
   document.getElementById('autoPreviewSection').style.display = 'block';
 }
-
-// ── autoExportar
 function autoExportar(tipo, formato) {
   document.getElementById('autoExportMenu').style.display = 'none';
   if (!autoData._processed || !autoData._processed.length) return;
@@ -1609,8 +1603,6 @@ function autoExportar(tipo, formato) {
   }
   showSuccessAnimation();
 }
-
-// ── buscarProducto
 function buscarProducto() {
   const cod = document.getElementById('buscarCod').value.trim();
   const box = document.getElementById('buscarResult');
@@ -1653,8 +1645,6 @@ function buscarProducto() {
       catPadre +
     '</table>';
 }
-
-// ── loadDB
 function loadDB() {
   fetch('productos_db.json?v=' + Date.now())
     .then(function(r) { return r.json(); })
@@ -1669,54 +1659,125 @@ function loadDB() {
     })
     .catch(function(e) { console.warn('[DosaTools] No se pudo cargar productos_db.json:', e); });
 }
-
-// ── toNum
 function toNum(v) {
     var s = String(v == null ? '' : v).trim();
     if (s === '') return '';
     var n = parseFloat(s);
     return !isNaN(n) ? n : s;
   }
-
-// ── toNumStr
 function toNumStr(v) {
     var n = toNum(v);
     if (typeof n === 'number') return String(n).replace('.', ',');
     return String(n);
   }
+async function hashStr(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+function openPwdModal() {
+  const overlay = document.getElementById('pwdOverlay');
+  const input = document.getElementById('pwdInput');
+  overlay.classList.add('show');
+  setTimeout(() => input.focus(), 100);
+  input.addEventListener('keydown', pwdKeyHandler);
+}
+function closePwdModal() {
+  const overlay = document.getElementById('pwdOverlay');
+  overlay.classList.remove('show');
+  document.getElementById('pwdInput').value = '';
+  document.getElementById('pwdErr').textContent = '';
+  document.getElementById('pwdInput').removeEventListener('keydown', pwdKeyHandler);
+}
+async function submitPwd() {
+  const input = document.getElementById('pwdInput');
+  const err = document.getElementById('pwdErr');
+  const val = input.value;
+  if (!val) { err.textContent = 'Ingresa una contraseña'; return; }
+  const hash = await hashStr(val);
+  const correct = await hashStr('Corlima2026');
+  if (hash === correct) {
+    corlimaUnlocked = true;
+    closePwdModal();
+    switchTab('corlima');
+  } else {
+    input.classList.add('error');
+    err.textContent = 'Contraseña incorrecta';
+    setTimeout(() => input.classList.remove('error'), 400);
+    input.value = '';
+    input.focus();
+  }
+}
+function pwdKeyHandler(e) {
+  if (e.key === 'Enter') submitPwd();
+  if (e.key === 'Escape') closePwdModal();
+}
+function togglePwdVisibility() {
+  const input = document.getElementById('pwdInput');
+  const btn = document.getElementById('pwdToggle');
+  if (input.type === 'password') {
+    input.type = 'text';
+    btn.textContent = '';
+  } else {
+    input.type = 'password';
+    btn.textContent = '';
+  }
+}
 
-// ════════════════════════════════════════════
-// EVENT LISTENERS
-// ════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// CANVAS DRAG (window listeners)
+// ═══════════════════════════════════════════════
+window.addEventListener('mouseup', () => { cIsDragging = false; });
+window.addEventListener('mousemove', e => {
+  if (!cIsDragging || corlimaActiveIndex < 0 || !cWrap) return;
+  const data = corlimaImages[corlimaActiveIndex];
+  const rect = cWrap.getBoundingClientRect();
+  const scaleRatio = baseW / rect.width;
+  const dx = (e.clientX - cStartX) * scaleRatio;
+  const dy = (e.clientY - cStartY) * scaleRatio;
+  data.x += dx; data.y += dy;
+  cStartX = e.clientX; cStartY = e.clientY;
+  clampCorlimaData(data);
+  drawCorlimaCanvas();
+});
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function() {
-  switchTab('corlima');
 
-  // ── Scale Corlima: dropzone y canvas
+  // Scale Corlima: canvas
+  cCanvas = document.getElementById('corlimaCanvas');
+  if (cCanvas) {
+    cCtx  = cCanvas.getContext('2d');
+    cWrap = document.getElementById('corlimaCanvasWrap');
+  }
+
+  // Scale Corlima: dropzone — registro DIRECTO
   const cFileInput = document.getElementById('corlimaFileInput');
   const cDropZone  = document.getElementById('corlimaDropZone');
   if (cFileInput && cDropZone) {
     cFileInput.addEventListener('change', handleCorlimaUpload);
-    cDropZone.addEventListener('click', () => cFileInput.click());
-    cDropZone.addEventListener('dragover', e => { e.preventDefault(); cDropZone.classList.add('drag-over'); });
-    cDropZone.addEventListener('dragleave', () => cDropZone.classList.remove('drag-over'));
-    cDropZone.addEventListener('drop', e => {
+    cDropZone.addEventListener('click', function() { cFileInput.click(); });
+    cDropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      cDropZone.classList.add('drag-over');
+    });
+    cDropZone.addEventListener('dragleave', function() {
+      cDropZone.classList.remove('drag-over');
+    });
+    cDropZone.addEventListener('drop', function(e) {
       e.preventDefault();
       cDropZone.classList.remove('drag-over');
-      if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
+      if (e.dataTransfer && e.dataTransfer.files) {
+        handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
+      }
     });
     corlimaInputListenerSet = true;
   }
 
-  // ── Canvas Corlima
-  cCanvas = document.getElementById('corlimaCanvas');
-  if (cCanvas) {
-    cCtx = cCanvas.getContext('2d');
-    cWrap = document.getElementById('corlimaCanvasWrap');
-  }
-
   initCorlimaResListener();
 
-  // Auto file input
+  // Automatización: file input
   const autoFileInput = document.getElementById('autoFileInput');
   if (autoFileInput) {
     autoFileInput.addEventListener('change', function(e) {
@@ -1733,6 +1794,8 @@ document.addEventListener('DOMContentLoaded', function() {
       menu.style.display = 'none';
     }
   });
+
+  switchTab('corlima');
 });
 </script>
 </body>
