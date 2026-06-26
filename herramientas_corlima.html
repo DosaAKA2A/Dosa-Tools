@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Herramientas Corlima — DOSA</title>
 <link rel="icon" href="dosa_favicon.svg" type="image/svg+xml">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">/* v7.24 cache bust */
+window.autoMode = window.autoMode || 'precios';
+window.autoData = window.autoData || [];
+window.autoHeaders = window.autoHeaders || [];
+window.CAT_DB = window.CAT_DB || {};
+window.PROD_DB = window.PROD_DB || {};
+window.CATS_DICT = window.CATS_DICT || {};
+</script>
 <style>
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -370,7 +377,7 @@ body { padding: 0; }
 <div class="header">
   <a class="header-logo" href="index.html" title="Volver al inicio"><img src="dosa_favicon.svg" alt="DOSA" style="width:32px;height:32px;display:block;border-radius:7px;"></a>
   <span class="header-title">DOSA TOOLS</span>
-  <span class="header-ver">v7.0</span>
+  <span class="header-ver">v7.24</span>
 </div>
 <div class="header-line"></div>
 
@@ -1770,6 +1777,8 @@ function autoFillSelects() {
   });
 }
 function autoProcesar() {
+  var autoMode = window.autoMode || 'precios';
+  var autoData = window.autoData || [];
   const isP = autoMode === 'precios';
   let matched = 0, unmatched = 0;
 
