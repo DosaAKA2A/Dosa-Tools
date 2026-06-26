@@ -364,7 +364,6 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
 
 <div id="scalePanel">
 
-<!-- ZONA DE CARGA -->
 <div id="scaleDropZone">
   <div class="sdz-icon">↑</div>
   <div class="sdz-main">Arrastra imágenes aquí o haz clic para explorar</div>
@@ -372,184 +371,180 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   <input type="file" id="scaleFileInput" multiple accept="image/*" style="display:none">
 </div>
 
-<!-- RESOLUCIONES -->
 <div id="scaleResBlock">
-  <div class="sres-title">Resolución de salida</div>
+  <div class="sres-label-title">Resolución de salida</div>
   <div class="sres-options">
-    <label class="sres-opt" id="sresOpt1000">
+    <label class="sres-opt">
       <input type="radio" name="scaleRes" value="1000x1000" checked>
-      <span class="sres-label">1000 × 1000 px</span>
-      <span class="sres-hint blue">Usa esta opción para las imágenes de corlima.pe</span>
+      <div class="sres-card">
+        <span class="sres-px">1000 × 1000 px</span>
+        <span class="sres-hint blue">Usa esta opción para las imágenes de corlima.pe</span>
+      </div>
     </label>
-    <label class="sres-opt" id="sresOpt2000">
+    <label class="sres-opt">
       <input type="radio" name="scaleRes" value="2000x2000">
-      <span class="sres-label">2000 × 2000 px</span>
-      <span class="sres-hint pink">Usa esta opción para otras plataformas</span>
+      <div class="sres-card">
+        <span class="sres-px">2000 × 2000 px</span>
+        <span class="sres-hint pink">Usa esta opción para otras plataformas</span>
+      </div>
     </label>
-    <label class="sres-opt" id="sresOpt1080">
+    <label class="sres-opt">
       <input type="radio" name="scaleRes" value="1080x1350">
-      <span class="sres-label">1080 × 1350 px &nbsp;<small style="opacity:.55;">4:5</small></span>
-      <span class="sres-hint orange">Usa esta opción para Instagram</span>
+      <div class="sres-card">
+        <span class="sres-px">1080 × 1350 px <em class="sres-ratio">4:5</em></span>
+        <span class="sres-hint orange">Usa esta opción para Instagram</span>
+      </div>
     </label>
   </div>
 </div>
 
-<!-- GALERÍA ACTIVA -->
 <div id="scaleGalleryBlock" style="display:none">
-  <div class="sgal-title">Galería Activa</div>
+  <div class="s-section-title">Galería activa</div>
   <div id="scaleGallery"></div>
 </div>
 
-<!-- WORKSPACE -->
 <div id="scaleWorkspace" style="display:none">
-  <div class="sws-layout">
-    <!-- CANVAS -->
-    <div class="sws-canvas-col">
-      <div class="sws-canvas-label">
-        Vista previa
-        <span id="scaleCanvasSize" style="opacity:.45;font-size:10px;margin-left:8px;"></span>
+  <div class="s-section-title">
+    Editor
+    <span id="scaleCanvasSize"></span>
+  </div>
+  <div id="scaleCanvasDual">
+    <div class="sdual-col">
+      <div class="sdual-col-label">Original</div>
+      <div id="scaleCanvasSrcWrap">
+        <canvas id="scaleCanvasSrc"></canvas>
       </div>
-      <!-- Layout dos columnas: original | resultado -->
-      <div id="scaleCanvasDual">
-
-        <!-- Original con overlay del recorte -->
-        <div class="sdual-col">
-          <div class="sws-canvas-label">Original</div>
-          <div id="scaleCanvasSrcWrap">
-            <canvas id="scaleCanvasSrc"></canvas>
-          </div>
-        </div>
-
-        <!-- Resultado editable -->
-        <div class="sdual-col">
-          <div class="sws-canvas-label" style="display:flex;align-items:center;justify-content:space-between;">
-            <span>Resultado <small id="scaleCanvasSize" style="opacity:.4;font-size:10px;margin-left:6px;"></small></span>
-            <button id="scaleDlSingle" class="sbtn-small" title="Descargar imagen actual">↓ Descargar</button>
-          </div>
-          <div id="scaleCanvasWrap">
-            <canvas id="scaleCanvas"></canvas>
-            <div id="scaleGrid"></div>
-          </div>
-        </div>
-
-      </div>
-      <div class="sws-zoom-row">
-        <span class="sws-zoom-lbl">Zoom</span>
-        <input type="range" id="scaleZoom" min="0.5" max="4" step="0.01" value="1">
-        <span id="scaleZoomVal">100%</span>
-      </div>
-
     </div>
+    <div class="sdual-col">
+      <div class="sdual-col-label">
+        Resultado
+        <button id="scaleDlSingle" class="sbtn-inline">↓ Descargar esta</button>
+      </div>
+      <div id="scaleCanvasWrap">
+        <canvas id="scaleCanvas"></canvas>
+        <div id="scaleGrid"></div>
+      </div>
+    </div>
+  </div>
+  <div class="sws-zoom-row">
+    <span class="sws-zoom-lbl">Zoom</span>
+    <input type="range" id="scaleZoom" min="0.5" max="4" step="0.01" value="1">
+    <span id="scaleZoomVal">100%</span>
   </div>
 </div>
 
-<!-- BOTÓN DESCARGA TODAS -->
 <div id="scaleDlAllBlock" style="display:none">
-  <button id="scaleDlAll" class="sbtn sbtn-primary">↓ Descargar todas las imágenes</button>
-  <span id="scaleDlStatus" style="font-size:11px;color:#888;margin-left:12px;"></span>
+  <button id="scaleDlAll" class="sbtn-dl-all">↓ Descargar todas las imágenes</button>
+  <span id="scaleDlStatus"></span>
 </div>
 
-</div><!-- /#scalePanel -->
+</div>
 
 <style>
-/* ── Scale Corlima CSS ─────────────────────────── */
-#scalePanel { padding: 0; }
+/* ═══════════════════════════════════════
+   SCALE CORLIMA — estilos
+═══════════════════════════════════════ */
+#scalePanel { display: flex; flex-direction: column; gap: 24px; }
 
 /* Drop zone */
 #scaleDropZone {
-  border: 1.5px dashed rgba(255,255,255,0.18);
-  border-radius: 10px;
-  padding: 48px 24px;
+  border: 1.5px dashed rgba(255,255,255,0.14);
+  border-radius: 12px;
+  padding: 40px 24px;
   text-align: center;
   cursor: pointer;
   transition: border-color .2s, background .2s;
-  margin-bottom: 20px;
   user-select: none;
 }
 #scaleDropZone:hover, #scaleDropZone.drag-over {
-  border-color: rgba(255,255,255,0.45);
-  background: rgba(255,255,255,0.03);
+  border-color: rgba(255,255,255,0.38);
+  background: rgba(255,255,255,0.025);
 }
-.sdz-icon { font-size: 28px; color: rgba(255,255,255,0.25); margin-bottom: 10px; }
-.sdz-main { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
-.sdz-sub  { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: .03em; }
+.sdz-icon { font-size: 22px; color: rgba(255,255,255,0.2); margin-bottom: 8px; }
+.sdz-main { font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 4px; }
+.sdz-sub  { font-size: 11px; color: rgba(255,255,255,0.28); letter-spacing:.03em; }
+
+/* Títulos de sección */
+.s-section-title {
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+#scaleCanvasSize {
+  font-size: 10px; letter-spacing: .04em; text-transform: none;
+  color: rgba(255,255,255,0.2);
+}
 
 /* Resoluciones */
-#scaleResBlock { margin-bottom: 20px; }
-.sres-title { font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: 10px; }
-.sres-options { display: flex; flex-wrap: wrap; gap: 10px; }
-.sres-opt {
-  display: flex; flex-direction: column; gap: 4px;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px; padding: 10px 14px;
-  cursor: pointer; transition: border-color .2s;
-  min-width: 190px;
+.sres-label-title {
+  font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); margin-bottom: 12px;
 }
-.sres-opt:has(input:checked) { border-color: rgba(255,255,255,0.35); }
-.sres-opt input[type=radio] { display: none; }
-.sres-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
+.sres-options { display: flex; gap: 10px; flex-wrap: wrap; }
+.sres-opt { cursor: pointer; }
+.sres-opt input { display: none; }
+.sres-card {
+  display: flex; flex-direction: column; gap: 5px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px; padding: 12px 16px;
+  transition: border-color .2s, background .2s;
+  min-width: 180px;
+}
+.sres-opt:has(input:checked) .sres-card {
+  border-color: rgba(255,255,255,0.32);
+  background: rgba(255,255,255,0.04);
+}
+.sres-px { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.82); }
+.sres-ratio { font-style: normal; font-size: 10px; opacity: .45; margin-left: 4px; }
 .sres-hint { font-size: 11px; line-height: 1.4; }
 .sres-hint.blue   { color: #4a9fd4; }
 .sres-hint.pink   { color: #e879a0; }
 .sres-hint.orange { color: #f5a623; }
 
 /* Galería */
-.sgal-title { font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35); margin-bottom: 10px; }
-#scaleGallery {
-  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
-}
+#scaleGallery { display: flex; flex-wrap: wrap; gap: 8px; }
 .sgal-thumb {
-  position: relative; width: 72px; height: 72px;
-  border-radius: 6px; overflow: hidden;
+  position: relative; width: 68px; height: 68px;
+  border-radius: 8px; overflow: hidden;
   border: 2px solid transparent; cursor: pointer;
-  transition: border-color .15s;
-  background: #111;
+  transition: border-color .15s; background: #111;
+  flex-shrink: 0;
 }
-.sgal-thumb.active { border-color: #fff; }
-.sgal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.sgal-thumb.active { border-color: rgba(255,255,255,0.8); }
+.sgal-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
 .sgal-del {
-  position: absolute; top: 2px; right: 2px;
-  width: 18px; height: 18px; border-radius: 50%;
-  background: rgba(0,0,0,0.75); border: none;
+  position: absolute; top: 3px; right: 3px;
+  width: 17px; height: 17px; border-radius: 50%;
+  background: rgba(0,0,0,0.7); border: none;
   color: #fff; font-size: 11px; cursor: pointer;
   display: flex; align-items: center; justify-content: center;
-  line-height: 1;
+  transition: background .15s;
 }
-.sgal-del:hover { background: #dc402a; }
+.sgal-del:hover { background: #dc2626; }
 
-/* Workspace */
-.sws-layout { display: flex; flex-direction: column; gap: 16px; }
-.sws-canvas-col { display: flex; flex-direction: column; gap: 10px; }
-.sws-canvas-label {
-  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
-  color: rgba(255,255,255,0.35);
-}
-/* Layout dual de canvas */
+/* Canvas dual */
 #scaleCanvasDual {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-bottom: 12px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
 }
+@media (max-width: 600px) { #scaleCanvasDual { grid-template-columns: 1fr; } }
+
 .sdual-col { display: flex; flex-direction: column; gap: 8px; }
+.sdual-col-label {
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: space-between;
+}
 
 #scaleCanvasSrcWrap {
-  position: relative;
-  width: 100%;
-  background: #1a1a1a;
-  border-radius: 8px; overflow: hidden;
+  border-radius: 8px; overflow: hidden; background: #141414;
+  border: 1px solid rgba(255,255,255,0.06);
 }
-#scaleCanvasSrc {
-  display: block; width: 100%; height: auto;
-}
+#scaleCanvasSrc { display: block; width: 100%; height: auto; }
 
 #scaleCanvasWrap {
-  position: relative;
-  width: 100%;
-  background: repeating-conic-gradient(#1a1a1a 0% 25%, #111 0% 50%) 0 0 / 16px 16px;
-  border-radius: 8px; overflow: hidden;
+  position: relative; border-radius: 8px; overflow: hidden;
+  background: repeating-conic-gradient(#1c1c1c 0% 25%, #141414 0% 50%) 0 0 / 14px 14px;
+  border: 1px solid rgba(255,255,255,0.06);
 }
 #scaleCanvas {
   display: block; width: 100%; height: auto;
@@ -559,49 +554,44 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
 #scaleGrid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
-    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
   background-size: 33.33% 33.33%;
 }
 
-/* Botón pequeño de descarga individual */
-.sbtn-small {
-  padding: 4px 10px;
-  border-radius: 5px;
-  border: 1px solid rgba(255,255,255,0.2);
-  background: rgba(255,255,255,0.07);
-  color: rgba(255,255,255,0.7);
-  font-family: inherit;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .04em;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background .15s;
+/* Botón descarga individual (inline, pequeño) */
+.sbtn-inline {
+  padding: 3px 9px; border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.16);
+  background: transparent;
+  color: rgba(255,255,255,0.5);
+  font-family: inherit; font-size: 10px; font-weight: 600;
+  letter-spacing: .04em; cursor: pointer;
+  transition: background .15s, color .15s; white-space: nowrap;
 }
-.sbtn-small:hover { background: rgba(255,255,255,0.14); }
-
-@media (max-width: 640px) {
-  #scaleCanvasDual { grid-template-columns: 1fr; }
-}
+.sbtn-inline:hover { background: rgba(255,255,255,0.08); color: rgba(255,255,255,.85); }
 
 /* Zoom */
 .sws-zoom-row {
-  display: flex; align-items: center; gap: 10px;
+  display: flex; align-items: center; gap: 10px; margin-top: 4px;
 }
-.sws-zoom-lbl { font-size: 11px; color: rgba(255,255,255,0.4); min-width: 32px; }
-#scaleZoom { flex: 1; accent-color: #fff; max-width: 200px; }
-#scaleZoomVal { font-size: 11px; color: rgba(255,255,255,0.5); min-width: 36px; }
+.sws-zoom-lbl { font-size: 11px; color: rgba(255,255,255,.3); min-width: 30px; }
+#scaleZoom { flex:1; max-width: 220px; accent-color: rgba(255,255,255,.6); }
+#scaleZoomVal { font-size: 11px; color: rgba(255,255,255,.35); min-width: 36px; }
 
-/* Botones */
-.sbtn {
+/* Botón descarga todas */
+.sbtn-dl-all {
   display: inline-flex; align-items: center; gap: 6px;
-  padding: 9px 18px; border-radius: 7px; border: none;
-  font-family: inherit; font-size: 12px; font-weight: 600;
+  padding: 10px 20px; border-radius: 8px; border: none;
+  background: rgba(255,255,255,0.9); color: #000;
+  font-family: inherit; font-size: 12px; font-weight: 700;
   letter-spacing: .04em; cursor: pointer; transition: opacity .2s;
 }
-.sbtn:hover { opacity: .82; }
-.sbtn-accent  { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.sbtn-dl-all:hover { opacity: .85; }
+#scaleDlStatus {
+  font-size: 11px; color: rgba(255,255,255,.4); margin-left: 12px;
+}
+#scaleDlAllBlock { display: flex; align-items: center; }.sbtn-accent  { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
 .sbtn-primary { background: #fff; color: #000; }
 
 #scaleDlAllBlock { margin-top: 16px; display: flex; align-items: center; }
@@ -914,7 +904,7 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   dlSingle.addEventListener('click', () => {
     if (S.active < 0) return;
     const d = S.images[S.active];
-    const name = d.file.name.replace(/\.[^.]+$/, '') + '_' + S.canvasW + 'x' + S.canvasH + '.jpg';
+    const name = 'dosa_scale(' + (S.active + 1) + ').jpg';
     triggerDl(renderJPG(d), name);
   });
 
@@ -923,7 +913,7 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
     dlStatus.textContent = 'Descargando ' + S.images.length + ' imágen(es)...';
     S.images.forEach((d, i) => {
       setTimeout(() => {
-        const name = d.file.name.replace(/\.[^.]+$/, '') + '_' + S.canvasW + 'x' + S.canvasH + '.jpg';
+        const name = 'dosa_scale(' + (S.active + 1) + ').jpg';
         triggerDl(renderJPG(d), name);
         if (i === S.images.length - 1) {
           dlStatus.textContent = '✓ Listo';
