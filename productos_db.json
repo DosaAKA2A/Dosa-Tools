@@ -4433,10 +4433,10 @@
   "10024": {
     "nombre": "TABLA CORTAR 25x35x1 CM PE 1014 CUATRO USOS",
     "marca": "DUSSEL",
-    "cat": "6540,6500,6000,2",
+    "cat": "2,7000,7500,7570",
     "cat_padre": "",
-    "cat_names": "",
-    "cat_ok": false
+    "cat_names": "TABLAS DE CORTAR > UTENSILIOS PROFESIONALES > PROFESIONAL",
+    "cat_ok": true
   },
   "10026": {
     "nombre": "TABLA CORTAR 30x46x1.1 CM PE C1218 AMARILLO",
@@ -5751,10 +5751,10 @@
   "10480": {
     "nombre": "COPA COCTEL 300 ML  OUTDOOR PERFECT",
     "marca": "ARCOROC",
-    "cat": "2",
-    "cat_names": "",
+    "cat": "2,1000,1300,1320",
+    "cat_names": "COPAS DE BAR > CRISTALERÍA DE BAR > BAR",
     "cat_padre": "",
-    "cat_ok": false
+    "cat_ok": true
   },
   "10469": {
     "nombre": "COPA COCTEL 44 CL HURRICANE OUTDOOR PERFECT",
@@ -8639,18 +8639,18 @@
   "11971": {
     "nombre": "JARRA DE TRITAN 2 LT C/ TAPA PARA LICUADORA PURE POWER",
     "marca": "KITCHEN AID",
-    "cat": "2.98",
-    "cat_names": "",
+    "cat": "2,9000,9800",
+    "cat_names": "LICUADORAS > ELECTRODOMÉSTICOS",
     "cat_padre": "",
-    "cat_ok": false
+    "cat_ok": true
   },
   "11970": {
     "nombre": "JARRA DE VIDRIO 1.85 LT C/ TAPA LICUADORA PURE POWER",
     "marca": "KITCHEN AID",
-    "cat": "2.98",
-    "cat_names": "",
+    "cat": "2,9000,9800",
+    "cat_names": "LICUADORAS > ELECTRODOMÉSTICOS",
     "cat_padre": "",
-    "cat_ok": false
+    "cat_ok": true
   },
   "11560": {
     "nombre": "TRITURADOR ROBOT COUPE CMP350VV",
