@@ -1298,14 +1298,14 @@ const crcTable = new Uint32Array(256);
 for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); crcTable[i] = c; }
 
 // DB externa
-let CAT_DB = {};      // { cod: cat_string }
-let PROD_DB = {};     // { cod: { nombre, marca, cat, cat_names, cat_padre } }
-let CATS_DICT = {};   // { id: nombre_categoria }
+var CAT_DB = {};      // { cod: cat_string }
+var PROD_DB = {};     // { cod: { nombre, marca, cat, cat_names, cat_padre } }
+var CATS_DICT = {};   // { id: nombre_categoria }
 
 // Auto (Carga Masiva)
-let autoData = [];
-let autoHeaders = [];
-let autoMode = 'precios';
+var autoData = [];
+var autoHeaders = [];
+var autoMode = 'precios';
 
 (function loadDB() {
   fetch('productos_db.json?v=' + Date.now())
@@ -1668,9 +1668,7 @@ async function firmaCopiar() {
   }
 }
 window.addEventListener('load', function() {
-  console.log('[auto] window.load - buscando autoFileInput');
   var _autoInput = document.getElementById('autoFileInput');
-  console.log('[auto] autoFileInput encontrado:', !!_autoInput);
   if (_autoInput) {
     _autoInput.addEventListener('change', function(e) {
       var f = e.target.files[0];
@@ -1713,7 +1711,6 @@ function autoHandleDrop(e) {
   if (f) autoLoadFile(f);
 }
 function autoLoadFile(file) {
-  console.log("[auto] autoLoadFile llamado:", file.name);
   const ext = file.name.split('.').pop().toLowerCase();
   document.getElementById('autoFileName').textContent = 'archivo: ' + file.name;
   document.getElementById('autoPreviewSection').style.display = 'none';
@@ -1744,7 +1741,6 @@ function autoParseCSV(text) {
   autoParseRows(rows);
 }
 function autoParseRows(rows) {
-  console.log("[auto] autoParseRows llamado, rows:", rows ? rows.length : "null");
   if (!rows || rows.length < 2) { alert('El archivo no tiene datos suficientes.'); return; }
   autoHeaders = rows[0].map(function(h) { return String(h).trim(); });
   autoData = rows.slice(1).filter(function(r) { return r.some(function(c) { return String(c).trim() !== ''; }); });
@@ -1774,7 +1770,6 @@ function autoFillSelects() {
   });
 }
 function autoProcesar() {
-  console.log("[auto] autoProcesar llamado, autoData:", autoData ? autoData.length : "null", "autoMode:", autoMode);
   const isP = autoMode === 'precios';
   let matched = 0, unmatched = 0;
 
