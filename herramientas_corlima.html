@@ -357,74 +357,498 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
 <div class="content">
 
 <div id="panelCorlima">
-  <div class="sec">Subir Imágenes (Máx 10)</div>
-  <div class="drop-zone" id="corlimaDropZone">
-    <div class="drop-icon">&#8593;</div>
-    <div class="drop-main">Sube hasta 10 imágenes para reescalar</div>
-    <div class="drop-sub">JPG, PNG, WebP</div>
-    <input type="file" id="corlimaFileInput" multiple accept="image/*">
+<!-- ══════════════════════════════════════════════════════
+     SCALE CORLIMA — Panel autónomo v1.0
+     Sin dependencias externas. Todo inline.
+══════════════════════════════════════════════════════ -->
+
+<div id="scalePanel">
+
+<!-- ZONA DE CARGA -->
+<div id="scaleDropZone">
+  <div class="sdz-icon">↑</div>
+  <div class="sdz-main">Arrastra imágenes aquí o haz clic para explorar</div>
+  <div class="sdz-sub">JPG · PNG · WebP · GIF · BMP — hasta 10 imágenes</div>
+  <input type="file" id="scaleFileInput" multiple accept="image/*" style="display:none">
+</div>
+
+<!-- RESOLUCIONES -->
+<div id="scaleResBlock">
+  <div class="sres-title">Resolución de salida</div>
+  <div class="sres-options">
+    <label class="sres-opt" id="sresOpt1000">
+      <input type="radio" name="scaleRes" value="1000x1000" checked>
+      <span class="sres-label">1000 × 1000 px</span>
+      <span class="sres-hint blue">Usa esta opción para las imágenes de corlima.pe</span>
+    </label>
+    <label class="sres-opt" id="sresOpt2000">
+      <input type="radio" name="scaleRes" value="2000x2000">
+      <span class="sres-label">2000 × 2000 px</span>
+      <span class="sres-hint pink">Usa esta opción para otras plataformas</span>
+    </label>
+    <label class="sres-opt" id="sresOpt1080">
+      <input type="radio" name="scaleRes" value="1080x1350">
+      <span class="sres-label">1080 × 1350 px &nbsp;<small style="opacity:.55;">4:5</small></span>
+      <span class="sres-hint orange">Usa esta opción para Instagram</span>
+    </label>
   </div>
+</div>
 
-  <div id="corlimaWorkspace" style="display:none">
-    <div class="sec">Galería Activa</div>
-    <div class="corlima-gallery" id="corlimaGallery" style="align-items: center; padding-top: 5px;"></div>
+<!-- GALERÍA ACTIVA -->
+<div id="scaleGalleryBlock" style="display:none">
+  <div class="sgal-title">Galería Activa</div>
+  <div id="scaleGallery"></div>
+</div>
 
-    <div class="sec" style="display:flex; align-items:center; flex-wrap:wrap; margin-top:1.5rem; gap:10px;">
-      <!-- TABS AJUSTE -->
-      <div style="display:flex; background:var(--bg2); border:0.5px solid var(--border); border-radius:6px; overflow:hidden; flex-shrink:0;">
-        <button type="button" id="tabAjusteManual" onclick="setAjusteMode('manual')" style="padding:6px 14px; font-size:11px; font-family:inherit; cursor:pointer; border:none; background:var(--bg4); color:#fff; font-weight:500; letter-spacing:.03em;">Ajuste Manual</button>
-        <button type="button" id="tabAjusteAuto" onclick="setAjusteMode('auto')" style="padding:6px 14px; font-size:11px; font-family:inherit; cursor:pointer; border:none; background:transparent; color:var(--muted); letter-spacing:.03em;">Ajuste Automático</button>
+<!-- WORKSPACE -->
+<div id="scaleWorkspace" style="display:none">
+  <div class="sws-layout">
+    <!-- CANVAS -->
+    <div class="sws-canvas-col">
+      <div class="sws-canvas-label">
+        Vista previa
+        <span id="scaleCanvasSize" style="opacity:.45;font-size:10px;margin-left:8px;"></span>
       </div>
-
-      <!-- MANUAL: selector de resolución -->
-      <div id="ajusteManualPanel" style="display:flex; align-items:center; gap:8px;">
-        <select id="corlimaRes" style="width:auto; padding:2px 6px;">
-          <option value="1000x1000">1000x1000</option>
-          <option value="2000x2000">2000x2000</option>
-          <option value="1080x1350">1080x1350 (4:5)</option>
-        </select>
-        <span id="corlimaResNote" class="res-note"></span>
+      <div id="scaleCanvasWrap">
+        <canvas id="scaleCanvas"></canvas>
+        <div id="scaleGrid"></div>
       </div>
-
-      <!-- AUTO: selector de fondo -->
-      <div id="ajusteAutoPanel" style="display:none; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span style="font-size:11px; color:var(--muted);">Fondo:</span>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);">
-          <input type="radio" name="corlimaFitBg" value="transparent" checked style="accent-color:var(--accent);"> Transparente
-        </label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);">
-          <input type="radio" name="corlimaFitBg" value="white" style="accent-color:var(--accent);"> Blanco
-        </label>
-        <label style="display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text);">
-          <input type="radio" name="corlimaFitBg" value="black" style="accent-color:var(--accent);"> Negro
-        </label>
+      <div class="sws-zoom-row">
+        <span class="sws-zoom-lbl">Zoom</span>
+        <input type="range" id="scaleZoom" min="0.5" max="4" step="0.01" value="1">
+        <span id="scaleZoomVal">100%</span>
       </div>
-
-      <button id="downloadCorlimaSingle" class="small-btn accent" style="margin-left:auto; display:flex; align-items:center; gap:4px;">&#8595; Imagen Actual</button>
-    </div>
-
-    <!-- AVISO AJUSTE AUTOMÁTICO -->
-    <div id="ajusteAutoWarning" style="display:none; align-items:center; gap:10px; margin-bottom:10px; padding:9px 14px; background:rgba(220,64,42,0.08); border:0.5px solid rgba(220,64,42,0.35); border-radius:6px;">
-      <span style="font-size:16px; flex-shrink:0;"></span>
-      <div>
-        <div style="font-size:11px; font-weight:600; color:#dc402a; letter-spacing:.04em; text-transform:uppercase;">Ajuste Automático</div>
-        <div style="font-size:11px; color:var(--muted); margin-top:2px;">Usa este modo solo si ningún otro formato te funciona. La imagen se ajustará completa con márgenes de relleno.</div>
-      </div>
-    </div>
-
-    <div class="corlima-helper" id="corlimaHelperText">Haz clic y arrastra dentro del lienzo para centrar. Usa el zoom para ajustar el tamaño.</div>
-
-    <div class="corlima-canvas-wrap" id="corlimaCanvasWrap">
-      <canvas id="corlimaCanvas" width="1000" height="1000"></canvas>
-    </div>
-    
-    <div class="controls">
-      <div class="ctrl" style="grid-column: span 2;">
-        <div class="ctrl-lbl">Zoom <span id="corlimaZoomVal">100%</span></div>
-        <input type="range" id="corlimaZoom" min="1" max="4" step="0.01" value="1">
-      </div>
+      <button id="scaleDlSingle" class="sbtn sbtn-accent">↓ Descargar imagen actual</button>
     </div>
   </div>
+</div>
+
+<!-- BOTÓN DESCARGA TODAS -->
+<div id="scaleDlAllBlock" style="display:none">
+  <button id="scaleDlAll" class="sbtn sbtn-primary">↓ Descargar todas las imágenes</button>
+  <span id="scaleDlStatus" style="font-size:11px;color:#888;margin-left:12px;"></span>
+</div>
+
+</div><!-- /#scalePanel -->
+
+<style>
+/* ── Scale Corlima CSS ─────────────────────────── */
+#scalePanel { padding: 0; }
+
+/* Drop zone */
+#scaleDropZone {
+  border: 1.5px dashed rgba(255,255,255,0.18);
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .2s;
+  margin-bottom: 20px;
+  user-select: none;
+}
+#scaleDropZone:hover, #scaleDropZone.drag-over {
+  border-color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.03);
+}
+.sdz-icon { font-size: 28px; color: rgba(255,255,255,0.25); margin-bottom: 10px; }
+.sdz-main { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 6px; }
+.sdz-sub  { font-size: 11px; color: rgba(255,255,255,0.3); letter-spacing: .03em; }
+
+/* Resoluciones */
+#scaleResBlock { margin-bottom: 20px; }
+.sres-title { font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+.sres-options { display: flex; flex-wrap: wrap; gap: 10px; }
+.sres-opt {
+  display: flex; flex-direction: column; gap: 4px;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px; padding: 10px 14px;
+  cursor: pointer; transition: border-color .2s;
+  min-width: 190px;
+}
+.sres-opt:has(input:checked) { border-color: rgba(255,255,255,0.35); }
+.sres-opt input[type=radio] { display: none; }
+.sres-label { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
+.sres-hint { font-size: 11px; line-height: 1.4; }
+.sres-hint.blue   { color: #4a9fd4; }
+.sres-hint.pink   { color: #e879a0; }
+.sres-hint.orange { color: #f5a623; }
+
+/* Galería */
+.sgal-title { font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35); margin-bottom: 10px; }
+#scaleGallery {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;
+}
+.sgal-thumb {
+  position: relative; width: 72px; height: 72px;
+  border-radius: 6px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer;
+  transition: border-color .15s;
+  background: #111;
+}
+.sgal-thumb.active { border-color: #fff; }
+.sgal-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.sgal-del {
+  position: absolute; top: 2px; right: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(0,0,0,0.75); border: none;
+  color: #fff; font-size: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+.sgal-del:hover { background: #dc402a; }
+
+/* Workspace */
+.sws-layout { display: flex; flex-direction: column; gap: 16px; }
+.sws-canvas-col { display: flex; flex-direction: column; gap: 10px; }
+.sws-canvas-label {
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+#scaleCanvasWrap {
+  position: relative;
+  width: 100%; max-width: 500px;
+  background: repeating-conic-gradient(#1a1a1a 0% 25%, #111 0% 50%) 0 0 / 16px 16px;
+  border-radius: 8px; overflow: hidden;
+}
+#scaleCanvas {
+  display: block; width: 100%; height: auto;
+  touch-action: none;
+}
+#scaleGrid {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 33.33% 33.33%;
+}
+
+/* Zoom */
+.sws-zoom-row {
+  display: flex; align-items: center; gap: 10px;
+}
+.sws-zoom-lbl { font-size: 11px; color: rgba(255,255,255,0.4); min-width: 32px; }
+#scaleZoom { flex: 1; accent-color: #fff; max-width: 200px; }
+#scaleZoomVal { font-size: 11px; color: rgba(255,255,255,0.5); min-width: 36px; }
+
+/* Botones */
+.sbtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 18px; border-radius: 7px; border: none;
+  font-family: inherit; font-size: 12px; font-weight: 600;
+  letter-spacing: .04em; cursor: pointer; transition: opacity .2s;
+}
+.sbtn:hover { opacity: .82; }
+.sbtn-accent  { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+.sbtn-primary { background: #fff; color: #000; }
+
+#scaleDlAllBlock { margin-top: 16px; display: flex; align-items: center; }
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── Estado ────────────────────────────────────────
+  const S = {
+    images: [],      // { file, img, url, ox, oy, scale }
+    active: -1,
+    dragging: false,
+    dragStartX: 0,
+    dragStartY: 0,
+    dragOX: 0,
+    dragOY: 0,
+    canvasW: 1000,
+    canvasH: 1000,
+  };
+
+  // ── Elementos ─────────────────────────────────────
+  const dropZone   = document.getElementById('scaleDropZone');
+  const fileInput  = document.getElementById('scaleFileInput');
+  const gallery    = document.getElementById('scaleGallery');
+  const workspace  = document.getElementById('scaleWorkspace');
+  const galBlock   = document.getElementById('scaleGalleryBlock');
+  const dlAllBlock = document.getElementById('scaleDlAllBlock');
+  const canvas     = document.getElementById('scaleCanvas');
+  const ctx        = canvas.getContext('2d');
+  const canvasWrap = document.getElementById('scaleCanvasWrap');
+  const zoomSlider = document.getElementById('scaleZoom');
+  const zoomVal    = document.getElementById('scaleZoomVal');
+  const dlSingle   = document.getElementById('scaleDlSingle');
+  const dlAll      = document.getElementById('scaleDlAll');
+  const dlStatus   = document.getElementById('scaleDlStatus');
+  const sizeLabel  = document.getElementById('scaleCanvasSize');
+
+  // ── Resolución ────────────────────────────────────
+  function getRes() {
+    const v = document.querySelector('input[name="scaleRes"]:checked').value;
+    const [w, h] = v.split('x').map(Number);
+    return { w, h };
+  }
+
+  function applyRes() {
+    const { w, h } = getRes();
+    S.canvasW = w; S.canvasH = h;
+    canvas.width  = w;
+    canvas.height = h;
+    sizeLabel.textContent = `${w} × ${h} px`;
+    // Recalcular escala base de todas las imágenes
+    S.images.forEach(d => resetImageFit(d));
+    draw();
+  }
+
+  document.querySelectorAll('input[name="scaleRes"]').forEach(r =>
+    r.addEventListener('change', applyRes)
+  );
+
+  // ── Fit de imagen al canvas ───────────────────────
+  function resetImageFit(d) {
+    const { w, h } = { w: S.canvasW, h: S.canvasH };
+    // Cover: escala mínima para que la imagen llene el canvas
+    d.scale = Math.max(w / d.img.naturalWidth, h / d.img.naturalHeight);
+    d.ox = (w - d.img.naturalWidth  * d.scale) / 2;
+    d.oy = (h - d.img.naturalHeight * d.scale) / 2;
+    d.zoomFactor = 1;
+  }
+
+  function clamp(d) {
+    const iw = d.img.naturalWidth  * d.scale;
+    const ih = d.img.naturalHeight * d.scale;
+    d.ox = Math.min(0, Math.max(S.canvasW - iw, d.ox));
+    d.oy = Math.min(0, Math.max(S.canvasH - ih, d.oy));
+  }
+
+  // ── Dibujo ────────────────────────────────────────
+  function draw() {
+    ctx.clearRect(0, 0, S.canvasW, S.canvasH);
+    if (S.active < 0 || !S.images[S.active]) return;
+    const d = S.images[S.active];
+    ctx.drawImage(d.img,
+      d.ox, d.oy,
+      d.img.naturalWidth  * d.scale,
+      d.img.naturalHeight * d.scale
+    );
+  }
+
+  // ── Carga de imágenes ─────────────────────────────
+  function loadFiles(files) {
+    const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    if (!arr.length) return;
+    if (S.images.length + arr.length > 10) {
+      alert('Máximo 10 imágenes en total.');
+      arr.splice(10 - S.images.length);
+    }
+    arr.forEach(file => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const d = { file, img, url, ox: 0, oy: 0, scale: 1, zoomFactor: 1 };
+        resetImageFit(d);
+        S.images.push(d);
+        renderGallery();
+        if (S.active === -1) setActive(0);
+        showUI();
+      };
+      img.onerror = () => URL.revokeObjectURL(url);
+      img.src = url;
+    });
+  }
+
+  function showUI() {
+    galBlock.style.display   = 'block';
+    workspace.style.display  = 'block';
+    dlAllBlock.style.display = 'flex';
+  }
+
+  // ── Galería ───────────────────────────────────────
+  function renderGallery() {
+    gallery.innerHTML = '';
+    S.images.forEach((d, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'sgal-thumb' + (i === S.active ? ' active' : '');
+      wrap.onclick = () => setActive(i);
+
+      const img = document.createElement('img');
+      img.src = d.url;
+      wrap.appendChild(img);
+
+      const del = document.createElement('button');
+      del.className = 'sgal-del';
+      del.textContent = '×';
+      del.onclick = e => { e.stopPropagation(); removeImage(i); };
+      wrap.appendChild(del);
+
+      gallery.appendChild(wrap);
+    });
+  }
+
+  function setActive(i) {
+    S.active = i;
+    renderGallery();
+    // Sincronizar zoom slider
+    const d = S.images[i];
+    if (d) {
+      zoomSlider.value = d.zoomFactor;
+      zoomVal.textContent = Math.round(d.zoomFactor * 100) + '%';
+    }
+    applyRes(); // re-aplica resolución y redibuja
+  }
+
+  function removeImage(i) {
+    URL.revokeObjectURL(S.images[i].url);
+    S.images.splice(i, 1);
+    if (S.images.length === 0) {
+      S.active = -1;
+      galBlock.style.display   = 'none';
+      workspace.style.display  = 'none';
+      dlAllBlock.style.display = 'none';
+      ctx.clearRect(0, 0, S.canvasW, S.canvasH);
+    } else {
+      S.active = Math.min(S.active, S.images.length - 1);
+      setActive(S.active);
+    }
+    renderGallery();
+  }
+
+  // ── Zoom ──────────────────────────────────────────
+  zoomSlider.addEventListener('input', () => {
+    if (S.active < 0) return;
+    const d = S.images[S.active];
+    const factor = parseFloat(zoomSlider.value);
+    d.zoomFactor = factor;
+    const baseScale = Math.max(S.canvasW / d.img.naturalWidth, S.canvasH / d.img.naturalHeight);
+    const cx = d.ox + (d.img.naturalWidth  * d.scale) / 2;
+    const cy = d.oy + (d.img.naturalHeight * d.scale) / 2;
+    d.scale = baseScale * factor;
+    d.ox = cx - (d.img.naturalWidth  * d.scale) / 2;
+    d.oy = cy - (d.img.naturalHeight * d.scale) / 2;
+    clamp(d);
+    zoomVal.textContent = Math.round(factor * 100) + '%';
+    draw();
+  });
+
+  // ── Drag en canvas ────────────────────────────────
+  function canvasPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = S.canvasW / rect.width;
+    const scaleY = S.canvasH / rect.height;
+    const src = e.touches ? e.touches[0] : e;
+    return {
+      x: (src.clientX - rect.left) * scaleX,
+      y: (src.clientY - rect.top)  * scaleY,
+    };
+  }
+
+  function startDrag(e) {
+    if (S.active < 0) return;
+    e.preventDefault();
+    S.dragging = true;
+    const pos = canvasPos(e);
+    S.dragStartX = pos.x;
+    S.dragStartY = pos.y;
+    const d = S.images[S.active];
+    S.dragOX = d.ox;
+    S.dragOY = d.oy;
+  }
+
+  function moveDrag(e) {
+    if (!S.dragging || S.active < 0) return;
+    e.preventDefault();
+    const pos = canvasPos(e);
+    const d = S.images[S.active];
+    d.ox = S.dragOX + (pos.x - S.dragStartX);
+    d.oy = S.dragOY + (pos.y - S.dragStartY);
+    clamp(d);
+    draw();
+  }
+
+  function endDrag() { S.dragging = false; }
+
+  canvas.addEventListener('mousedown',  startDrag);
+  canvas.addEventListener('mousemove',  moveDrag);
+  canvas.addEventListener('mouseup',    endDrag);
+  canvas.addEventListener('mouseleave', endDrag);
+  canvas.addEventListener('touchstart', startDrag, { passive: false });
+  canvas.addEventListener('touchmove',  moveDrag,  { passive: false });
+  canvas.addEventListener('touchend',   endDrag);
+
+  // ── Descarga ──────────────────────────────────────
+  function renderToJPG(d) {
+    const offscreen = document.createElement('canvas');
+    offscreen.width  = S.canvasW;
+    offscreen.height = S.canvasH;
+    const octx = offscreen.getContext('2d');
+    octx.fillStyle = '#ffffff';
+    octx.fillRect(0, 0, S.canvasW, S.canvasH);
+    octx.drawImage(d.img,
+      d.ox, d.oy,
+      d.img.naturalWidth  * d.scale,
+      d.img.naturalHeight * d.scale
+    );
+    return offscreen.toDataURL('image/jpeg', 0.92);
+  }
+
+  function triggerDownload(dataUrl, name) {
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
+  dlSingle.addEventListener('click', () => {
+    if (S.active < 0) return;
+    const d = S.images[S.active];
+    const name = d.file.name.replace(/\.[^.]+$/, '') + `_${S.canvasW}x${S.canvasH}.jpg`;
+    triggerDownload(renderToJPG(d), name);
+  });
+
+  dlAll.addEventListener('click', () => {
+    if (S.images.length === 0) return;
+    dlStatus.textContent = `Descargando ${S.images.length} imagen(es)...`;
+    S.images.forEach((d, i) => {
+      setTimeout(() => {
+        const name = d.file.name.replace(/\.[^.]+$/, '') + `_${S.canvasW}x${S.canvasH}.jpg`;
+        triggerDownload(renderToJPG(d), name);
+        if (i === S.images.length - 1) {
+          dlStatus.textContent = '✓ Listo';
+          setTimeout(() => { dlStatus.textContent = ''; }, 3000);
+        }
+      }, i * 300);
+    });
+  });
+
+  // ── Drop zone events ──────────────────────────────
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.classList.remove('drag-over');
+  });
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer && e.dataTransfer.files.length) {
+      loadFiles(e.dataTransfer.files);
+    }
+  });
+
+  fileInput.addEventListener('change', e => {
+    if (e.target.files.length) loadFiles(e.target.files);
+    e.target.value = '';
+  });
+
+  // ── Init ──────────────────────────────────────────
+  applyRes();
+
+})();
+</script>
+
 </div>
 
 <div id="panelFirma" style="display:none;">
@@ -818,282 +1242,22 @@ function switchTab(tab) {
 // ═══════════════════════════════════════════════
 // FUNCIONES
 // ═══════════════════════════════════════════════
-function handleCorlimaUpload(e) {
-  const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-  if (files.length === 0) return;
-  
-  if (corlimaImages.length + files.length > 10) {
-      alert('Puedes subir un máximo de 10 imágenes en total.');
-      return;
-  }
-  
-  files.forEach(file => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-          const scale = Math.max(baseW / img.width, baseH / img.height);
-          const x = (baseW - (img.width * scale)) / 2;
-          const y = (baseH - (img.height * scale)) / 2;
-          
-          corlimaImages.push({ file, img, url, scale, x, y, baseScale: scale });
-          updateCorlimaGallery();
-          if (corlimaActiveIndex === -1) setCorlimaActive(0);
-          
-          // Disparador de Alarma de Múltiples Imágenes
-          if (corlimaImages.length > 1 && !multiWarningShown) {
-              multiWarningShown = true;
-              document.getElementById('multiImageWarning').classList.add('show');
-          }
-      };
-      img.src = url;
-  });
-  
-  document.getElementById('corlimaWorkspace').style.display = 'block';
-  document.getElementById('globalExportArea').style.display = 'block';
-  document.getElementById('btnRow').style.display = 'none';
-  document.getElementById('btnRowCorlima').style.display = 'flex';
-  e.target.value = '';
-}
-function updateCorlimaGallery() {
-  const gal = document.getElementById('corlimaGallery');
-  gal.innerHTML = '';
-  corlimaImages.forEach((data, i) => {
-      const wrapper = document.createElement('div');
-      wrapper.style.position = 'relative';
-      wrapper.style.display = 'inline-block';
-      wrapper.style.flexShrink = '0';
-      
-      const t = document.createElement('img');
-      t.src = data.url;
-      t.className = 'corlima-thumb' + (i === corlimaActiveIndex ? ' active' : '');
-      t.onclick = () => setCorlimaActive(i);
-      
-      const delBtn = document.createElement('button');
-      delBtn.innerHTML = '&#10005;'; 
-      delBtn.style.position = 'absolute';
-      delBtn.style.top = '-6px';
-      delBtn.style.right = '-6px';
-      delBtn.style.background = '#e34141';
-      delBtn.style.color = '#fff';
-      delBtn.style.border = 'none';
-      delBtn.style.borderRadius = '50%';
-      delBtn.style.width = '18px';
-      delBtn.style.height = '18px';
-      delBtn.style.fontSize = '10px';
-      delBtn.style.cursor = 'pointer';
-      delBtn.style.display = 'flex';
-      delBtn.style.alignItems = 'center';
-      delBtn.style.justifyContent = 'center';
-      delBtn.style.padding = '0';
-      delBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.5)';
-      
-      delBtn.onclick = (e) => {
-          e.stopPropagation(); 
-          removeCorlimaImage(i);
-      };
 
-      wrapper.appendChild(t);
-      wrapper.appendChild(delBtn);
-      gal.appendChild(wrapper);
-  });
-}
-function setCorlimaActive(idx) {
-  corlimaActiveIndex = idx;
-  updateCorlimaGallery();
-  const data = corlimaImages[idx];
-  
-  const zoomSlider = document.getElementById('corlimaZoom');
-  zoomSlider.value = data.scale / data.baseScale;
-  document.getElementById('corlimaZoomVal').textContent = Math.round((data.scale / data.baseScale) * 100) + '%';
-  
-  clampCorlimaData(data);
-  drawCorlimaCanvas();
-}
-function removeCorlimaImage(idx) {
-    URL.revokeObjectURL(corlimaImages[idx].url);
-    corlimaImages.splice(idx, 1);
-    
-    if (corlimaImages.length === 0) {
-        corlimaActiveIndex = -1;
-        document.getElementById('corlimaWorkspace').style.display = 'none';
-        document.getElementById('globalExportArea').style.display = 'none';
-        cCtx.clearRect(0, 0, baseW, baseH);
-    } else {
-        if (corlimaActiveIndex === idx) {
-            setCorlimaActive(Math.max(0, idx - 1));
-        } else if (corlimaActiveIndex > idx) {
-            corlimaActiveIndex--;
-            updateCorlimaGallery();
-        } else {
-            updateCorlimaGallery();
-        }
-    }
-}
-function updateCorlimaWorkspace() {
-    const { w, h } = getTargetRes();
-    baseW = 1000;
-    baseH = Math.round(1000 * (h / w));
-    if (!cCanvas || !cWrap) return;
-    cCanvas.width = baseW;
-    cCanvas.height = baseH;
-    cWrap.style.aspectRatio = `${baseW}/${baseH}`;
-    
-    corlimaImages.forEach(data => {
-        data.baseScale = Math.max(baseW / data.img.width, baseH / data.img.height);
-        if (data.scale < data.baseScale) data.scale = data.baseScale;
-        clampCorlimaData(data);
-    });
-    drawCorlimaCanvas();
-}
-function drawCorlimaCanvas() {
-  if (!cCtx) return;
-  if (corlimaActiveIndex < 0 || !corlimaImages[corlimaActiveIndex]) return;
-  const data = corlimaImages[corlimaActiveIndex];
-  
-  cCtx.clearRect(0, 0, baseW, baseH);
 
-  if (isFitMode()) {
-    const bg = getFitBg();
-    if (bg === 'white') { cCtx.fillStyle = '#ffffff'; cCtx.fillRect(0, 0, baseW, baseH); }
-    else if (bg === 'black') { cCtx.fillStyle = '#000000'; cCtx.fillRect(0, 0, baseW, baseH); }
-    // transparente: no fill
 
-    // Escala contain: la imagen entra completa
-    const fitScale = Math.min(baseW / data.img.width, baseH / data.img.height);
-    const fw = data.img.width * fitScale;
-    const fh = data.img.height * fitScale;
-    const fx = (baseW - fw) / 2;
-    const fy = (baseH - fh) / 2;
-    cCtx.drawImage(data.img, fx, fy, fw, fh);
-  } else {
-    cCtx.drawImage(data.img, data.x, data.y, data.img.width * data.scale, data.img.height * data.scale);
-  }
-}
-function clampCorlimaData(data) {
-  if (isFitMode()) return; // En modo fit no se clampea — la imagen puede ser más pequeña que el canvas
-  if (data.scale < data.baseScale) data.scale = data.baseScale;
-  
-  const minX = baseW - (data.img.width * data.scale);
-  const minY = baseH - (data.img.height * data.scale);
-  
-  data.x = Math.max(minX, Math.min(0, data.x));
-  data.y = Math.max(minY, Math.min(0, data.y));
-}
-function setAjusteMode(mode) {
-  ajusteMode = mode;
-  const isAuto = mode === 'auto';
 
-  // Tabs
-  document.getElementById('tabAjusteManual').style.background = isAuto ? 'transparent' : 'var(--bg4)';
-  document.getElementById('tabAjusteManual').style.color     = isAuto ? 'var(--muted)' : '#fff';
-  document.getElementById('tabAjusteManual').style.fontWeight = isAuto ? 'normal' : '500';
-  document.getElementById('tabAjusteAuto').style.background  = isAuto ? 'var(--bg4)' : 'transparent';
-  document.getElementById('tabAjusteAuto').style.color       = isAuto ? '#fff' : 'var(--muted)';
-  document.getElementById('tabAjusteAuto').style.fontWeight  = isAuto ? '500' : 'normal';
 
-  // Paneles
-  document.getElementById('ajusteManualPanel').style.display  = isAuto ? 'none' : 'flex';
-  document.getElementById('ajusteAutoPanel').style.display    = isAuto ? 'flex' : 'none';
-  document.getElementById('ajusteAutoWarning').style.display  = isAuto ? 'flex' : 'none';
-  document.getElementById('corlimaHelperText').style.display  = isAuto ? 'none' : 'block';
 
-  drawCorlimaCanvas();
-}
-function getResSelect() { return document.getElementById('corlimaRes'); }
-function getTargetRes() {
-    const val = getResSelect() ? getResSelect().value : '1000x1000';
-    if (val === '2000x2000') return { w: 2000, h: 2000 };
-    if (val === '1080x1350') return { w: 1080, h: 1350 };
-    return { w: 1000, h: 1000 };
-}
-function getResNote()   { return document.getElementById('corlimaResNote'); }
-function updateResNote() {
-    const sel = getResSelect(); const note = getResNote();
-    if (!sel || !note) return;
-    const val = sel.value;
-    if (val === '1000x1000') {
-        note.textContent = 'Este formato es el adecuado para corlima.pe';
-        note.style.color = '#3fb950';
-    } else if (val === '1080x1350') {
-        note.textContent = 'Este formato es el adecuado para Instagram';
-        note.style.color = '#e3a341';
-    } else {
-        note.textContent = 'Este formato es el adecuado para otras plataformas';
-        note.style.color = '#ffb6c1';
-    }
-}
-function isFitMode() {
-  return ajusteMode === 'auto';
-}
-function getFitBg() {
-  const sel = document.querySelector('input[name="corlimaFitBg"]:checked');
-  return sel ? sel.value : 'transparent';
-}
-function initCorlimaElements() {
-    if (cCanvas) return; // ya inicializado
-    cCanvas = document.getElementById('corlimaCanvas');
-    if (!cCanvas) return;
-    cCtx = cCanvas.getContext('2d');
-    cWrap = document.getElementById('corlimaCanvasWrap');
 
-    const cFileInput = document.getElementById('corlimaFileInput');
-    const cDropZone  = document.getElementById('corlimaDropZone');
 
-    if (!corlimaInputListenerSet && cFileInput && cDropZone) {
-        cFileInput.addEventListener('change', handleCorlimaUpload);
-        cDropZone.addEventListener('click', () => cFileInput.click());
-        cDropZone.addEventListener('dragover', e => { e.preventDefault(); cDropZone.classList.add('drag-over'); });
-        cDropZone.addEventListener('dragleave', () => cDropZone.classList.remove('drag-over'));
-        cDropZone.addEventListener('drop', e => {
-            e.preventDefault(); cDropZone.classList.remove('drag-over');
-            if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
-        });
 
-        // Touch/mouse drag en canvas wrap
-        cWrap.addEventListener('mousedown', e => {
-            if (corlimaActiveIndex < 0) return;
-            cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
-        });
-        cWrap.addEventListener('touchstart', e => {
-            if (corlimaActiveIndex < 0) return;
-            cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
-        }, { passive: true });
 
-        corlimaInputListenerSet = true;
 
-        // Zoom
-        const zoomSlider = document.getElementById('corlimaZoom');
-        if (zoomSlider) {
-            zoomSlider.addEventListener('input', e => {
-                if (corlimaActiveIndex < 0) return;
-                const data = corlimaImages[corlimaActiveIndex];
-                const factor = parseFloat(e.target.value);
-                const newScale = data.baseScale * factor;
-                const cx = data.x + (data.img.width * data.scale) / 2;
-                const cy = data.y + (data.img.height * data.scale) / 2;
-                data.scale = newScale;
-                data.x = cx - (data.img.width * data.scale) / 2;
-                data.y = cy - (data.img.height * data.scale) / 2;
-                document.getElementById('corlimaZoomVal').textContent = Math.round(factor * 100) + '%';
-                clampCorlimaData(data);
-                drawCorlimaCanvas();
-            });
-        }
 
-        // Radios de fondo fit
-        document.querySelectorAll('input[name="corlimaFitBg"]').forEach(r => {
-            r.addEventListener('change', drawCorlimaCanvas);
-        });
-    }
-}
-function initCorlimaResListener() {
-    if (corlimaResListenerSet) return;
-    const sel = getResSelect();
-    if (!sel) return;
-    sel.addEventListener('change', () => { updateResNote(); updateCorlimaWorkspace(); });
-    updateResNote();
-    corlimaResListenerSet = true;
-}
+
+
+
+
 async function exportCorlimaQueue(format) {
   if (corlimaImages.length === 0) return;
   
@@ -1749,39 +1913,9 @@ document.addEventListener('DOMContentLoaded', function() {
   // Activar tab primero — antes de cualquier otra cosa
   switchTab('corlima');
 
-  // Scale Corlima: canvas
-  cCanvas = document.getElementById('corlimaCanvas');
-  if (cCanvas) {
-    cCtx  = cCanvas.getContext('2d');
-    cWrap = document.getElementById('corlimaCanvasWrap');
-    // Sincronizar canvas con la resolución seleccionada
-    updateCorlimaWorkspace();
-  }
 
-  // Scale Corlima: dropzone — registro DIRECTO
-  const cFileInput = document.getElementById('corlimaFileInput');
-  const cDropZone  = document.getElementById('corlimaDropZone');
-  if (cFileInput && cDropZone) {
-    cFileInput.addEventListener('change', handleCorlimaUpload);
-    cDropZone.addEventListener('click', function() { cFileInput.click(); });
-    cDropZone.addEventListener('dragover', function(e) {
-      e.preventDefault();
-      cDropZone.classList.add('drag-over');
-    });
-    cDropZone.addEventListener('dragleave', function() {
-      cDropZone.classList.remove('drag-over');
-    });
-    cDropZone.addEventListener('drop', function(e) {
-      e.preventDefault();
-      cDropZone.classList.remove('drag-over');
-      if (e.dataTransfer && e.dataTransfer.files) {
-        handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
-      }
-    });
-    corlimaInputListenerSet = true;
-  }
 
-  initCorlimaResListener();
+  
 
   // Automatización: file input
   const autoFileInput = document.getElementById('autoFileInput');
