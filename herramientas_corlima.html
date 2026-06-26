@@ -788,17 +788,19 @@ function initCorlimaElements() {
             if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
         });
 
-        // Touch/mouse drag en canvas wrap
-        cWrap.addEventListener('mousedown', e => {
-            if (corlimaActiveIndex < 0) return;
-            cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
-        });
-        cWrap.addEventListener('touchstart', e => {
-            if (corlimaActiveIndex < 0) return;
-            cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
-        }, { passive: true });
-
         corlimaInputListenerSet = true;
+
+        // Touch/mouse drag en canvas wrap (solo si existe)
+        if (cWrap) {
+          cWrap.addEventListener('mousedown', e => {
+              if (corlimaActiveIndex < 0) return;
+              cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
+          });
+          cWrap.addEventListener('touchstart', e => {
+              if (corlimaActiveIndex < 0) return;
+              cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
+          }, { passive: true });
+        }
 
         // Zoom
         const zoomSlider = document.getElementById('corlimaZoom');
@@ -1039,6 +1041,7 @@ function updateCorlimaWorkspace() {
 
 // ── drawCorlimaCanvas
 function drawCorlimaCanvas() {
+  if (!cCtx) return;
   if (corlimaActiveIndex < 0 || !corlimaImages[corlimaActiveIndex]) return;
   const data = corlimaImages[corlimaActiveIndex];
   
