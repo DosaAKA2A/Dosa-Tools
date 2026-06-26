@@ -490,6 +490,27 @@ body { font-family: 'Inter', system-ui, sans-serif; }
 .sbtn-primary { background: #fff; color: #000; }
 
 #scaleDlAllBlock { margin-top: 16px; display: flex; align-items: center; }
+
+/* Swatches fondo modo automático */
+.sabg-swatch {
+  width: 20px; height: 20px; border-radius: 4px;
+  border: 1.5px solid rgba(255,255,255,0.15);
+  transition: border-color .15s, transform .15s;
+  cursor: pointer;
+}
+.sabg-swatch:hover { border-color: rgba(255,255,255,0.5); transform: scale(1.12); }
+input[name="scaleAutoBg"]:checked + .sabg-swatch {
+  border-color: rgba(255,255,255,0.9);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.2);
+}
+.sabg-transparent {
+  background:
+    linear-gradient(45deg, #888 25%, transparent 25%) 0 0 / 8px 8px,
+    linear-gradient(-45deg, #888 25%, transparent 25%) 0 4px / 8px 8px,
+    linear-gradient(45deg, transparent 75%, #888 75%) 4px -4px / 8px 8px,
+    linear-gradient(-45deg, transparent 75%, #888 75%) -4px 0px / 8px 8px,
+    #444;
+}
 </style>
 </head>
 <body>
@@ -566,6 +587,33 @@ body { font-family: 'Inter', system-ui, sans-serif; }
             <div class="sres-px">2000 × 2000 <em class="sres-ratio">1:1</em></div>
             <div class="sres-hint orange">Alta resolución</div>
           </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- Modo Automático -->
+    <div id="scaleAutoRow" style="display:flex;align-items:center;gap:14px;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.03);">
+      <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none;">
+        <input type="checkbox" id="scaleAutoMode" style="display:none;">
+        <div id="scaleAutoToggle" style="width:32px;height:18px;border-radius:9px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.18);position:relative;transition:background .2s;flex-shrink:0;">
+          <div id="scaleAutoThumb" style="width:12px;height:12px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left .2s,background .2s;opacity:0.5;"></div>
+        </div>
+        <span style="font-size:12px;color:rgba(255,255,255,0.55);letter-spacing:.04em;">Modo Automático</span>
+        <span style="font-size:10px;color:rgba(255,255,255,0.25);">— contain + fondo</span>
+      </label>
+      <div id="scaleAutoBgPicker" style="display:none;align-items:center;gap:8px;margin-left:auto;">
+        <span style="font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:.06em;text-transform:uppercase;">Fondo</span>
+        <label title="Blanco" style="cursor:pointer;">
+          <input type="radio" name="scaleAutoBg" value="white" checked style="display:none;">
+          <div class="sabg-swatch" style="background:#ffffff;"></div>
+        </label>
+        <label title="Negro" style="cursor:pointer;">
+          <input type="radio" name="scaleAutoBg" value="black" style="display:none;">
+          <div class="sabg-swatch" style="background:#000000;border-color:rgba(255,255,255,0.25);"></div>
+        </label>
+        <label title="Transparente" style="cursor:pointer;">
+          <input type="radio" name="scaleAutoBg" value="transparent" style="display:none;">
+          <div class="sabg-swatch sabg-transparent"></div>
         </label>
       </div>
     </div>
@@ -885,6 +933,8 @@ document.addEventListener('DOMContentLoaded', function() {
     dragStartX: 0, dragStartY: 0,
     dragOX: 0,     dragOY: 0,
     canvasW: 1000, canvasH: 1000,
+    autoMode: false,
+    autoBg: 'white',
   };
 
   // ── Elementos ─────────────────────────────────────
@@ -905,6 +955,10 @@ document.addEventListener('DOMContentLoaded', function() {
   const dlAll       = document.getElementById('scaleDlAll');
   const dlStatus    = document.getElementById('scaleDlStatus');
   const sizeLabel   = document.getElementById('scaleCanvasSize');
+  const autoToggle  = document.getElementById('scaleAutoToggle');
+  const autoThumb   = document.getElementById('scaleAutoThumb');
+  const autoCheckbox= document.getElementById('scaleAutoMode');
+  const autoBgPicker= document.getElementById('scaleAutoBgPicker');
 
   // ── Resolución ────────────────────────────────────
   function getRes() {
@@ -930,24 +984,31 @@ document.addEventListener('DOMContentLoaded', function() {
   );
 
   // ── Fit / clamp ───────────────────────────────────
-  // La imagen siempre llena el canvas: escala = Math.max de los dos factores
-  // (cover, no contain). El drag no puede sacar la imagen del borde.
   function resetFit(d) {
-    const scaleBase = Math.max(S.canvasW / d.img.naturalWidth,
-                               S.canvasH / d.img.naturalHeight);
-    d.scale      = scaleBase;
-    d.zoomFactor = 1;
-    // Centrar
-    d.ox = (S.canvasW - d.img.naturalWidth  * d.scale) / 2;
-    d.oy = (S.canvasH - d.img.naturalHeight * d.scale) / 2;
-    clamp(d);
+    if (S.autoMode) {
+      // Contain: imagen completa centrada, sin recorte
+      const scaleBase = Math.min(S.canvasW / d.img.naturalWidth,
+                                 S.canvasH / d.img.naturalHeight);
+      d.scale      = scaleBase;
+      d.zoomFactor = 1;
+      d.ox = (S.canvasW - d.img.naturalWidth  * d.scale) / 2;
+      d.oy = (S.canvasH - d.img.naturalHeight * d.scale) / 2;
+    } else {
+      // Cover: imagen siempre llena el canvas
+      const scaleBase = Math.max(S.canvasW / d.img.naturalWidth,
+                                 S.canvasH / d.img.naturalHeight);
+      d.scale      = scaleBase;
+      d.zoomFactor = 1;
+      d.ox = (S.canvasW - d.img.naturalWidth  * d.scale) / 2;
+      d.oy = (S.canvasH - d.img.naturalHeight * d.scale) / 2;
+      clamp(d);
+    }
   }
 
   function clamp(d) {
+    if (S.autoMode) return; // en modo auto no se clampea — la imagen puede ser más pequeña que el canvas
     const iw = d.img.naturalWidth  * d.scale;
     const ih = d.img.naturalHeight * d.scale;
-    // Máximo: borde izquierdo/superior nunca > 0
-    // Mínimo: borde derecho/inferior nunca < tamaño del canvas
     d.ox = Math.min(0, Math.max(S.canvasW - iw, d.ox));
     d.oy = Math.min(0, Math.max(S.canvasH - ih, d.oy));
   }
@@ -1001,10 +1062,14 @@ document.addEventListener('DOMContentLoaded', function() {
     ctxSrc.strokeRect(cropX, cropY, cropW, cropH);
   }
 
-  // Canvas derecho: resultado del recorte (este es el que se descarga)
+  // Canvas derecho: resultado (descargable)
   function drawDst() {
-    ctxDst.fillStyle = '#ffffff';
-    ctxDst.fillRect(0, 0, S.canvasW, S.canvasH);
+    if (S.autoMode && S.autoBg === 'transparent') {
+      ctxDst.clearRect(0, 0, S.canvasW, S.canvasH);
+    } else {
+      ctxDst.fillStyle = (S.autoMode && S.autoBg === 'black') ? '#000000' : '#ffffff';
+      ctxDst.fillRect(0, 0, S.canvasW, S.canvasH);
+    }
     if (S.active < 0) return;
     const d = S.images[S.active];
     ctxDst.drawImage(d.img,
@@ -1096,9 +1161,10 @@ document.addEventListener('DOMContentLoaded', function() {
     if (S.active < 0) return;
     const d   = S.images[S.active];
     const factor = parseFloat(zoomSlider.value);
-    // Escala base (cover mínimo)
-    const baseScale = Math.max(S.canvasW / d.img.naturalWidth,
-                               S.canvasH / d.img.naturalHeight);
+    // Escala base: cover en modo normal, contain en modo auto
+    const baseScale = S.autoMode
+      ? Math.min(S.canvasW / d.img.naturalWidth, S.canvasH / d.img.naturalHeight)
+      : Math.max(S.canvasW / d.img.naturalWidth, S.canvasH / d.img.naturalHeight);
     // Centro actual del canvas en coordenadas de imagen
     const cx = (S.canvasW / 2 - d.ox) / d.scale;
     const cy = (S.canvasH / 2 - d.oy) / d.scale;
@@ -1125,7 +1191,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function startDrag(e) {
-    if (S.active < 0) return;
+    if (S.active < 0 || S.autoMode) return;
     e.preventDefault();
     S.dragging = true;
     const pos = getCanvasPos(canvasDst, e);
@@ -1156,18 +1222,24 @@ document.addEventListener('DOMContentLoaded', function() {
   canvasDst.addEventListener('touchend',   endDrag);
 
   // ── Descarga ──────────────────────────────────────
-  function renderJPG(d) {
+  function renderOutput(d) {
     const off = document.createElement('canvas');
     off.width  = S.canvasW; off.height = S.canvasH;
     const octx = off.getContext('2d');
-    octx.fillStyle = '#ffffff';
-    octx.fillRect(0, 0, S.canvasW, S.canvasH);
+    const useTransparent = S.autoMode && S.autoBg === 'transparent';
+    if (!useTransparent) {
+      octx.fillStyle = (S.autoMode && S.autoBg === 'black') ? '#000000' : '#ffffff';
+      octx.fillRect(0, 0, S.canvasW, S.canvasH);
+    }
     octx.drawImage(d.img,
       d.ox, d.oy,
       d.img.naturalWidth  * d.scale,
       d.img.naturalHeight * d.scale
     );
-    return off.toDataURL('image/jpeg', 0.92);
+    if (useTransparent) {
+      return { url: off.toDataURL('image/png'), ext: 'png' };
+    }
+    return { url: off.toDataURL('image/jpeg', 0.92), ext: 'jpg' };
   }
 
   function triggerDl(dataUrl, name) {
@@ -1180,8 +1252,8 @@ document.addEventListener('DOMContentLoaded', function() {
   dlSingle.addEventListener('click', () => {
     if (S.active < 0) return;
     const d = S.images[S.active];
-    const name = 'dosa_scale(' + (S.active + 1) + ').jpg';
-    triggerDl(renderJPG(d), name);
+    const out = renderOutput(d);
+    triggerDl(out.url, 'dosa_scale(' + (S.active + 1) + ').' + out.ext);
   });
 
   dlAll.addEventListener('click', () => {
@@ -1189,8 +1261,8 @@ document.addEventListener('DOMContentLoaded', function() {
     dlStatus.textContent = 'Descargando ' + S.images.length + ' imágen(es)...';
     S.images.forEach((d, i) => {
       setTimeout(() => {
-        const name = 'dosa_scale(' + (S.active + 1) + ').jpg';
-        triggerDl(renderJPG(d), name);
+        const out = renderOutput(d);
+        triggerDl(out.url, 'dosa_scale(' + (i + 1) + ').' + out.ext);
         if (i === S.images.length - 1) {
           dlStatus.textContent = '✓ Listo';
           setTimeout(() => { dlStatus.textContent = ''; }, 3000);
@@ -1210,6 +1282,34 @@ document.addEventListener('DOMContentLoaded', function() {
   fileInput.addEventListener('change', e => {
     if (e.target.files.length) loadFiles(e.target.files);
     e.target.value = '';
+  });
+
+  // ── Modo Automático ───────────────────────────────
+  function setAutoMode(active) {
+    S.autoMode = active;
+    autoCheckbox.checked = active;
+    // Toggle visual
+    autoToggle.style.background = active ? 'rgba(255,255,255,0.7)' : 'rgba(255,255,255,0.12)';
+    autoThumb.style.left        = active ? '16px' : '2px';
+    autoThumb.style.opacity     = active ? '1' : '0.5';
+    // Mostrar/ocultar picker
+    autoBgPicker.style.display  = active ? 'flex' : 'none';
+    // Cursor del canvas
+    canvasDst.style.cursor      = active ? 'default' : 'grab';
+    // Re-fit todas las imágenes y redibujar
+    S.images.forEach(d => resetFit(d));
+    drawAll();
+  }
+
+  autoToggle.parentElement.parentElement.addEventListener('click', () => {
+    setAutoMode(!S.autoMode);
+  });
+
+  document.querySelectorAll('input[name="scaleAutoBg"]').forEach(r => {
+    r.addEventListener('change', () => {
+      S.autoBg = r.value;
+      drawAll();
+    });
   });
 
   // ── Init ──────────────────────────────────────────
