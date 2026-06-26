@@ -1662,10 +1662,17 @@ async function firmaCopiar() {
     showFirmaCopiadaAnim();
   }
 }
-document.getElementById('autoFileInput').addEventListener('change', function(e) {
-  const f = e.target.files[0];
-  if (f) autoLoadFile(f);
-  e.target.value = '';
+window.addEventListener('load', function() {
+  console.log('[auto] window.load - buscando autoFileInput');
+  var _autoInput = document.getElementById('autoFileInput');
+  console.log('[auto] autoFileInput encontrado:', !!_autoInput);
+  if (_autoInput) {
+    _autoInput.addEventListener('change', function(e) {
+      var f = e.target.files[0];
+      if (f) autoLoadFile(f);
+      e.target.value = '';
+    });
+  }
 });
 
 function autoSetMode(mode) {
@@ -1701,6 +1708,7 @@ function autoHandleDrop(e) {
   if (f) autoLoadFile(f);
 }
 function autoLoadFile(file) {
+  console.log("[auto] autoLoadFile llamado:", file.name);
   const ext = file.name.split('.').pop().toLowerCase();
   document.getElementById('autoFileName').textContent = 'archivo: ' + file.name;
   document.getElementById('autoPreviewSection').style.display = 'none';
@@ -1731,6 +1739,7 @@ function autoParseCSV(text) {
   autoParseRows(rows);
 }
 function autoParseRows(rows) {
+  console.log("[auto] autoParseRows llamado, rows:", rows ? rows.length : "null");
   if (!rows || rows.length < 2) { alert('El archivo no tiene datos suficientes.'); return; }
   autoHeaders = rows[0].map(function(h) { return String(h).trim(); });
   autoData = rows.slice(1).filter(function(r) { return r.some(function(c) { return String(c).trim() !== ''; }); });
@@ -1760,90 +1769,81 @@ function autoFillSelects() {
   });
 }
 function autoProcesar() {
-  try {
-    const isP = autoMode === 'precios';
-    let matched = 0, unmatched = 0;
+  console.log("[auto] autoProcesar llamado, autoData:", autoData ? autoData.length : "null", "autoMode:", autoMode);
+  const isP = autoMode === 'precios';
+  let matched = 0, unmatched = 0;
 
-    if (!autoData || !autoData.length) { alert('Primero carga un archivo.'); return; }
+  if (isP) {
+    const iRef    = document.getElementById('mapRef').value;
+    const iPrecio = document.getElementById('mapPrecio').value;
+    const iDesc   = document.getElementById('mapDescuento').value;
+    if (iRef === '' || iPrecio === '' || iDesc === '') { alert('Define las 3 columnas.'); return; }
 
-    if (isP) {
-      const iRef    = parseInt(document.getElementById('mapRef').value);
-      const iPrecio = parseInt(document.getElementById('mapPrecio').value);
-      const iDesc   = parseInt(document.getElementById('mapDescuento').value);
-      if (isNaN(iRef) || isNaN(iPrecio) || isNaN(iDesc)) { alert('Define las 3 columnas.'); return; }
+    autoData._processed = autoData.map(function(row) {
+      const ref   = String(row[iRef]    || '').trim();
+      const precio= parseFloat(String(row[iPrecio]).replace(',', '.')) || 0;
+      const desc  = parseFloat(String(row[iDesc]  ).replace(',', '.')) || 0;
+      const valor = Math.max(0, precio - desc).toFixed(2);
+      const cat   = CAT_DB[ref] || CAT_DB[parseInt(ref)] || '';
+      if (cat) matched++; else unmatched++;
+      return { ref: ref, precio: precio, desc: desc, valor: valor, cat: cat, stock: null };
+    });
 
-      autoData._processed = autoData.map(function(row) {
-        const ref    = String(row[iRef]    || '').trim();
-        const precio = parseFloat(String(row[iPrecio]).replace(',', '.')) || 0;
-        const desc   = parseFloat(String(row[iDesc]  ).replace(',', '.')) || 0;
-        const valor  = Math.max(0, precio - desc).toFixed(2);
-        const cat    = CAT_DB[ref] || CAT_DB[parseInt(ref)] || '';
-        if (cat) matched++; else unmatched++;
-        return { ref: ref, precio: precio, desc: desc, valor: valor, cat: cat };
-      });
+    const tbody = document.getElementById('autoPreviewBodyPrecios');
+    tbody.innerHTML = '';
+    autoData._processed.slice(0, 50).forEach(function(r) {
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid var(--border)';
+      const cs = r.cat ? '' : 'color:var(--muted2);font-style:italic';
+      tr.innerHTML =
+        '<td style="padding:6px 10px;font-family:monospace;white-space:nowrap;">' + r.ref + '</td>' +
+        '<td style="padding:6px 10px;text-align:right;">' + parseFloat(r.precio).toFixed(2) + '</td>' +
+        '<td style="padding:6px 10px;text-align:right;">' + parseFloat(r.desc).toFixed(2) + '</td>' +
+        '<td style="padding:6px 10px;text-align:right;color:#3fb950;font-weight:600;">' + r.valor + '</td>' +
+        '<td style="padding:6px 10px;font-size:10px;' + cs + '">' + (r.cat || 'Sin coincidencia') + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('tablePreciosWrap').style.display = 'block';
+    document.getElementById('tableStockWrap').style.display   = 'none';
 
-      const tbody = document.getElementById('autoPreviewBodyPrecios');
-      tbody.innerHTML = '';
-      autoData._processed.slice(0, 50).forEach(function(r) {
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid var(--border)';
-        const cs = r.cat ? '' : 'color:var(--muted2);font-style:italic';
-        tr.innerHTML =
-          '<td style="padding:6px 10px;font-family:monospace;white-space:nowrap;">' + r.ref + '</td>' +
-          '<td style="padding:6px 10px;text-align:right;">' + r.precio.toFixed(2) + '</td>' +
-          '<td style="padding:6px 10px;text-align:right;">' + r.desc.toFixed(2) + '</td>' +
-          '<td style="padding:6px 10px;text-align:right;color:#3fb950;font-weight:600;">' + r.valor + '</td>' +
-          '<td style="padding:6px 10px;font-size:10px;' + cs + '">' + (r.cat || 'Sin coincidencia') + '</td>';
-        tbody.appendChild(tr);
-      });
-      document.getElementById('tablePreciosWrap').style.display = 'block';
-      document.getElementById('tableStockWrap').style.display   = 'none';
+  } else {
+    const iRef   = document.getElementById('mapRefStock').value;
+    const iStock = document.getElementById('mapStockCol').value;
+    if (iRef === '' || iStock === '') { alert('Define las 2 columnas.'); return; }
 
-    } else {
-      const iRef   = parseInt(document.getElementById('mapRefStock').value);
-      const iStock = parseInt(document.getElementById('mapStockCol').value);
-      if (isNaN(iRef) || isNaN(iStock)) { alert('Define las 2 columnas.'); return; }
+    autoData._processed = autoData.map(function(row) {
+      const ref   = String(row[iRef]   || '').trim();
+      const stock = String(row[iStock] || '').trim();
+      const cat   = CAT_DB[ref] || CAT_DB[parseInt(ref)] || '';
+      if (cat) matched++; else unmatched++;
+      return { ref: ref, stock: stock, cat: cat, precio: null, desc: null, valor: null };
+    });
 
-      autoData._processed = autoData.map(function(row) {
-        const ref   = String(row[iRef]   || '').trim();
-        const stock = String(row[iStock] || '').trim();
-        const cat   = CAT_DB[ref] || CAT_DB[parseInt(ref)] || '';
-        if (cat) matched++; else unmatched++;
-        return { ref: ref, stock: stock, cat: cat };
-      });
-
-      const tbody = document.getElementById('autoPreviewBodyStock');
-      tbody.innerHTML = '';
-      autoData._processed.slice(0, 50).forEach(function(r) {
-        const tr = document.createElement('tr');
-        tr.style.borderBottom = '1px solid var(--border)';
-        const cs = r.cat ? '' : 'color:var(--muted2);font-style:italic';
-        tr.innerHTML =
-          '<td style="padding:6px 10px;font-family:monospace;white-space:nowrap;">' + r.ref + '</td>' +
-          '<td style="padding:6px 10px;text-align:right;font-weight:600;">' + r.stock + '</td>' +
-          '<td style="padding:6px 10px;font-size:10px;' + cs + '">' + (r.cat || 'Sin coincidencia') + '</td>';
-        tbody.appendChild(tr);
-      });
-      document.getElementById('tablePreciosWrap').style.display = 'none';
-      document.getElementById('tableStockWrap').style.display   = 'block';
-    }
-
-    const total = autoData._processed.length;
-    document.getElementById('autoStats').textContent = total + ' filas';
-    const pct  = total > 0 ? Math.round(matched / total * 100) : 0;
-    const info = document.getElementById('autoMatchInfo');
-    info.textContent  = matched + ' con categoría (' + pct + '%)  /  ' + unmatched + ' sin coincidencia';
-    info.style.background = matched >= unmatched ? 'rgba(63,185,80,0.08)' : 'rgba(224,82,82,0.08)';
-    info.style.color      = matched >= unmatched ? '#3fb950' : '#e05252';
-    info.style.border     = '1px solid ' + (matched >= unmatched ? 'rgba(63,185,80,0.3)' : 'rgba(224,82,82,0.3)');
-
-    const preview = document.getElementById('autoPreviewSection');
-    preview.style.display = 'block';
-    preview.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-  } catch(err) {
-    alert('Error al procesar: ' + err.message);
+    const tbody = document.getElementById('autoPreviewBodyStock');
+    tbody.innerHTML = '';
+    autoData._processed.slice(0, 50).forEach(function(r) {
+      const tr = document.createElement('tr');
+      tr.style.borderBottom = '1px solid var(--border)';
+      const cs = r.cat ? '' : 'color:var(--muted2);font-style:italic';
+      tr.innerHTML =
+        '<td style="padding:6px 10px;font-family:monospace;white-space:nowrap;">' + r.ref + '</td>' +
+        '<td style="padding:6px 10px;text-align:right;font-weight:600;">' + r.stock + '</td>' +
+        '<td style="padding:6px 10px;font-size:10px;' + cs + '">' + (r.cat || 'Sin coincidencia') + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById('tablePreciosWrap').style.display = 'none';
+    document.getElementById('tableStockWrap').style.display   = 'block';
   }
+
+  const total = autoData._processed.length;
+  document.getElementById('autoStats').textContent = total + ' filas';
+  const pct = Math.round(matched / total * 100);
+  const info = document.getElementById('autoMatchInfo');
+  info.textContent = matched + ' con categoria (' + pct + '%)  /  ' + unmatched + ' sin coincidencia';
+  info.style.background = matched > unmatched ? 'rgba(63,185,80,0.08)' : 'rgba(224,82,82,0.08)';
+  info.style.color  = matched > unmatched ? '#3fb950' : '#e05252';
+  info.style.border = '1px solid ' + (matched > unmatched ? 'rgba(63,185,80,0.3)' : 'rgba(224,82,82,0.3)');
+  document.getElementById('autoPreviewSection').style.display = 'block';
 }
 function autoExportar(tipo, formato) {
   document.getElementById('autoExportMenu').style.display = 'none';
