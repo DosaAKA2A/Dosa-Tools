@@ -5,15 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Herramientas Corlima — DOSA</title>
 <link rel="icon" href="dosa_favicon.svg" type="image/svg+xml">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js">/* v7.24 cache bust */
-window.autoMode = window.autoMode || 'precios';
-window.autoData = window.autoData || [];
-window.autoHeaders = window.autoHeaders || [];
-window.CAT_DB = window.CAT_DB || {};
-window.PROD_DB = window.PROD_DB || {};
-window.CATS_DICT = window.CATS_DICT || {};
-</script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+@font-face { font-family: "Clash Display"; src: url("https://framerusercontent.com/third-party-assets/fontshare/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2"); font-display: swap; font-style: normal; font-weight: 700 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -25,7 +21,7 @@ window.CATS_DICT = window.CATS_DICT || {};
   --radius: 8px; --radius-sm: 5px;
 }
 body {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   background: var(--bg); color: var(--text);
   min-height: 100vh; padding: 2rem 1rem 3rem; line-height: 1.5;
 }
@@ -38,13 +34,10 @@ body {
   border-bottom: .5px solid var(--border);
 }
 .header-logo {
-  display: flex; align-items: center; flex-shrink: 0;
-  text-decoration: none; outline: none;
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 4px; overflow: hidden;
 }
-.header-logo:focus { outline: none; }
-.header-logo img { border-radius: 7px; }
-.header h1 { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .08em; text-transform: uppercase; font-family: "Clash Display", sans-serif; }
-.header-title { font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .08em; text-transform: uppercase; font-family: "Clash Display", sans-serif; }
+.header h1 { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: .04em; text-transform: uppercase; }
 .header-ver {
   margin-left: auto; font-size: 11px; color: var(--muted);
   border: .5px solid var(--border2); border-radius: 20px; padding: 2px 9px;
@@ -226,7 +219,7 @@ button:disabled { opacity: .3; cursor: default; }
 }
 
 /* SCALE CORLIMA */
-/* panelCorlima display controlado por JS */
+#panelCorlima { display: none; }
 .corlima-gallery {
   display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; margin-bottom: 1rem;
   scrollbar-width: thin; scrollbar-color: var(--border2) var(--bg2);
@@ -337,143 +330,12 @@ button:disabled { opacity: .3; cursor: default; }
   transition: color 0.3s ease;
 }
 
-/* Max-width centrado */
-body { padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; }
+.header h1, .header-title { font-family: "Clash Display", sans-serif; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 15px; color: #fff; }
+.header-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; outline: none; }
+.header-logo:focus { outline: none; }
+.header-logo img { border-radius: 7px; }
 .page-wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
-</style>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-@font-face { font-family: "Clash Display"; src: url("https://framerusercontent.com/third-party-assets/fontshare/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2"); font-display: swap; font-style: normal; font-weight: 700 }
-</style>
-</head>
-<body>
-<script>
-(function() {
-  var key = 'corlimaAccess';
-  var ok = false;
-  // sessionStorage (misma sesión)
-  if (sessionStorage.getItem(key)) { ok = true; }
-  // localStorage con TTL de 24h
-  if (!ok) {
-    try {
-      var item = localStorage.getItem(key);
-      if (item) {
-        var data = JSON.parse(item);
-        if ((Date.now() - data.ts) < 86400000) {
-          sessionStorage.setItem(key, '1');
-          ok = true;
-        }
-      }
-    } catch(e) {}
-  }
-  if (!ok) window.location.href = 'index.html';
-})();
-</script>
-
-<div class="page-wrap">
-
-<div class="header">
-  <a class="header-logo" href="index.html" title="Volver al inicio"><img src="dosa_favicon.svg" alt="DOSA" style="width:32px;height:32px;display:block;border-radius:7px;"></a>
-  <span class="header-title">DOSA TOOLS</span>
-  <span class="header-ver">v7.24</span>
-</div>
-<div class="header-line"></div>
-
-<div class="tabs">
-  <button type="button" class="tab active" id="tabCorlima" onclick="switchTab('corlima')">Scale Corlima</button>
-  <button type="button" class="tab" id="tabFirma" onclick="switchTab('firma')">Firma Corlima</button>
-  <button type="button" class="tab" id="tabAuto" onclick="switchTab('auto')">Carga Masiva</button>
-</div>
-
-<div class="content">
-
-<div id="panelCorlima">
-<!-- ══════════════════════════════════════════════════════
-     SCALE CORLIMA — Panel autónomo v1.0
-     Sin dependencias externas. Todo inline.
-══════════════════════════════════════════════════════ -->
-
-<div id="scalePanel">
-
-<div id="scaleDropZone">
-  <div class="sdz-icon">↑</div>
-  <div class="sdz-main">Arrastra imágenes aquí o haz clic para explorar</div>
-  <div class="sdz-sub">JPG · PNG · WebP · GIF · BMP — hasta 10 imágenes</div>
-  <input type="file" id="scaleFileInput" multiple accept="image/*" style="display:none">
-</div>
-
-<div id="scaleResBlock">
-  <div class="sres-label-title">Resolución de salida</div>
-  <div class="sres-options">
-    <label class="sres-opt">
-      <input type="radio" name="scaleRes" value="1000x1000" checked>
-      <div class="sres-card">
-        <span class="sres-px">1000 × 1000 px</span>
-        <span class="sres-hint blue">Usa esta opción para las imágenes de corlima.pe</span>
-      </div>
-    </label>
-    <label class="sres-opt">
-      <input type="radio" name="scaleRes" value="2000x2000">
-      <div class="sres-card">
-        <span class="sres-px">2000 × 2000 px</span>
-        <span class="sres-hint pink">Usa esta opción para otras plataformas</span>
-      </div>
-    </label>
-    <label class="sres-opt">
-      <input type="radio" name="scaleRes" value="1080x1350">
-      <div class="sres-card">
-        <span class="sres-px">1080 × 1350 px <em class="sres-ratio">4:5</em></span>
-        <span class="sres-hint orange">Usa esta opción para Instagram</span>
-      </div>
-    </label>
-  </div>
-</div>
-
-<div id="scaleGalleryBlock" style="display:none">
-  <div class="s-section-title">Galería activa</div>
-  <div id="scaleGallery"></div>
-</div>
-
-<div id="scaleWorkspace" style="display:none">
-  <div class="s-section-title">
-    Editor
-    <span id="scaleCanvasSize"></span>
-  </div>
-  <div id="scaleCanvasDual">
-    <div class="sdual-col">
-      <div class="sdual-col-label">Original</div>
-      <div id="scaleCanvasSrcWrap">
-        <canvas id="scaleCanvasSrc"></canvas>
-      </div>
-    </div>
-    <div class="sdual-col">
-      <div class="sdual-col-label">
-        Resultado
-        <button id="scaleDlSingle" class="sbtn-inline">↓ Descargar esta</button>
-      </div>
-      <div id="scaleCanvasWrap">
-        <canvas id="scaleCanvas"></canvas>
-        <div id="scaleGrid"></div>
-      </div>
-    </div>
-  </div>
-  <div class="sws-zoom-row">
-    <span class="sws-zoom-lbl">Zoom</span>
-    <input type="range" id="scaleZoom" min="0.5" max="4" step="0.01" value="1">
-    <span id="scaleZoomVal">100%</span>
-  </div>
-</div>
-
-<div id="scaleDlAllBlock" style="display:none">
-  <button id="scaleDlAll" class="sbtn-dl-all">↓ Descargar todas las imágenes</button>
-  <span id="scaleDlStatus"></span>
-</div>
-
-</div>
-
-<style>
 /* ═══════════════════════════════════════
    SCALE CORLIMA — estilos
 ═══════════════════════════════════════ */
@@ -629,8 +491,299 @@ body { padding: 0; }
 
 #scaleDlAllBlock { margin-top: 16px; display: flex; align-items: center; }
 </style>
+</head>
+<body>
 
 <script>
+(function() {
+  var key = 'corlimaAccess';
+  var ok = false;
+  if (sessionStorage.getItem(key)) { ok = true; }
+  if (!ok) {
+    try {
+      var item = localStorage.getItem(key);
+      if (item) {
+        var data = JSON.parse(item);
+        if ((Date.now() - data.ts) < 86400000) { sessionStorage.setItem(key, '1'); ok = true; }
+      }
+    } catch(e) {}
+  }
+  if (!ok) window.location.href = 'index.html';
+})();
+</script>
+
+<div class="page-wrap">
+
+<div class="header">
+  <a class="header-logo" href="index.html" title="Volver al inicio"><img src="dosa_favicon.svg" alt="DOSA" style="width:32px;height:32px;display:block;border-radius:7px;"></a>
+  <span class="header-title">DOSA TOOLS</span>
+  <span class="header-ver">v7.25</span>
+</div>
+<div class="header-line"></div>
+
+<div class="tabs">
+  <button type="button" class="tab active" id="tabCorlima" onclick="switchTab('corlima')">Scale Corlima</button>
+  <button type="button" class="tab" id="tabFirma" onclick="switchTab('firma')">Firma Corlima</button>
+  <button type="button" class="tab" id="tabAuto" onclick="switchTab('auto')">Carga Masiva</button>
+</div>
+
+<div class="content">
+
+<!-- SCALE CORLIMA (nuevo panel autónomo) -->
+<div id="panelCorlima">
+
+</div>
+
+<div id="panelFirma" style="display:none;">
+  <div class="sec" style="margin-bottom:1rem;">Generador de Firma Corlima</div>
+
+  <!-- Formulario -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;">
+    <div>
+      <div class="ctrl-lbl" style="margin-bottom:5px;">Nombre completo</div>
+      <input id="firmaNombre" type="text" value="Nombre del Trabajador" placeholder="Nombre completo"
+             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+    </div>
+    <div>
+      <div class="ctrl-lbl" style="margin-bottom:5px;">Cargo</div>
+      <input id="firmaCargo" type="text" value="Cargo" placeholder="Cargo"
+             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+    </div>
+    <div>
+      <div class="ctrl-lbl" style="margin-bottom:5px;">Móvil</div>
+      <input id="firmaMovil" type="text" value="+51 9XX XXX XXX" placeholder="+51 9XX XXX XXX"
+             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+    </div>
+    <div>
+      <div class="ctrl-lbl" style="margin-bottom:5px;">Fijo + Anexo</div>
+      <input id="firmaFijo" type="text" value="+51 01 XXXXXXX anexo XXX" placeholder="+51 01 XXXXXXX anexo XXX"
+             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+    </div>
+    <div style="grid-column:span 2;">
+      <div class="ctrl-lbl" style="margin-bottom:5px;">Email</div>
+      <input id="firmaEmail" type="email" value="nombre@corlima.pe" placeholder="nombre@corlima.pe"
+             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
+    </div>
+  </div>
+
+  <!-- Botones -->
+  <div style="display:flex;gap:10px;margin-bottom:1.5rem;">
+    <button type="button" onclick="firmaActualizar()" class="small-btn accent" style="display:flex;align-items:center;gap:6px;">
+      &#8635; Actualizar Preview
+    </button>
+    <button type="button" onclick="firmaCopiar()" id="firmaCopyBtn" class="small-btn" style="display:flex;align-items:center;gap:6px;background:var(--bg4);color:var(--text);border:1px solid var(--border2);">
+      &#9166; Copiar para Outlook
+    </button>
+  </div>
+
+  <!-- Preview -->
+  <div id="firmaPreviewWrap" style="display:none;">
+    <div class="ctrl-lbl" style="margin-bottom:8px;">Vista previa</div>
+    <div style="background:#ffffff;border:1px solid var(--border);border-radius:6px;padding:20px;overflow-x:auto;">
+      <div id="firmaPreview"></div>
+    </div>
+  </div>
+
+  <!-- Aviso -->
+  <p style="font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;">
+    Haz clic en <b>Copiar para Outlook</b>, luego ve a <b>Outlook → Archivo → Opciones → Correo → Firmas → Nueva</b>, pega con <b>Ctrl+V</b> y guarda.
+  </p>
+</div>
+
+<div id="panelAuto" style="display:none;">
+  <div class="sec" style="margin-bottom:.4rem;">Carga Masiva de Productos Corlima</div>
+  <p style="font-size:12.5px;color:var(--text);opacity:.75;line-height:1.7;margin-bottom:1.25rem;">
+    Esta herramienta garantiza que cada carga masiva incluya el árbol de categorías correcto, eliminando el error de importación en Prestashop. Si un producto no aparece en los resultados, contacta al administrador para que lo añada a la base de datos antes de exportar.
+  </p>
+
+  <!-- PASO 1: Modo + Subir archivo -->
+  <div style="margin-bottom:1.25rem;">
+
+    <!-- Selector de modo -->
+    <div class="ctrl-lbl" style="margin-bottom:6px;">1. Selecciona el tipo de actualización</div>
+    <div style="display:flex;gap:0;background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content;margin-bottom:1.25rem;">
+      <button type="button" id="modePrecios" onclick="autoSetMode('precios')"
+        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:var(--bg4);color:#4ade80;font-weight:500;letter-spacing:.03em;">
+        Actualizar Precios
+      </button>
+      <button type="button" id="modeStock" onclick="autoSetMode('stock')"
+        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);letter-spacing:.03em;">
+        Actualizar Stock
+      </button>
+    </div>
+
+    <!-- Drop zone -->
+    <div class="ctrl-lbl" style="margin-bottom:6px;">2. Sube tu archivo (Excel o CSV)</div>
+    <div id="autoDropZone" style="border:1.5px dashed var(--border2);border-radius:6px;padding:20px;text-align:center;cursor:pointer;background:var(--bg2);transition:border-color .15s;"
+         onclick="document.getElementById('autoFileInput').click()"
+         ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+         ondragleave="this.style.borderColor='var(--border2)'"
+         ondrop="autoHandleDrop(event)">
+      <div style="font-size:22px;margin-bottom:6px;">&#8679;</div>
+      <div style="font-size:12px;color:var(--muted);">Arrastra un archivo aquí o haz clic para explorar</div>
+      <div style="font-size:10px;color:var(--muted2);margin-top:4px;">.xlsx, .xls, .csv aceptados</div>
+    </div>
+    <input type="file" id="autoFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
+    <div id="autoFileName" style="font-size:11px;color:var(--muted);margin-top:6px;"></div>
+  </div>
+
+  <!-- PASO 3: Mapeo de columnas -->
+  <div id="autoMapSection" style="display:none;margin-bottom:1.25rem;">
+    <div class="ctrl-lbl" style="margin-bottom:8px;">3. Define qué columna es cada campo</div>
+
+    <!-- Modo Precios -->
+    <div id="mapPrecios" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Código de Referencia (REF)</div>
+        <select id="mapRef" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#4ade80;margin-bottom:4px;font-weight:600;">Precio Original</div>
+        <select id="mapPrecio" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#86efac;margin-bottom:4px;font-weight:600;">Precio con Descuento</div>
+        <select id="mapDescuento" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
+      </div>
+    </div>
+
+    <!-- Modo Stock -->
+    <div id="mapStock" style="display:none;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div>
+        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Código de Referencia (REF)</div>
+        <select id="mapRefStock" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Stock</div>
+        <select id="mapStockCol" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
+      </div>
+    </div>
+
+    <button type="button" onclick="autoProcesar()" class="small-btn accent" style="display:flex;align-items:center;gap:6px;">
+      Procesar y previsualizar
+    </button>
+  </div>
+
+  <!-- PASO 4: Preview -->
+  <div id="autoPreviewSection" style="display:none;margin-bottom:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+      <div class="ctrl-lbl">4. Vista previa</div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span id="autoStats" style="font-size:10px;color:var(--muted);"></span>
+
+        <!-- Botón exportar dinámico según modo -->
+        <div style="position:relative;display:inline-block;">
+          <button type="button" onclick="autoToggleExportMenu()" class="small-btn accent"
+            style="display:flex;align-items:center;gap:5px;padding-right:10px;">
+            &#8595; Exportar &nbsp;<span style="font-size:9px;opacity:.7;">&#9660;</span>
+          </button>
+          <div id="autoExportMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:100;overflow:hidden;">
+            <button type="button" id="exportOptPrecios" onclick="autoExportar('precios','xlsx')"
+              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;"
+              onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+              Exportar Precios (.xlsx)
+            </button>
+            <button type="button" id="exportOptStock" onclick="autoExportar('stock','xlsx')"
+              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;display:none;"
+              onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
+              Exportar Stock (.xlsx)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info coincidencias -->
+    <div id="autoMatchInfo" style="font-size:10px;padding:6px 10px;border-radius:4px;margin-bottom:10px;"></div>
+
+    <!-- Tabla precios -->
+    <div id="tablePreciosWrap" style="overflow-x:auto;border:1px solid var(--border);border-radius:6px;">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead>
+          <tr style="background:var(--bg2);border-bottom:1px solid var(--border);">
+            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">REF</th>
+            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Precio</th>
+            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Precio c/ Desc.</th>
+            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Valor Descontado</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">Categorías</th>
+          </tr>
+        </thead>
+        <tbody id="autoPreviewBodyPrecios"></tbody>
+      </table>
+    </div>
+
+    <!-- Tabla stock -->
+    <div id="tableStockWrap" style="display:none;overflow-x:auto;border:1px solid var(--border);border-radius:6px;">
+      <table style="width:100%;border-collapse:collapse;font-size:11px;">
+        <thead>
+          <tr style="background:var(--bg2);border-bottom:1px solid var(--border);">
+            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">REF</th>
+            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Stock</th>
+            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">Categorías</th>
+          </tr>
+        </thead>
+        <tbody id="autoPreviewBodyStock"></tbody>
+      </table>
+    </div>
+
+    <div style="font-size:9px;color:var(--muted2);margin-top:6px;">
+      Mostrando máx. 50 filas en preview. El CSV exportado incluye todos los registros.
+    </div>
+  </div>
+
+  <!-- BUSCADOR DE PRODUCTO -->
+  <div style="margin-top:1.5rem;">
+    <div class="sec" style="margin-bottom:.75rem;">Buscar Producto por Código</div>
+    <div style="display:flex;gap:8px;margin-bottom:10px;">
+      <input id="buscarCod" type="text" placeholder="Ej: 11036"
+        style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:monospace;outline:none;"
+        onkeydown="if(event.key==='Enter') buscarProducto()">
+      <button type="button" onclick="buscarProducto()" class="small-btn accent" style="white-space:nowrap;">
+        Buscar
+      </button>
+    </div>
+    <div id="buscarResult" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;"></div>
+  </div>
+</div>
+
+<div id="globalExportArea" style="display:none">
+  <div class="sec">Exportar</div>
+  <div class="progress-wrap" id="progressWrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">Procesando...</div>
+  </div>
+  
+  <div class="btn-row" id="btnRow">
+    <button class="accent" id="downloadImgBtn">&#8595; PNG</button>
+    <button id="downloadTxtBtn" style="display:none">&#8595; TXT ASCII</button>
+    <button id="downloadGIF" style="display:none">&#8595; GIF animado</button>
+    <button id="downloadFrames" style="display:none">&#8595; Secuencia ZIP</button>
+    <button id="reRenderBtn">&#8635; Re-render</button>
+  </div>
+  
+  <div class="btn-row" id="btnRowCorlima" style="display:none">
+    <button class="accent" id="exportCorlima1x1JPG">&#8595; Descargar Todas (JPG)</button>
+    <button id="exportCorlima1x1WebP">&#8595; Descargar Todas (WebP)</button>
+  </div>
+</div>
+
+</div>
+
+</div>
+
+<div id="successOverlay" class="success-overlay">
+  <div class="success-box">
+    <div class="success-text">Todo Listo</div>
+  </div>
+</div>
+<div id="firmaCopiadaOverlay" class="success-overlay">
+  <div class="success-box" style="border-color:rgba(13,40,122,0.8);box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 40px rgba(13,40,122,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;">
+    <div class="success-text" style="color:#c9a227;">Firma Copiada</div>
+  </div>
+</div>
+
+<script>
+
 (function() {
   'use strict';
 
@@ -973,347 +1126,37 @@ body { padding: 0; }
   applyRes();
 
 })();
+
 </script>
 
-</div>
-
-<div id="panelFirma" style="display:none;">
-  <div class="sec" style="margin-bottom:1rem;">Generador de Firma Corlima</div>
-
-  <!-- Formulario -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem;">
-    <div>
-      <div class="ctrl-lbl" style="margin-bottom:5px;">Nombre completo</div>
-      <input id="firmaNombre" type="text" value="Nombre del Trabajador" placeholder="Nombre completo"
-             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
-    </div>
-    <div>
-      <div class="ctrl-lbl" style="margin-bottom:5px;">Cargo</div>
-      <input id="firmaCargo" type="text" value="Cargo" placeholder="Cargo"
-             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
-    </div>
-    <div>
-      <div class="ctrl-lbl" style="margin-bottom:5px;">Móvil</div>
-      <input id="firmaMovil" type="text" value="+51 9XX XXX XXX" placeholder="+51 9XX XXX XXX"
-             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
-    </div>
-    <div>
-      <div class="ctrl-lbl" style="margin-bottom:5px;">Fijo + Anexo</div>
-      <input id="firmaFijo" type="text" value="+51 01 XXXXXXX anexo XXX" placeholder="+51 01 XXXXXXX anexo XXX"
-             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
-    </div>
-    <div style="grid-column:span 2;">
-      <div class="ctrl-lbl" style="margin-bottom:5px;">Email</div>
-      <input id="firmaEmail" type="email" value="nombre@corlima.pe" placeholder="nombre@corlima.pe"
-             style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;outline:none;box-sizing:border-box;">
-    </div>
-  </div>
-
-  <!-- Botones -->
-  <div style="display:flex;gap:10px;margin-bottom:1.5rem;">
-    <button type="button" onclick="firmaActualizar()" class="small-btn accent" style="display:flex;align-items:center;gap:6px;">
-      &#8635; Actualizar Preview
-    </button>
-    <button type="button" onclick="firmaCopiar()" id="firmaCopyBtn" class="small-btn" style="display:flex;align-items:center;gap:6px;background:var(--bg4);color:var(--text);border:1px solid var(--border2);">
-      &#9166; Copiar para Outlook
-    </button>
-  </div>
-
-  <!-- Preview -->
-  <div id="firmaPreviewWrap" style="display:none;">
-    <div class="ctrl-lbl" style="margin-bottom:8px;">Vista previa</div>
-    <div style="background:#ffffff;border:1px solid var(--border);border-radius:6px;padding:20px;overflow-x:auto;">
-      <div id="firmaPreview"></div>
-    </div>
-  </div>
-
-  <!-- Aviso -->
-  <p style="font-size:10px;color:var(--muted);margin-top:10px;line-height:1.5;">
-    Haz clic en <b>Copiar para Outlook</b>, luego ve a <b>Outlook → Archivo → Opciones → Correo → Firmas → Nueva</b>, pega con <b>Ctrl+V</b> y guarda.
-  </p>
-</div>
-
-<div id="panelAuto" style="display:none;">
-  <div class="sec" style="margin-bottom:.4rem;">Carga Masiva de Productos Corlima</div>
-  <p style="font-size:12.5px;color:var(--text);opacity:.75;line-height:1.7;margin-bottom:1.25rem;">
-    Esta herramienta garantiza que cada carga masiva incluya el árbol de categorías correcto, eliminando el error de importación en Prestashop. Si un producto no aparece en los resultados, contacta al administrador para que lo añada a la base de datos antes de exportar.
-  </p>
-
-  <!-- PASO 1: Modo + Subir archivo -->
-  <div style="margin-bottom:1.25rem;">
-
-    <!-- Selector de modo -->
-    <div class="ctrl-lbl" style="margin-bottom:6px;">1. Selecciona el tipo de actualización</div>
-    <div style="display:flex;gap:0;background:var(--bg2);border:0.5px solid var(--border);border-radius:6px;overflow:hidden;width:fit-content;margin-bottom:1.25rem;">
-      <button type="button" id="modePrecios" onclick="autoSetMode('precios')"
-        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:var(--bg4);color:#4ade80;font-weight:500;letter-spacing:.03em;">
-        Actualizar Precios
-      </button>
-      <button type="button" id="modeStock" onclick="autoSetMode('stock')"
-        style="padding:7px 18px;font-size:12px;font-family:inherit;cursor:pointer;border:none;background:transparent;color:var(--muted);letter-spacing:.03em;">
-        Actualizar Stock
-      </button>
-    </div>
-
-    <!-- Drop zone -->
-    <div class="ctrl-lbl" style="margin-bottom:6px;">2. Sube tu archivo (Excel o CSV)</div>
-    <div id="autoDropZone" style="border:1.5px dashed var(--border2);border-radius:6px;padding:20px;text-align:center;cursor:pointer;background:var(--bg2);transition:border-color .15s;"
-         onclick="document.getElementById('autoFileInput').click()"
-         ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
-         ondragleave="this.style.borderColor='var(--border2)'"
-         ondrop="autoHandleDrop(event)">
-      <div style="font-size:22px;margin-bottom:6px;">&#8679;</div>
-      <div style="font-size:12px;color:var(--muted);">Arrastra un archivo aquí o haz clic para explorar</div>
-      <div style="font-size:10px;color:var(--muted2);margin-top:4px;">.xlsx, .xls, .csv aceptados</div>
-    </div>
-    <input type="file" id="autoFileInput" accept=".xlsx,.xls,.csv" style="display:none;">
-    <div id="autoFileName" style="font-size:11px;color:var(--muted);margin-top:6px;"></div>
-  </div>
-
-  <!-- PASO 3: Mapeo de columnas -->
-  <div id="autoMapSection" style="display:none;margin-bottom:1.25rem;">
-    <div class="ctrl-lbl" style="margin-bottom:8px;">3. Define qué columna es cada campo</div>
-
-    <!-- Modo Precios -->
-    <div id="mapPrecios" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
-      <div>
-        <div style="font-size:10px;color:var(--muted);margin-bottom:4px;">Código de Referencia (REF)</div>
-        <select id="mapRef" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
-      </div>
-      <div>
-        <div style="font-size:10px;color:#4ade80;margin-bottom:4px;font-weight:600;">Precio Original</div>
-        <select id="mapPrecio" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
-      </div>
-      <div>
-        <div style="font-size:10px;color:#86efac;margin-bottom:4px;font-weight:600;">Precio con Descuento</div>
-        <select id="mapDescuento" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
-      </div>
-    </div>
-
-    <!-- Modo Stock -->
-    <div id="mapStock" style="display:none;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
-      <div>
-        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Código de Referencia (REF)</div>
-        <select id="mapRefStock" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
-      </div>
-      <div>
-        <div style="font-size:10px;color:#f9a8d4;margin-bottom:4px;font-weight:600;">Stock</div>
-        <select id="mapStockCol" style="width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:6px 8px;font-size:12px;color:var(--text);font-family:inherit;"></select>
-      </div>
-    </div>
-
-    <button type="button" onclick="autoProcesar()" class="small-btn accent" style="display:flex;align-items:center;gap:6px;">
-      Procesar y previsualizar
-    </button>
-  </div>
-
-  <!-- PASO 4: Preview -->
-  <div id="autoPreviewSection" style="display:none;margin-bottom:1.25rem;">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-      <div class="ctrl-lbl">4. Vista previa</div>
-      <div style="display:flex;gap:8px;align-items:center;">
-        <span id="autoStats" style="font-size:10px;color:var(--muted);"></span>
-
-        <!-- Botón exportar dinámico según modo -->
-        <div style="position:relative;display:inline-block;">
-          <button type="button" onclick="autoToggleExportMenu()" class="small-btn accent"
-            style="display:flex;align-items:center;gap:5px;padding-right:10px;">
-            &#8595; Exportar &nbsp;<span style="font-size:9px;opacity:.7;">&#9660;</span>
-          </button>
-          <div id="autoExportMenu" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:var(--bg2);border:1px solid var(--border2);border-radius:6px;min-width:170px;box-shadow:0 8px 24px rgba(0,0,0,0.4);z-index:100;overflow:hidden;">
-            <button type="button" id="exportOptPrecios" onclick="autoExportar('precios','xlsx')"
-              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;"
-              onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-              Exportar Precios (.xlsx)
-            </button>
-            <button type="button" id="exportOptStock" onclick="autoExportar('stock','xlsx')"
-              style="width:100%;padding:9px 14px;background:none;border:none;color:var(--text);font-family:inherit;font-size:12px;text-align:left;cursor:pointer;display:none;"
-              onmouseover="this.style.background='var(--bg3)'" onmouseout="this.style.background='none'">
-              Exportar Stock (.xlsx)
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Info coincidencias -->
-    <div id="autoMatchInfo" style="font-size:10px;padding:6px 10px;border-radius:4px;margin-bottom:10px;"></div>
-
-    <!-- Tabla precios -->
-    <div id="tablePreciosWrap" style="overflow-x:auto;border:1px solid var(--border);border-radius:6px;">
-      <table style="width:100%;border-collapse:collapse;font-size:11px;">
-        <thead>
-          <tr style="background:var(--bg2);border-bottom:1px solid var(--border);">
-            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">REF</th>
-            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Precio</th>
-            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Precio c/ Desc.</th>
-            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Valor Descontado</th>
-            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">Categorías</th>
-          </tr>
-        </thead>
-        <tbody id="autoPreviewBodyPrecios"></tbody>
-      </table>
-    </div>
-
-    <!-- Tabla stock -->
-    <div id="tableStockWrap" style="display:none;overflow-x:auto;border:1px solid var(--border);border-radius:6px;">
-      <table style="width:100%;border-collapse:collapse;font-size:11px;">
-        <thead>
-          <tr style="background:var(--bg2);border-bottom:1px solid var(--border);">
-            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">REF</th>
-            <th style="padding:8px 10px;text-align:right;color:var(--muted);font-weight:600;white-space:nowrap;">Stock</th>
-            <th style="padding:8px 10px;text-align:left;color:var(--muted);font-weight:600;white-space:nowrap;">Categorías</th>
-          </tr>
-        </thead>
-        <tbody id="autoPreviewBodyStock"></tbody>
-      </table>
-    </div>
-
-    <div style="font-size:9px;color:var(--muted2);margin-top:6px;">
-      Mostrando máx. 50 filas en preview. El CSV exportado incluye todos los registros.
-    </div>
-  </div>
-
-  <!-- BUSCADOR DE PRODUCTO -->
-  <div style="margin-top:1.5rem;">
-    <div class="sec" style="margin-bottom:.75rem;">Buscar Producto por Código</div>
-    <div style="display:flex;gap:8px;margin-bottom:10px;">
-      <input id="buscarCod" type="text" placeholder="Ej: 11036"
-        style="flex:1;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;color:var(--text);font-family:monospace;outline:none;"
-        onkeydown="if(event.key==='Enter') buscarProducto()">
-      <button type="button" onclick="buscarProducto()" class="small-btn accent" style="white-space:nowrap;">
-        Buscar
-      </button>
-    </div>
-    <div id="buscarResult" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;"></div>
-  </div>
-</div>
-
-<div id="globalExportArea" style="display:none">
-  <div class="sec">Exportar</div>
-  <div class="progress-wrap" id="progressWrap">
-    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-    <div class="progress-label" id="progressLabel">Procesando...</div>
-  </div>
-  
-  <div class="btn-row" id="btnRow">
-    <button class="accent" id="downloadImgBtn">&#8595; PNG</button>
-    <button id="downloadTxtBtn" style="display:none">&#8595; TXT ASCII</button>
-    <button id="downloadGIF" style="display:none">&#8595; GIF animado</button>
-    <button id="downloadFrames" style="display:none">&#8595; Secuencia ZIP</button>
-    <button id="reRenderBtn">&#8635; Re-render</button>
-  </div>
-  
-  <div class="btn-row" id="btnRowCorlima" style="display:none">
-    <button class="accent" id="exportCorlima1x1JPG">&#8595; Descargar Todas (JPG)</button>
-    <button id="exportCorlima1x1WebP">&#8595; Descargar Todas (WebP)</button>
-  </div>
-</div>
-
-</div><!-- /.content -->
-
-</div><!-- /.page-wrap -->
-
-<div id="successOverlay" class="success-overlay">
-  <div class="success-box">
-    <div class="success-text">Todo Listo</div>
-  </div>
-</div>
-<div id="firmaCopiadaOverlay" class="success-overlay">
-  <div class="success-box" style="border-color:rgba(13,40,122,0.8);box-shadow:0 40px 80px rgba(0,0,0,0.6),0 0 40px rgba(13,40,122,0.2),0 0 0 1px rgba(255,255,255,0.05) inset;">
-    <div class="success-text" style="color:#c9a227;">Firma Copiada</div>
-  </div>
-</div>
-<div id="multiImageWarning" class="success-overlay" style="z-index:10000; pointer-events:none;">
-  <div class="success-box" style="pointer-events:all; border-color: #e3a341; box-shadow: 0 40px 80px rgba(0,0,0,0.6), 0 0 40px rgba(227,163,65,0.15);">
-    <div class="success-text" style="color: #e3a341; margin-bottom: 15px; opacity:1; transform:none; text-transform:none; font-size: 14px; font-weight: 500; letter-spacing: normal;">
-      &#9888; Para descargar varias imágenes, debes aceptar la solicitud de múltiples descargas de tu navegador.
-    </div>
-    <button class="small-btn accent" onclick="document.getElementById('multiImageWarning').classList.remove('show')" style="border-color:#e3a341; color:#e3a341; font-size:12px; padding:6px 14px;">Entendido</button>
-  </div>
-</div>
-
-
 <script>
-// ═══════════════════════════════════════════════
-// VARIABLES GLOBALES (del INDEX_FUNCIONAL)
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════
+// VARIABLES GLOBALES
+// ═══════════════════════════════
+var corlimaUnlocked = true;
+var currentTab = 'corlima';
 
-// GIF encoder
-window.addEventListener('error', function(e) {
-  console.error('[DosaTools] Error global:', e.message, 'en', e.filename, 'línea', e.lineno);
-});
-const GIFEncoder = (() => {
-  function ByteArray() { this.data = []; }
-  ByteArray.prototype.writeByte = function(b) { this.data.push(b & 0xFF); };
-  ByteArray.prototype.writeUint16 = function(w) { this.writeByte(w & 0xFF); this.writeByte((w >> 8) & 0xFF); };
-  ByteArray.prototype.writeBytes = function(arr) { for (let b of arr) this.writeByte(b); };
-  ByteArray.prototype.toUint8Array = function() { return new Uint8Array(this.data); };
-  function lzwEncode(width, height, pixels, colorDepth) {
-    const out = []; const minCode = Math.max(colorDepth, 2);
-    const clearCode = 1 << minCode; const eofCode = clearCode + 1;
-    let curCode, prevCode; let table = new Map(); let nextCode = clearCode + 2;
-    let bitBuf = 0, bitLen = 0; let buf = new Uint8Array(256); let bufLen = 0;
-    function flush() { out.push(bufLen); for (let i=0;i<bufLen;i++) out.push(buf[i]); bufLen=0; }
-    function writeBits(code, len) {
-      bitBuf |= code << bitLen; bitLen += len;
-      while (bitLen >= 8) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; bitBuf >>= 8; bitLen -= 8; }
-    }
-    let codeLen = minCode + 1; writeBits(clearCode, codeLen); prevCode = pixels[0];
-    for (let i=1; i<pixels.length; i++) {
-      curCode = pixels[i]; const key = (prevCode << 8) | curCode;
-      if (table.has(key)) { prevCode = table.get(key); }
-      else {
-        writeBits(prevCode, codeLen);
-        if (nextCode < 4096) { table.set(key, nextCode++); if (nextCode > (1 << codeLen)) codeLen++; }
-        else { writeBits(clearCode, codeLen); table = new Map(); nextCode = clearCode + 2; codeLen = minCode + 1; }
-        prevCode = curCode;
-      }
-    }
-    writeBits(prevCode, codeLen); writeBits(eofCode, codeLen);
-    if (bitLen > 0) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; }
-    if (bufLen > 0) flush(); out.push(0); return out;
-  }
-  return {
-    encode(frames, opts = {}) {
-      const { width, height, delay = 100, loop = 0 } = opts;
-      const ba = new ByteArray();
-      ba.writeBytes([0x47,0x49,0x46,0x38,0x39,0x61]); ba.writeUint16(width); ba.writeUint16(height);
-      ba.writeByte(0xF7); ba.writeByte(0); ba.writeByte(0);
-      const gct = new Uint8Array(256 * 3); const firstPal = frames[0].palette;
-      for (let i=0;i<Math.min(firstPal.length,256);i++) { gct[i*3]=firstPal[i][0]; gct[i*3+1]=firstPal[i][1]; gct[i*3+2]=firstPal[i][2]; }
-      ba.writeBytes(gct);
-      ba.writeBytes([0x21,0xFF,0x0B,0x4E,0x45,0x54,0x53,0x43,0x41,0x50,0x45,0x32,0x2E,0x30,0x03,0x01]);
-      ba.writeUint16(loop); ba.writeByte(0);
-      for (const frame of frames) {
-        const pal = frame.palette; const lctSize = Math.ceil(Math.log2(Math.max(pal.length,2)));
-        const lctCount = 1 << lctSize; const lct = new Uint8Array(lctCount * 3);
-        for (let i=0;i<pal.length;i++) { lct[i*3]=pal[i][0]; lct[i*3+1]=pal[i][1]; lct[i*3+2]=pal[i][2]; }
-        ba.writeBytes([0x21,0xF9,0x04,0x04]); ba.writeUint16(Math.round(delay/10)); ba.writeByte(0); ba.writeByte(0);
-        ba.writeByte(0x2C); ba.writeUint16(0); ba.writeUint16(0); ba.writeUint16(width); ba.writeUint16(height);
-        ba.writeByte(0x80 | (lctSize - 1)); ba.writeBytes(lct);
-        const encoded = lzwEncode(width, height, frame.indices, lctSize);
-        ba.writeByte(lctSize); ba.writeBytes(encoded);
-      }
-      ba.writeByte(0x3B); return ba.toUint8Array();
-    }
-  };
-})();
+// Canvas Corlima (Scale)
+var cCanvas, cCtx, cWrap;
+var cIsDragging = false;
+var cStartX = 0, cStartY = 0;
+var baseW = 1000, baseH = 1000;
+var corlimaImages = [];
+var corlimaActiveIndex = -1;
+var corlimaInputListenerSet = false;
+var corlimaResListenerSet = false;
+var multiWarningShown = false;
+var ajusteMode = 'auto';
 
-// ZIP for Sequence Generator
-const crcTable = new Uint32Array(256);
-for (let i = 0; i < 256; i++) { let c = i; for (let j = 0; j < 8; j++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); crcTable[i] = c; }
-
-// DB externa
-var CAT_DB = {};      // { cod: cat_string }
-var PROD_DB = {};     // { cod: { nombre, marca, cat, cat_names, cat_padre } }
-var CATS_DICT = {};   // { id: nombre_categoria }
-
-// Auto (Carga Masiva)
+// DB + Auto (Carga Masiva)
+var CAT_DB = {};
+var PROD_DB = {};
+var CATS_DICT = {};
 var autoData = [];
 var autoHeaders = [];
 var autoMode = 'precios';
 
+// Cargar DB externa
 (function loadDB() {
   fetch('productos_db.json?v=' + Date.now())
     .then(function(r) { return r.json(); })
@@ -1329,17 +1172,15 @@ var autoMode = 'precios';
     .catch(function(e) { console.warn('[DosaTools] No se pudo cargar productos_db.json:', e); });
 })();
 
-// ═══════════════════════════════════════════════
-// SWITCH TAB — solo 3 tabs
-// ═══════════════════════════════════════════════
-let corlimaUnlocked = true; // protección en el landing
-
+// ═══════════════════════════════
+// SWITCH TAB
+// ═══════════════════════════════
 function switchTab(tab) {
   corlimaUnlocked = true;
   currentTab = tab;
-  const isCorlima = tab === 'corlima';
-  const isFirma   = tab === 'firma';
-  const isAuto    = tab === 'auto';
+  var isCorlima = tab === 'corlima';
+  var isFirma   = tab === 'firma';
+  var isAuto    = tab === 'auto';
 
   document.getElementById('panelCorlima').style.display = isCorlima ? 'block' : 'none';
   document.getElementById('panelFirma').style.display   = isFirma   ? 'block' : 'none';
@@ -1349,46 +1190,304 @@ function switchTab(tab) {
   document.getElementById('tabFirma').classList.toggle('active', isFirma);
   document.getElementById('tabAuto').classList.toggle('active', isAuto);
 
-  const gea = document.getElementById('globalExportArea');
-  const br  = document.getElementById('btnRow');
-  const brc = document.getElementById('btnRowCorlima');
+  var gea = document.getElementById('globalExportArea');
+  var br  = document.getElementById('btnRow');
+  var brc = document.getElementById('btnRowCorlima');
+  if (gea) gea.style.display = 'none';
+  if (br)  br.style.display  = 'none';
+  if (brc) brc.style.display = 'none';
 
-  if (isCorlima) {
-    if (gea) gea.style.display = corlimaImages.length > 0 ? 'block' : 'none';
-    if (br)  br.style.display  = 'none';
-    if (brc) brc.style.display = 'flex';
-    setStatus('', '');
-  } else if (isFirma) {
-    if (gea) gea.style.display = 'none';
-    if (br)  br.style.display  = 'none';
-    if (brc) brc.style.display = 'none';
-    firmaActualizar();
-  } else if (isAuto) {
-    if (gea) gea.style.display = 'none';
-    if (br)  br.style.display  = 'none';
-    if (brc) brc.style.display = 'none';
-  }
+  if (isFirma) firmaActualizar();
 }
 
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════
 // FUNCIONES
-// ═══════════════════════════════════════════════
+// ═══════════════════════════════
+function setStatus(msg, type) {
+  const el=document.getElementById('statusBar'); if(!el) return;
+  if(msg){el.innerHTML='<span class="status-dot"></span>'+msg;el.className='status'+(type?' '+type:'');}
+  else{el.innerHTML='';el.className='status';}
+}
+function showSuccessAnimation() {
+    const overlay = document.getElementById('successOverlay');
+    overlay.classList.add('show');
+    setTimeout(() => { overlay.classList.remove('show'); }, 2000);
+}
+function initCorlimaElements() {
+    if (cCanvas) return; // ya inicializado
+    cCanvas = document.getElementById('corlimaCanvas');
+    if (!cCanvas) return;
+    cCtx = cCanvas.getContext('2d');
+    cWrap = document.getElementById('corlimaCanvasWrap');
 
+    const cFileInput = document.getElementById('corlimaFileInput');
+    const cDropZone  = document.getElementById('corlimaDropZone');
 
+    if (!corlimaInputListenerSet && cFileInput && cDropZone) {
+        cFileInput.addEventListener('change', handleCorlimaUpload);
+        cDropZone.addEventListener('click', () => cFileInput.click());
+        cDropZone.addEventListener('dragover', e => { e.preventDefault(); cDropZone.classList.add('drag-over'); });
+        cDropZone.addEventListener('dragleave', () => cDropZone.classList.remove('drag-over'));
+        cDropZone.addEventListener('drop', e => {
+            e.preventDefault(); cDropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files) handleCorlimaUpload({ target: { files: e.dataTransfer.files } });
+        });
 
+        // Touch/mouse drag en canvas wrap
+        cWrap.addEventListener('mousedown', e => {
+            if (corlimaActiveIndex < 0) return;
+            cIsDragging = true; cStartX = e.clientX; cStartY = e.clientY;
+        });
+        cWrap.addEventListener('touchstart', e => {
+            if (corlimaActiveIndex < 0) return;
+            cIsDragging = true; cStartX = e.touches[0].clientX; cStartY = e.touches[0].clientY;
+        }, { passive: true });
 
+        corlimaInputListenerSet = true;
 
+        // Zoom
+        const zoomSlider = document.getElementById('corlimaZoom');
+        if (zoomSlider) {
+            zoomSlider.addEventListener('input', e => {
+                if (corlimaActiveIndex < 0) return;
+                const data = corlimaImages[corlimaActiveIndex];
+                const factor = parseFloat(e.target.value);
+                const newScale = data.baseScale * factor;
+                const cx = data.x + (data.img.width * data.scale) / 2;
+                const cy = data.y + (data.img.height * data.scale) / 2;
+                data.scale = newScale;
+                data.x = cx - (data.img.width * data.scale) / 2;
+                data.y = cy - (data.img.height * data.scale) / 2;
+                document.getElementById('corlimaZoomVal').textContent = Math.round(factor * 100) + '%';
+                clampCorlimaData(data);
+                drawCorlimaCanvas();
+            });
+        }
 
+        // Radios de fondo fit
+        document.querySelectorAll('input[name="corlimaFitBg"]').forEach(r => {
+            r.addEventListener('change', drawCorlimaCanvas);
+        });
+    }
+}
+function initCorlimaResListener() {
+    if (corlimaResListenerSet) return;
+    const sel = getResSelect();
+    if (!sel) return;
+    sel.addEventListener('change', () => { updateResNote(); updateCorlimaWorkspace(); });
+    updateResNote();
+    corlimaResListenerSet = true;
+}
+function setAjusteMode(mode) {
+  ajusteMode = mode;
+  const isAuto = mode === 'auto';
 
+  // Tabs
+  document.getElementById('tabAjusteManual').style.background = isAuto ? 'transparent' : 'var(--bg4)';
+  document.getElementById('tabAjusteManual').style.color     = isAuto ? 'var(--muted)' : '#fff';
+  document.getElementById('tabAjusteManual').style.fontWeight = isAuto ? 'normal' : '500';
+  document.getElementById('tabAjusteAuto').style.background  = isAuto ? 'var(--bg4)' : 'transparent';
+  document.getElementById('tabAjusteAuto').style.color       = isAuto ? '#fff' : 'var(--muted)';
+  document.getElementById('tabAjusteAuto').style.fontWeight  = isAuto ? '500' : 'normal';
 
+  // Paneles
+  document.getElementById('ajusteManualPanel').style.display  = isAuto ? 'none' : 'flex';
+  document.getElementById('ajusteAutoPanel').style.display    = isAuto ? 'flex' : 'none';
+  document.getElementById('ajusteAutoWarning').style.display  = isAuto ? 'flex' : 'none';
+  document.getElementById('corlimaHelperText').style.display  = isAuto ? 'none' : 'block';
 
+  drawCorlimaCanvas();
+}
+function getResSelect() { return document.getElementById('corlimaRes'); }
+function getTargetRes() {
+    const val = getResSelect() ? getResSelect().value : '1000x1000';
+    if (val === '2000x2000') return { w: 2000, h: 2000 };
+    if (val === '1080x1350') return { w: 1080, h: 1350 };
+    return { w: 1000, h: 1000 };
+}
+function getResNote()   { return document.getElementById('corlimaResNote'); }
+function updateResNote() {
+    const sel = getResSelect(); const note = getResNote();
+    if (!sel || !note) return;
+    const val = sel.value;
+    if (val === '1000x1000') {
+        note.textContent = 'Este formato es el adecuado para corlima.pe';
+        note.style.color = '#3fb950';
+    } else if (val === '1080x1350') {
+        note.textContent = 'Este formato es el adecuado para Instagram';
+        note.style.color = '#e3a341';
+    } else {
+        note.textContent = 'Este formato es el adecuado para otras plataformas';
+        note.style.color = '#ffb6c1';
+    }
+}
+function isFitMode() {
+  return ajusteMode === 'auto';
+}
+function getFitBg() {
+  const sel = document.querySelector('input[name="corlimaFitBg"]:checked');
+  return sel ? sel.value : 'transparent';
+}
+function handleCorlimaUpload(e) {
+  const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+  if (files.length === 0) return;
+  
+  if (corlimaImages.length + files.length > 10) {
+      alert('Puedes subir un máximo de 10 imágenes en total.');
+      return;
+  }
+  
+  files.forEach(file => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+          const scale = Math.max(baseW / img.width, baseH / img.height);
+          const x = (baseW - (img.width * scale)) / 2;
+          const y = (baseH - (img.height * scale)) / 2;
+          
+          corlimaImages.push({ file, img, url, scale, x, y, baseScale: scale });
+          updateCorlimaGallery();
+          if (corlimaActiveIndex === -1) setCorlimaActive(0);
+          
+          // Disparador de Alarma de Múltiples Imágenes
+          if (corlimaImages.length > 1 && !multiWarningShown) {
+              multiWarningShown = true;
+              document.getElementById('multiImageWarning').classList.add('show');
+          }
+      };
+      img.src = url;
+  });
+  
+  document.getElementById('corlimaWorkspace').style.display = 'block';
+  document.getElementById('globalExportArea').style.display = 'block';
+  document.getElementById('btnRow').style.display = 'none';
+  document.getElementById('btnRowCorlima').style.display = 'flex';
+  e.target.value = '';
+}
+function removeCorlimaImage(idx) {
+    URL.revokeObjectURL(corlimaImages[idx].url);
+    corlimaImages.splice(idx, 1);
+    
+    if (corlimaImages.length === 0) {
+        corlimaActiveIndex = -1;
+        document.getElementById('corlimaWorkspace').style.display = 'none';
+        document.getElementById('globalExportArea').style.display = 'none';
+        cCtx.clearRect(0, 0, baseW, baseH);
+    } else {
+        if (corlimaActiveIndex === idx) {
+            setCorlimaActive(Math.max(0, idx - 1));
+        } else if (corlimaActiveIndex > idx) {
+            corlimaActiveIndex--;
+            updateCorlimaGallery();
+        } else {
+            updateCorlimaGallery();
+        }
+    }
+}
+function setCorlimaActive(idx) {
+  corlimaActiveIndex = idx;
+  updateCorlimaGallery();
+  const data = corlimaImages[idx];
+  
+  const zoomSlider = document.getElementById('corlimaZoom');
+  zoomSlider.value = data.scale / data.baseScale;
+  document.getElementById('corlimaZoomVal').textContent = Math.round((data.scale / data.baseScale) * 100) + '%';
+  
+  clampCorlimaData(data);
+  drawCorlimaCanvas();
+}
+function updateCorlimaGallery() {
+  const gal = document.getElementById('corlimaGallery');
+  gal.innerHTML = '';
+  corlimaImages.forEach((data, i) => {
+      const wrapper = document.createElement('div');
+      wrapper.style.position = 'relative';
+      wrapper.style.display = 'inline-block';
+      wrapper.style.flexShrink = '0';
+      
+      const t = document.createElement('img');
+      t.src = data.url;
+      t.className = 'corlima-thumb' + (i === corlimaActiveIndex ? ' active' : '');
+      t.onclick = () => setCorlimaActive(i);
+      
+      const delBtn = document.createElement('button');
+      delBtn.innerHTML = '&#10005;'; 
+      delBtn.style.position = 'absolute';
+      delBtn.style.top = '-6px';
+      delBtn.style.right = '-6px';
+      delBtn.style.background = '#e34141';
+      delBtn.style.color = '#fff';
+      delBtn.style.border = 'none';
+      delBtn.style.borderRadius = '50%';
+      delBtn.style.width = '18px';
+      delBtn.style.height = '18px';
+      delBtn.style.fontSize = '10px';
+      delBtn.style.cursor = 'pointer';
+      delBtn.style.display = 'flex';
+      delBtn.style.alignItems = 'center';
+      delBtn.style.justifyContent = 'center';
+      delBtn.style.padding = '0';
+      delBtn.style.boxShadow = '0 2px 4px rgba(0,0,0,0.5)';
+      
+      delBtn.onclick = (e) => {
+          e.stopPropagation(); 
+          removeCorlimaImage(i);
+      };
 
+      wrapper.appendChild(t);
+      wrapper.appendChild(delBtn);
+      gal.appendChild(wrapper);
+  });
+}
+function updateCorlimaWorkspace() {
+    const { w, h } = getTargetRes();
+    baseW = 1000;
+    baseH = Math.round(1000 * (h / w));
+    
+    cCanvas.width = baseW;
+    cCanvas.height = baseH;
+    cWrap.style.aspectRatio = `${baseW}/${baseH}`;
+    
+    corlimaImages.forEach(data => {
+        data.baseScale = Math.max(baseW / data.img.width, baseH / data.img.height);
+        if (data.scale < data.baseScale) data.scale = data.baseScale;
+        clampCorlimaData(data);
+    });
+    drawCorlimaCanvas();
+}
+function drawCorlimaCanvas() {
+  if (corlimaActiveIndex < 0 || !corlimaImages[corlimaActiveIndex]) return;
+  const data = corlimaImages[corlimaActiveIndex];
+  
+  cCtx.clearRect(0, 0, baseW, baseH);
 
+  if (isFitMode()) {
+    const bg = getFitBg();
+    if (bg === 'white') { cCtx.fillStyle = '#ffffff'; cCtx.fillRect(0, 0, baseW, baseH); }
+    else if (bg === 'black') { cCtx.fillStyle = '#000000'; cCtx.fillRect(0, 0, baseW, baseH); }
+    // transparente: no fill
 
-
-
-
-
+    // Escala contain: la imagen entra completa
+    const fitScale = Math.min(baseW / data.img.width, baseH / data.img.height);
+    const fw = data.img.width * fitScale;
+    const fh = data.img.height * fitScale;
+    const fx = (baseW - fw) / 2;
+    const fy = (baseH - fh) / 2;
+    cCtx.drawImage(data.img, fx, fy, fw, fh);
+  } else {
+    cCtx.drawImage(data.img, data.x, data.y, data.img.width * data.scale, data.img.height * data.scale);
+  }
+}
+function clampCorlimaData(data) {
+  if (isFitMode()) return; // En modo fit no se clampea — la imagen puede ser más pequeña que el canvas
+  if (data.scale < data.baseScale) data.scale = data.baseScale;
+  
+  const minX = baseW - (data.img.width * data.scale);
+  const minY = baseH - (data.img.height * data.scale);
+  
+  data.x = Math.max(minX, Math.min(0, data.x));
+  data.y = Math.max(minY, Math.min(0, data.y));
+}
 async function exportCorlimaQueue(format) {
   if (corlimaImages.length === 0) return;
   
@@ -1491,47 +1590,6 @@ function buildZip(files) {
   for (const e of entries) { zip.set(e.local, pos); pos += e.local.length; }
   for (const r of cd) { zip.set(r, pos); pos += r.length; }
   zip.set(eocd, pos); return zip;
-}
-function ByteArray() { this.data = []; }
-function lzwEncode(width, height, pixels, colorDepth) {
-    const out = []; const minCode = Math.max(colorDepth, 2);
-    const clearCode = 1 << minCode; const eofCode = clearCode + 1;
-    let curCode, prevCode; let table = new Map(); let nextCode = clearCode + 2;
-    let bitBuf = 0, bitLen = 0; let buf = new Uint8Array(256); let bufLen = 0;
-    function flush() { out.push(bufLen); for (let i=0;i<bufLen;i++) out.push(buf[i]); bufLen=0; }
-    function writeBits(code, len) {
-      bitBuf |= code << bitLen; bitLen += len;
-      while (bitLen >= 8) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; bitBuf >>= 8; bitLen -= 8; }
-    }
-    let codeLen = minCode + 1; writeBits(clearCode, codeLen); prevCode = pixels[0];
-    for (let i=1; i<pixels.length; i++) {
-      curCode = pixels[i]; const key = (prevCode << 8) | curCode;
-      if (table.has(key)) { prevCode = table.get(key); }
-      else {
-        writeBits(prevCode, codeLen);
-        if (nextCode < 4096) { table.set(key, nextCode++); if (nextCode > (1 << codeLen)) codeLen++; }
-        else { writeBits(clearCode, codeLen); table = new Map(); nextCode = clearCode + 2; codeLen = minCode + 1; }
-        prevCode = curCode;
-      }
-    }
-    writeBits(prevCode, codeLen); writeBits(eofCode, codeLen);
-    if (bitLen > 0) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; }
-    if (bufLen > 0) flush(); out.push(0); return out;
-  }
-function flush() { out.push(bufLen); for (let i=0;i<bufLen;i++) out.push(buf[i]); bufLen=0; }
-function writeBits(code, len) {
-      bitBuf |= code << bitLen; bitLen += len;
-      while (bitLen >= 8) { if (bufLen === 255) flush(); buf[bufLen++] = bitBuf & 0xFF; bitBuf >>= 8; bitLen -= 8; }
-    }
-function setStatus(msg, type) {
-  const el=document.getElementById('statusBar'); if(!el) return;
-  if(msg){el.innerHTML='<span class="status-dot"></span>'+msg;el.className='status'+(type?' '+type:'');}
-  else{el.innerHTML='';el.className='status';}
-}
-function showSuccessAnimation() {
-    const overlay = document.getElementById('successOverlay');
-    overlay.classList.add('show');
-    setTimeout(() => { overlay.classList.remove('show'); }, 2000);
 }
 function firmaGetTemplate(NOMBRE, CARGO, MOVIL, FIJO, EMAIL, MOVIL_RAW, FIJO_RAW) {
   return `<table width="700" cellpadding="0" cellspacing="0" border="0" style="width:700px;max-width:700px;border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;">
@@ -1674,20 +1732,8 @@ async function firmaCopiar() {
     showFirmaCopiadaAnim();
   }
 }
-window.addEventListener('load', function() {
-  var _autoInput = document.getElementById('autoFileInput');
-  if (_autoInput) {
-    _autoInput.addEventListener('change', function(e) {
-      var f = e.target.files[0];
-      if (f) autoLoadFile(f);
-      e.target.value = '';
-    });
-  }
-});
-
 function autoSetMode(mode) {
   autoMode = mode;
-  window.autoMode = mode;
   const isP = mode === 'precios';
   // Tabs — verde activo/inactivo para Precios, rosa activo/inactivo para Stock
   document.getElementById('modePrecios').style.background = isP ? 'var(--bg4)' : 'transparent';
@@ -1752,8 +1798,6 @@ function autoParseRows(rows) {
   if (!rows || rows.length < 2) { alert('El archivo no tiene datos suficientes.'); return; }
   autoHeaders = rows[0].map(function(h) { return String(h).trim(); });
   autoData = rows.slice(1).filter(function(r) { return r.some(function(c) { return String(c).trim() !== ''; }); });
-  window.autoHeaders = autoHeaders;
-  window.autoData = autoData;
   autoFillSelects();
   document.getElementById('autoMapSection').style.display = 'block';
 }
@@ -1780,8 +1824,6 @@ function autoFillSelects() {
   });
 }
 function autoProcesar() {
-  var autoMode = window.autoMode || 'precios';
-  var autoData = window.autoData || [];
   const isP = autoMode === 'precios';
   let matched = 0, unmatched = 0;
 
@@ -1957,31 +1999,6 @@ function buscarProducto() {
       catPadre +
     '</table>';
 }
-function loadDB() {
-  fetch('productos_db.json?v=' + Date.now())
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      CATS_DICT = data['__cats__'] || {};
-      Object.keys(data).forEach(function(k) {
-        if (k === '__cats__') return;
-        PROD_DB[k] = data[k];
-        CAT_DB[k] = data[k].cat;
-      });
-      console.log('[DosaTools] DB cargada:', Object.keys(PROD_DB).length, 'productos,', Object.keys(CATS_DICT).length, 'categorías');
-    })
-    .catch(function(e) { console.warn('[DosaTools] No se pudo cargar productos_db.json:', e); });
-}
-function toNum(v) {
-    var s = String(v == null ? '' : v).trim();
-    if (s === '') return '';
-    var n = parseFloat(s);
-    return !isNaN(n) ? n : s;
-  }
-function toNumStr(v) {
-    var n = toNum(v);
-    if (typeof n === 'number') return String(n).replace('.', ',');
-    return String(n);
-  }
 async function hashStr(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
@@ -2035,35 +2052,19 @@ function togglePwdVisibility() {
   }
 }
 
-// ═══════════════════════════════════════════════
-// CANVAS DRAG (window listeners)
-// ═══════════════════════════════════════════════
-// canvas drag manejado dentro del IIFE de Scale Corlima
-
-// ═══════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════
+// autoFileInput listener
 document.addEventListener('DOMContentLoaded', function() {
-
-  // Activar tab primero — antes de cualquier otra cosa
+  var inp = document.getElementById('autoFileInput');
+  if (inp) {
+    inp.addEventListener('change', function(e) {
+      var f = e.target.files[0];
+      if (f) autoLoadFile(f);
+      e.target.value = '';
+    });
+  }
   switchTab('corlima');
-
-
-
-  
-
-  // autoFileInput: listener registrado en el script principal
-
-  // Cerrar menú exportar al click fuera
-  document.addEventListener('click', function(e) {
-    const menu = document.getElementById('autoExportMenu');
-    if (menu && !e.target.closest('#autoExportMenu') && !e.target.closest('button[onclick*="autoToggleExportMenu"]')) {
-      menu.style.display = 'none';
-    }
-  });
-
-  // switchTab ya llamado al inicio
 });
 </script>
+
 </body>
 </html>
