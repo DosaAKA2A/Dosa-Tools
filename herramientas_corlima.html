@@ -20,9 +20,9 @@
 body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   background: var(--bg); color: var(--text);
-  min-height: 100vh; padding: 2rem 1rem 3rem; line-height: 1.5;
+  min-height: 100vh; line-height: 1.5;
 }
-.wrap { max-width: 1020px; margin: 0 auto; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 2rem 1.5rem 3rem; }
 
 /* HEADER */
 .header {
@@ -334,6 +334,7 @@ button:disabled { opacity: .3; cursor: default; }
 if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.html'; }
 </script>
 
+<div class="wrap">
 <div class="header">
   <div class="header-logo">
     <img src="dosa_favicon.svg" alt="DOSA" style="width:32px;height:32px;border-radius:4px;">
@@ -655,7 +656,7 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   </div>
 </div>
 
-</div>
+</div><!-- /.wrap -->
 
 <div id="successOverlay" class="success-overlay">
   <div class="success-box">
@@ -765,11 +766,14 @@ function setStatus(msg, type) {
 
 // ── initCorlimaElements
 function initCorlimaElements() {
-    if (cCanvas) return; // ya inicializado
-    cCanvas = document.getElementById('corlimaCanvas');
-    if (!cCanvas) return;
-    cCtx = cCanvas.getContext('2d');
-    cWrap = document.getElementById('corlimaCanvasWrap');
+    // cCanvas/cCtx/cWrap solo si existen (no requeridos para Scale Corlima standalone)
+    if (!cCanvas) {
+      cCanvas = document.getElementById('corlimaCanvas');
+      if (cCanvas) {
+        cCtx = cCanvas.getContext('2d');
+        cWrap = document.getElementById('corlimaCanvasWrap');
+      }
+    }
 
     const cFileInput = document.getElementById('corlimaFileInput');
     const cDropZone  = document.getElementById('corlimaDropZone');
