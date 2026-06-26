@@ -409,16 +409,36 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
         Vista previa
         <span id="scaleCanvasSize" style="opacity:.45;font-size:10px;margin-left:8px;"></span>
       </div>
-      <div id="scaleCanvasWrap">
-        <canvas id="scaleCanvas"></canvas>
-        <div id="scaleGrid"></div>
+      <!-- Layout dos columnas: original | resultado -->
+      <div id="scaleCanvasDual">
+
+        <!-- Original con overlay del recorte -->
+        <div class="sdual-col">
+          <div class="sws-canvas-label">Original</div>
+          <div id="scaleCanvasSrcWrap">
+            <canvas id="scaleCanvasSrc"></canvas>
+          </div>
+        </div>
+
+        <!-- Resultado editable -->
+        <div class="sdual-col">
+          <div class="sws-canvas-label" style="display:flex;align-items:center;justify-content:space-between;">
+            <span>Resultado <small id="scaleCanvasSize" style="opacity:.4;font-size:10px;margin-left:6px;"></small></span>
+            <button id="scaleDlSingle" class="sbtn-small" title="Descargar imagen actual">↓ Descargar</button>
+          </div>
+          <div id="scaleCanvasWrap">
+            <canvas id="scaleCanvas"></canvas>
+            <div id="scaleGrid"></div>
+          </div>
+        </div>
+
       </div>
       <div class="sws-zoom-row">
         <span class="sws-zoom-lbl">Zoom</span>
         <input type="range" id="scaleZoom" min="0.5" max="4" step="0.01" value="1">
         <span id="scaleZoomVal">100%</span>
       </div>
-      <button id="scaleDlSingle" class="sbtn sbtn-accent">↓ Descargar imagen actual</button>
+
     </div>
   </div>
 </div>
@@ -506,22 +526,63 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
   color: rgba(255,255,255,0.35);
 }
+/* Layout dual de canvas */
+#scaleCanvasDual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.sdual-col { display: flex; flex-direction: column; gap: 8px; }
+
+#scaleCanvasSrcWrap {
+  position: relative;
+  width: 100%;
+  background: #1a1a1a;
+  border-radius: 8px; overflow: hidden;
+}
+#scaleCanvasSrc {
+  display: block; width: 100%; height: auto;
+}
+
 #scaleCanvasWrap {
   position: relative;
-  width: 100%; max-width: 500px;
+  width: 100%;
   background: repeating-conic-gradient(#1a1a1a 0% 25%, #111 0% 50%) 0 0 / 16px 16px;
   border-radius: 8px; overflow: hidden;
 }
 #scaleCanvas {
   display: block; width: 100%; height: auto;
-  touch-action: none;
+  touch-action: none; cursor: grab;
 }
+#scaleCanvas:active { cursor: grabbing; }
 #scaleGrid {
   position: absolute; inset: 0; pointer-events: none;
   background-image:
     linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
   background-size: 33.33% 33.33%;
+}
+
+/* Botón pequeño de descarga individual */
+.sbtn-small {
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.7);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s;
+}
+.sbtn-small:hover { background: rgba(255,255,255,0.14); }
+
+@media (max-width: 640px) {
+  #scaleCanvasDual { grid-template-columns: 1fr; }
 }
 
 /* Zoom */
@@ -552,33 +613,32 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
 
   // ── Estado ────────────────────────────────────────
   const S = {
-    images: [],      // { file, img, url, ox, oy, scale }
+    images: [],
     active: -1,
     dragging: false,
-    dragStartX: 0,
-    dragStartY: 0,
-    dragOX: 0,
-    dragOY: 0,
-    canvasW: 1000,
-    canvasH: 1000,
+    dragStartX: 0, dragStartY: 0,
+    dragOX: 0,     dragOY: 0,
+    canvasW: 1000, canvasH: 1000,
   };
 
   // ── Elementos ─────────────────────────────────────
-  const dropZone   = document.getElementById('scaleDropZone');
-  const fileInput  = document.getElementById('scaleFileInput');
-  const gallery    = document.getElementById('scaleGallery');
-  const workspace  = document.getElementById('scaleWorkspace');
-  const galBlock   = document.getElementById('scaleGalleryBlock');
-  const dlAllBlock = document.getElementById('scaleDlAllBlock');
-  const canvas     = document.getElementById('scaleCanvas');
-  const ctx        = canvas.getContext('2d');
-  const canvasWrap = document.getElementById('scaleCanvasWrap');
-  const zoomSlider = document.getElementById('scaleZoom');
-  const zoomVal    = document.getElementById('scaleZoomVal');
-  const dlSingle   = document.getElementById('scaleDlSingle');
-  const dlAll      = document.getElementById('scaleDlAll');
-  const dlStatus   = document.getElementById('scaleDlStatus');
-  const sizeLabel  = document.getElementById('scaleCanvasSize');
+  const dropZone    = document.getElementById('scaleDropZone');
+  const fileInput   = document.getElementById('scaleFileInput');
+  const gallery     = document.getElementById('scaleGallery');
+  const workspace   = document.getElementById('scaleWorkspace');
+  const galBlock    = document.getElementById('scaleGalleryBlock');
+  const dlAllBlock  = document.getElementById('scaleDlAllBlock');
+  const canvasSrc   = document.getElementById('scaleCanvasSrc');
+  const ctxSrc      = canvasSrc.getContext('2d');
+  const canvasDst   = document.getElementById('scaleCanvas');
+  const ctxDst      = canvasDst.getContext('2d');
+  const canvasWrap  = document.getElementById('scaleCanvasWrap');
+  const zoomSlider  = document.getElementById('scaleZoom');
+  const zoomVal     = document.getElementById('scaleZoomVal');
+  const dlSingle    = document.getElementById('scaleDlSingle');
+  const dlAll       = document.getElementById('scaleDlAll');
+  const dlStatus    = document.getElementById('scaleDlStatus');
+  const sizeLabel   = document.getElementById('scaleCanvasSize');
 
   // ── Resolución ────────────────────────────────────
   function getRes() {
@@ -590,53 +650,110 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   function applyRes() {
     const { w, h } = getRes();
     S.canvasW = w; S.canvasH = h;
-    canvas.width  = w;
-    canvas.height = h;
-    sizeLabel.textContent = `${w} × ${h} px`;
-    // Recalcular escala base de todas las imágenes
-    S.images.forEach(d => resetImageFit(d));
-    draw();
+    // Canvas resultado
+    canvasDst.width  = w; canvasDst.height = h;
+    // Canvas fuente (preview original) — mismo aspect ratio, tamaño visual fijo
+    canvasSrc.width  = w; canvasSrc.height = h;
+    sizeLabel.textContent = w + ' × ' + h + ' px';
+    S.images.forEach(d => resetFit(d));
+    drawAll();
   }
 
   document.querySelectorAll('input[name="scaleRes"]').forEach(r =>
     r.addEventListener('change', applyRes)
   );
 
-  // ── Fit de imagen al canvas ───────────────────────
-  function resetImageFit(d) {
-    const { w, h } = { w: S.canvasW, h: S.canvasH };
-    // Cover: escala mínima para que la imagen llene el canvas
-    d.scale = Math.max(w / d.img.naturalWidth, h / d.img.naturalHeight);
-    d.ox = (w - d.img.naturalWidth  * d.scale) / 2;
-    d.oy = (h - d.img.naturalHeight * d.scale) / 2;
+  // ── Fit / clamp ───────────────────────────────────
+  // La imagen siempre llena el canvas: escala = Math.max de los dos factores
+  // (cover, no contain). El drag no puede sacar la imagen del borde.
+  function resetFit(d) {
+    const scaleBase = Math.max(S.canvasW / d.img.naturalWidth,
+                               S.canvasH / d.img.naturalHeight);
+    d.scale      = scaleBase;
     d.zoomFactor = 1;
+    // Centrar
+    d.ox = (S.canvasW - d.img.naturalWidth  * d.scale) / 2;
+    d.oy = (S.canvasH - d.img.naturalHeight * d.scale) / 2;
+    clamp(d);
   }
 
   function clamp(d) {
     const iw = d.img.naturalWidth  * d.scale;
     const ih = d.img.naturalHeight * d.scale;
+    // Máximo: borde izquierdo/superior nunca > 0
+    // Mínimo: borde derecho/inferior nunca < tamaño del canvas
     d.ox = Math.min(0, Math.max(S.canvasW - iw, d.ox));
     d.oy = Math.min(0, Math.max(S.canvasH - ih, d.oy));
   }
 
   // ── Dibujo ────────────────────────────────────────
-  function draw() {
-    ctx.clearRect(0, 0, S.canvasW, S.canvasH);
-    if (S.active < 0 || !S.images[S.active]) return;
+  function drawAll() {
+    drawSrc();
+    drawDst();
+  }
+
+  // Canvas izquierdo: imagen original completa con recuadro del recorte actual
+  function drawSrc() {
+    ctxSrc.clearRect(0, 0, S.canvasW, S.canvasH);
+    if (S.active < 0) return;
     const d = S.images[S.active];
-    ctx.drawImage(d.img,
+
+    // Imagen original escalada para caber en el canvas fuente (contain)
+    const fitScale = Math.min(S.canvasW / d.img.naturalWidth,
+                              S.canvasH / d.img.naturalHeight);
+    const fw = d.img.naturalWidth  * fitScale;
+    const fh = d.img.naturalHeight * fitScale;
+    const fx = (S.canvasW - fw) / 2;
+    const fy = (S.canvasH - fh) / 2;
+
+    // Fondo oscuro
+    ctxSrc.fillStyle = '#1a1a1a';
+    ctxSrc.fillRect(0, 0, S.canvasW, S.canvasH);
+    ctxSrc.drawImage(d.img, fx, fy, fw, fh);
+
+    // Rectángulo del recorte actual (en coordenadas del canvas fuente)
+    const cropX = fx + (-d.ox / d.scale) * fitScale;
+    const cropY = fy + (-d.oy / d.scale) * fitScale;
+    const cropW = (S.canvasW / d.scale) * fitScale;
+    const cropH = (S.canvasH / d.scale) * fitScale;
+
+    // Overlay oscuro fuera del recorte
+    ctxSrc.fillStyle = 'rgba(0,0,0,0.55)';
+    ctxSrc.fillRect(0, 0, S.canvasW, S.canvasH);
+    ctxSrc.clearRect(cropX, cropY, cropW, cropH);
+    // Necesitamos dibujar la imagen de nuevo en la zona del recorte para que no quede vacía
+    ctxSrc.save();
+    ctxSrc.beginPath();
+    ctxSrc.rect(cropX, cropY, cropW, cropH);
+    ctxSrc.clip();
+    ctxSrc.drawImage(d.img, fx, fy, fw, fh);
+    ctxSrc.restore();
+
+    // Borde del recorte
+    ctxSrc.strokeStyle = 'rgba(255,255,255,0.8)';
+    ctxSrc.lineWidth = 2;
+    ctxSrc.strokeRect(cropX, cropY, cropW, cropH);
+  }
+
+  // Canvas derecho: resultado del recorte (este es el que se descarga)
+  function drawDst() {
+    ctxDst.fillStyle = '#ffffff';
+    ctxDst.fillRect(0, 0, S.canvasW, S.canvasH);
+    if (S.active < 0) return;
+    const d = S.images[S.active];
+    ctxDst.drawImage(d.img,
       d.ox, d.oy,
       d.img.naturalWidth  * d.scale,
       d.img.naturalHeight * d.scale
     );
   }
 
-  // ── Carga de imágenes ─────────────────────────────
+  // ── Carga ─────────────────────────────────────────
   function loadFiles(files) {
     const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
     if (!arr.length) return;
     if (S.images.length + arr.length > 10) {
-      alert('Máximo 10 imágenes en total.');
+      alert('Máximo 10 imágenes.');
       arr.splice(10 - S.images.length);
     }
     arr.forEach(file => {
@@ -644,7 +761,7 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
       const url = URL.createObjectURL(file);
       img.onload = () => {
         const d = { file, img, url, ox: 0, oy: 0, scale: 1, zoomFactor: 1 };
-        resetImageFit(d);
+        resetFit(d);
         S.images.push(d);
         renderGallery();
         if (S.active === -1) setActive(0);
@@ -668,17 +785,14 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
       const wrap = document.createElement('div');
       wrap.className = 'sgal-thumb' + (i === S.active ? ' active' : '');
       wrap.onclick = () => setActive(i);
-
       const img = document.createElement('img');
       img.src = d.url;
       wrap.appendChild(img);
-
       const del = document.createElement('button');
       del.className = 'sgal-del';
       del.textContent = '×';
       del.onclick = e => { e.stopPropagation(); removeImage(i); };
       wrap.appendChild(del);
-
       gallery.appendChild(wrap);
     });
   }
@@ -686,13 +800,12 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   function setActive(i) {
     S.active = i;
     renderGallery();
-    // Sincronizar zoom slider
     const d = S.images[i];
     if (d) {
       zoomSlider.value = d.zoomFactor;
       zoomVal.textContent = Math.round(d.zoomFactor * 100) + '%';
     }
-    applyRes(); // re-aplica resolución y redibuja
+    applyRes();
   }
 
   function removeImage(i) {
@@ -703,7 +816,8 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
       galBlock.style.display   = 'none';
       workspace.style.display  = 'none';
       dlAllBlock.style.display = 'none';
-      ctx.clearRect(0, 0, S.canvasW, S.canvasH);
+      ctxDst.clearRect(0, 0, S.canvasW, S.canvasH);
+      ctxSrc.clearRect(0, 0, S.canvasW, S.canvasH);
     } else {
       S.active = Math.min(S.active, S.images.length - 1);
       setActive(S.active);
@@ -714,29 +828,33 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
   // ── Zoom ──────────────────────────────────────────
   zoomSlider.addEventListener('input', () => {
     if (S.active < 0) return;
-    const d = S.images[S.active];
+    const d   = S.images[S.active];
     const factor = parseFloat(zoomSlider.value);
+    // Escala base (cover mínimo)
+    const baseScale = Math.max(S.canvasW / d.img.naturalWidth,
+                               S.canvasH / d.img.naturalHeight);
+    // Centro actual del canvas en coordenadas de imagen
+    const cx = (S.canvasW / 2 - d.ox) / d.scale;
+    const cy = (S.canvasH / 2 - d.oy) / d.scale;
     d.zoomFactor = factor;
-    const baseScale = Math.max(S.canvasW / d.img.naturalWidth, S.canvasH / d.img.naturalHeight);
-    const cx = d.ox + (d.img.naturalWidth  * d.scale) / 2;
-    const cy = d.oy + (d.img.naturalHeight * d.scale) / 2;
     d.scale = baseScale * factor;
-    d.ox = cx - (d.img.naturalWidth  * d.scale) / 2;
-    d.oy = cy - (d.img.naturalHeight * d.scale) / 2;
+    // Mantener el punto central
+    d.ox = S.canvasW / 2 - cx * d.scale;
+    d.oy = S.canvasH / 2 - cy * d.scale;
     clamp(d);
     zoomVal.textContent = Math.round(factor * 100) + '%';
-    draw();
+    drawAll();
   });
 
-  // ── Drag en canvas ────────────────────────────────
-  function canvasPos(e) {
+  // ── Drag en canvas resultado ──────────────────────
+  function getCanvasPos(canvas, e) {
     const rect = canvas.getBoundingClientRect();
-    const scaleX = S.canvasW / rect.width;
-    const scaleY = S.canvasH / rect.height;
+    const sx = canvas.width  / rect.width;
+    const sy = canvas.height / rect.height;
     const src = e.touches ? e.touches[0] : e;
     return {
-      x: (src.clientX - rect.left) * scaleX,
-      y: (src.clientY - rect.top)  * scaleY,
+      x: (src.clientX - rect.left) * sx,
+      y: (src.clientY - rect.top)  * sy,
     };
   }
 
@@ -744,41 +862,38 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
     if (S.active < 0) return;
     e.preventDefault();
     S.dragging = true;
-    const pos = canvasPos(e);
-    S.dragStartX = pos.x;
-    S.dragStartY = pos.y;
+    const pos = getCanvasPos(canvasDst, e);
+    S.dragStartX = pos.x; S.dragStartY = pos.y;
     const d = S.images[S.active];
-    S.dragOX = d.ox;
-    S.dragOY = d.oy;
+    S.dragOX = d.ox; S.dragOY = d.oy;
   }
 
   function moveDrag(e) {
     if (!S.dragging || S.active < 0) return;
     e.preventDefault();
-    const pos = canvasPos(e);
-    const d = S.images[S.active];
+    const pos = getCanvasPos(canvasDst, e);
+    const d   = S.images[S.active];
     d.ox = S.dragOX + (pos.x - S.dragStartX);
     d.oy = S.dragOY + (pos.y - S.dragStartY);
     clamp(d);
-    draw();
+    drawAll();
   }
 
   function endDrag() { S.dragging = false; }
 
-  canvas.addEventListener('mousedown',  startDrag);
-  canvas.addEventListener('mousemove',  moveDrag);
-  canvas.addEventListener('mouseup',    endDrag);
-  canvas.addEventListener('mouseleave', endDrag);
-  canvas.addEventListener('touchstart', startDrag, { passive: false });
-  canvas.addEventListener('touchmove',  moveDrag,  { passive: false });
-  canvas.addEventListener('touchend',   endDrag);
+  canvasDst.addEventListener('mousedown',  startDrag);
+  canvasDst.addEventListener('mousemove',  moveDrag);
+  canvasDst.addEventListener('mouseup',    endDrag);
+  canvasDst.addEventListener('mouseleave', endDrag);
+  canvasDst.addEventListener('touchstart', startDrag, { passive: false });
+  canvasDst.addEventListener('touchmove',  moveDrag,  { passive: false });
+  canvasDst.addEventListener('touchend',   endDrag);
 
   // ── Descarga ──────────────────────────────────────
-  function renderToJPG(d) {
-    const offscreen = document.createElement('canvas');
-    offscreen.width  = S.canvasW;
-    offscreen.height = S.canvasH;
-    const octx = offscreen.getContext('2d');
+  function renderJPG(d) {
+    const off = document.createElement('canvas');
+    off.width  = S.canvasW; off.height = S.canvasH;
+    const octx = off.getContext('2d');
     octx.fillStyle = '#ffffff';
     octx.fillRect(0, 0, S.canvasW, S.canvasH);
     octx.drawImage(d.img,
@@ -786,58 +901,46 @@ if (!sessionStorage.getItem('corlimaAccess')) { window.location.href = 'index.ht
       d.img.naturalWidth  * d.scale,
       d.img.naturalHeight * d.scale
     );
-    return offscreen.toDataURL('image/jpeg', 0.92);
+    return off.toDataURL('image/jpeg', 0.92);
   }
 
-  function triggerDownload(dataUrl, name) {
+  function triggerDl(dataUrl, name) {
     const a = document.createElement('a');
-    a.href = dataUrl;
-    a.download = name;
-    document.body.appendChild(a);
-    a.click();
+    a.href = dataUrl; a.download = name;
+    document.body.appendChild(a); a.click();
     document.body.removeChild(a);
   }
 
   dlSingle.addEventListener('click', () => {
     if (S.active < 0) return;
     const d = S.images[S.active];
-    const name = d.file.name.replace(/\.[^.]+$/, '') + `_${S.canvasW}x${S.canvasH}.jpg`;
-    triggerDownload(renderToJPG(d), name);
+    const name = d.file.name.replace(/\.[^.]+$/, '') + '_' + S.canvasW + 'x' + S.canvasH + '.jpg';
+    triggerDl(renderJPG(d), name);
   });
 
   dlAll.addEventListener('click', () => {
-    if (S.images.length === 0) return;
-    dlStatus.textContent = `Descargando ${S.images.length} imagen(es)...`;
+    if (!S.images.length) return;
+    dlStatus.textContent = 'Descargando ' + S.images.length + ' imágen(es)...';
     S.images.forEach((d, i) => {
       setTimeout(() => {
-        const name = d.file.name.replace(/\.[^.]+$/, '') + `_${S.canvasW}x${S.canvasH}.jpg`;
-        triggerDownload(renderToJPG(d), name);
+        const name = d.file.name.replace(/\.[^.]+$/, '') + '_' + S.canvasW + 'x' + S.canvasH + '.jpg';
+        triggerDl(renderJPG(d), name);
         if (i === S.images.length - 1) {
           dlStatus.textContent = '✓ Listo';
           setTimeout(() => { dlStatus.textContent = ''; }, 3000);
         }
-      }, i * 300);
+      }, i * 350);
     });
   });
 
-  // ── Drop zone events ──────────────────────────────
+  // ── Drop zone ─────────────────────────────────────
   dropZone.addEventListener('click', () => fileInput.click());
-
-  dropZone.addEventListener('dragover', e => {
-    e.preventDefault();
-    dropZone.classList.add('drag-over');
-  });
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('drag-over');
-  });
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
   dropZone.addEventListener('drop', e => {
-    e.preventDefault();
-    dropZone.classList.remove('drag-over');
-    if (e.dataTransfer && e.dataTransfer.files.length) {
-      loadFiles(e.dataTransfer.files);
-    }
+    e.preventDefault(); dropZone.classList.remove('drag-over');
+    if (e.dataTransfer && e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
   });
-
   fileInput.addEventListener('change', e => {
     if (e.target.files.length) loadFiles(e.target.files);
     e.target.value = '';
