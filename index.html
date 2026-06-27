@@ -1027,7 +1027,7 @@
 
   <!-- DERECHA: CTA -->
   <div style="display:flex;align-items:center;gap:10px;">
-    <a class="nav-cv-btn" href="dosa-cv.html"><span>CV</span></a>
+    <a class="nav-cv-btn" href="#" onclick="openCvPin(event)"><span>CV</span></a>
     <button class="nav-cta-btn" onclick="#">
       ¿Qué hacemos?
       <span class="nav-cta-arrow">›</span>
@@ -1311,6 +1311,135 @@ function toggleMenu() {
   drawer.classList.toggle('open', !isOpen);
   backdrop.classList.toggle('open', !isOpen);
 }
+</script>
+
+<!-- Modal PIN para acceso al CV -->
+<div id="cvPinModal" style="
+  display:none; position:fixed; inset:0; z-index:9999;
+  background:rgba(0,0,0,0.75); backdrop-filter:blur(8px);
+  align-items:center; justify-content:center;
+">
+  <div style="
+    background:#111; border:1px solid rgba(255,255,255,0.1);
+    border-radius:20px; padding:40px 36px; width:300px;
+    display:flex; flex-direction:column; align-items:center; gap:20px;
+    box-shadow:0 24px 64px rgba(0,0,0,0.6);
+  ">
+    <div style="font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:#f5f5f5;letter-spacing:-.02em;">
+      DO<span style="color:#dc402a">S</span>A
+    </div>
+    <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,0.35);font-family:'Inter',sans-serif;">
+      Acceso restringido
+    </div>
+    <!-- Dígitos visuales -->
+    <div style="display:flex;gap:10px;">
+      <div class="pin-dot" id="pd0"></div>
+      <div class="pin-dot" id="pd1"></div>
+      <div class="pin-dot" id="pd2"></div>
+      <div class="pin-dot" id="pd3"></div>
+    </div>
+    <!-- Teclado numérico -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:100%;">
+      <button class="pin-key" onclick="pinKey(1)">1</button>
+      <button class="pin-key" onclick="pinKey(2)">2</button>
+      <button class="pin-key" onclick="pinKey(3)">3</button>
+      <button class="pin-key" onclick="pinKey(4)">4</button>
+      <button class="pin-key" onclick="pinKey(5)">5</button>
+      <button class="pin-key" onclick="pinKey(6)">6</button>
+      <button class="pin-key" onclick="pinKey(7)">7</button>
+      <button class="pin-key" onclick="pinKey(8)">8</button>
+      <button class="pin-key" onclick="pinKey(9)">9</button>
+      <button class="pin-key pin-clear" onclick="pinClear()">✕</button>
+      <button class="pin-key" onclick="pinKey(0)">0</button>
+      <button class="pin-key pin-ok" onclick="pinSubmit()">→</button>
+    </div>
+    <div id="pinError" style="font-size:11px;color:#dc402a;font-family:'Inter',sans-serif;height:14px;"></div>
+  </div>
+</div>
+
+<style>
+.pin-dot {
+  width:12px; height:12px; border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.25);
+  background:transparent;
+  transition:background .15s;
+}
+.pin-dot.filled { background:#f5f5f5; border-color:#f5f5f5; }
+.pin-dot.error  { background:#dc402a; border-color:#dc402a; }
+.pin-key {
+  height:48px; border-radius:12px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  color:#f5f5f5; font-size:18px; font-family:'Inter',sans-serif;
+  cursor:pointer; transition:background .15s;
+}
+.pin-key:hover { background:rgba(255,255,255,0.12); }
+.pin-clear { font-size:14px; color:rgba(255,255,255,0.5); }
+.pin-ok    { background:#dc402a; border-color:#dc402a; font-size:18px; }
+.pin-ok:hover { background:#c03520; }
+</style>
+
+<script>
+var _pin = '';
+var _correct = '4552';
+
+function openCvPin(e) {
+  e.preventDefault();
+  _pin = '';
+  updateDots();
+  document.getElementById('pinError').textContent = '';
+  var m = document.getElementById('cvPinModal');
+  m.style.display = 'flex';
+}
+
+document.getElementById('cvPinModal').addEventListener('click', function(e) {
+  if (e.target === this) closeCvPin();
+});
+
+function closeCvPin() {
+  document.getElementById('cvPinModal').style.display = 'none';
+}
+
+function pinKey(n) {
+  if (_pin.length >= 4) return;
+  _pin += n;
+  updateDots();
+  if (_pin.length === 4) setTimeout(pinSubmit, 200);
+}
+
+function pinClear() {
+  _pin = _pin.slice(0, -1);
+  updateDots();
+  document.getElementById('pinError').textContent = '';
+}
+
+function updateDots() {
+  for (var i = 0; i < 4; i++) {
+    var d = document.getElementById('pd' + i);
+    d.classList.toggle('filled', i < _pin.length);
+    d.classList.remove('error');
+  }
+}
+
+function pinSubmit() {
+  if (_pin === _correct) {
+    closeCvPin();
+    window.location.href = 'dosa-cv.html';
+  } else {
+    for (var i = 0; i < 4; i++)
+      document.getElementById('pd' + i).classList.add('error');
+    document.getElementById('pinError').textContent = 'PIN incorrecto';
+    setTimeout(function() { _pin = ''; updateDots(); document.getElementById('pinError').textContent = ''; }, 1000);
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('cvPinModal').style.display === 'none') return;
+  if (e.key >= '0' && e.key <= '9') pinKey(parseInt(e.key));
+  if (e.key === 'Backspace') pinClear();
+  if (e.key === 'Enter') pinSubmit();
+  if (e.key === 'Escape') closeCvPin();
+});
 </script>
 
 </div><!-- /site-frame -->
