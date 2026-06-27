@@ -45,8 +45,8 @@
   nav {
     position: fixed;
     top: 0;
-    left: max(0px, calc(50% - 960px));
-    right: max(0px, calc(50% - 960px));
+    left: max(8px, calc(50% - 952px));
+    right: max(8px, calc(50% - 952px));
     z-index: 100;
     display: flex;
     align-items: center;
@@ -307,12 +307,15 @@
 
   .hero {
     position: relative;
-    min-height: 100vh;
+    height: 72vh;
+    min-height: 520px;
+    max-height: 780px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
-    border-radius: 16px;
+    border-radius: 24px;
+    margin: 8px;       /* margen para ver el fondo negro, igual que Norvin */
   }
 
   /* Banner imagen con parallax */
