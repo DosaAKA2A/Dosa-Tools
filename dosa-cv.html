@@ -225,8 +225,8 @@
 
   .cv-job-desc {
     font-size: 13px;
-    color: rgba(255,255,255,0.5);
-    line-height: 1.7;
+    color: rgba(255,255,255,0.65);
+    line-height: 1.75;
     margin-bottom: 14px;
   }
 
@@ -240,8 +240,8 @@
     font-size: 9px;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: rgba(255,255,255,0.4);
-    border: 1px solid var(--border);
+    color: rgba(255,255,255,0.55);
+    border: 1px solid rgba(255,255,255,0.12);
     padding: 4px 10px;
     border-radius: 100px;
   }
@@ -281,9 +281,9 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
     font-size: 12px;
-    color: rgba(255,255,255,0.6);
+    color: rgba(255,255,255,0.7);
     letter-spacing: .02em;
   }
   .cv-skill-item:last-child { border-bottom: none; }
@@ -338,10 +338,38 @@
     margin-bottom: 6px;
   }
   .cv-project-desc {
-    font-size: 12px;
-    color: rgba(255,255,255,0.45);
-    line-height: 1.65;
+    font-size: 13px;
+    color: rgba(255,255,255,0.62);
+    line-height: 1.72;
     margin-bottom: 10px;
+  }
+
+  /* ── BADGE DISPONIBILIDAD ── */
+  .cv-avail-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    border: 1px solid rgba(63,185,80,0.4);
+    background: rgba(63,185,80,0.1);
+    color: #3fb950;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .06em;
+    font-family: 'Inter', sans-serif;
+    margin-bottom: 36px;
+  }
+  .cv-avail-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #3fb950;
+    animation: pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50%       { opacity: .5; transform: scale(.7); }
   }
 
   /* ── ANIMACIONES ── */
@@ -379,6 +407,10 @@
 <div class="cv-hero">
   <div class="cv-hero-eyebrow">Perfil profesional · Madrid, España</div>
   <h1 class="cv-hero-name">Eduardo<br>En<span class="s">r</span>ico</h1>
+  <div class="cv-avail-badge">
+    <span class="cv-avail-dot"></span>
+    Disponibilidad inmediata
+  </div>
   <div class="cv-hero-meta">
     <p class="cv-hero-role">
       Diseñador digital y gestor de e-commerce con perfil híbrido creativo-técnico.<br>
@@ -468,33 +500,37 @@
 
       <div class="cv-project">
         <div class="cv-project-title">DOSA Tools</div>
-        <p class="cv-project-desc">Suite de herramientas web bajo marca propia. Incluye Scale Corlima (reescalado de imágenes para e-commerce), Firma Corlima, Carga Masiva para PrestaShop, y una sección de Filtros con efectos Dreamy Blur y CRT Machine sobre imágenes. Desarrollado en HTML/CSS/JS vanilla y desplegado en GitHub Pages.</p>
+        <p class="cv-project-desc">Proyecto personal de diseño y automatización orientado al e-commerce. Una plataforma web desarrollada desde cero que centraliza flujos operativos complejos —desde la gestión de catálogos y la generación de documentos hasta el procesamiento masivo de imágenes— reduciendo tiempos de producción y eliminando errores manuales en entornos de venta digital.</p>
         <div class="cv-tags">
+          <span class="cv-tag">Diseño web</span>
+          <span class="cv-tag">Automatización</span>
+          <span class="cv-tag">E-commerce</span>
           <span class="cv-tag">JavaScript</span>
-          <span class="cv-tag">Canvas API</span>
-          <span class="cv-tag">HTML/CSS</span>
-          <span class="cv-tag">GitHub Pages</span>
+          <span class="cv-tag">HTML / CSS</span>
         </div>
       </div>
 
       <div class="cv-project">
-        <div class="cv-project-title">Catálogo Interactivo Luminarc</div>
-        <p class="cv-project-desc">Editor de catálogo de productos para Corlima, con colecciones Diwali, Carine y Lotusia. Interfaz de navegación y edición de fichas técnicas integrada en el ecosistema de herramientas internas.</p>
+        <div class="cv-project-title">Proyecto Aurora — Iris Studio</div>
+        <p class="cv-project-desc">Servidor de videojuegos desarrollado de forma colaborativa por el equipo de Iris Studio, colectivo creativo del que formo parte. Mi rol se centró en el crecimiento y la retención de la comunidad: definición de estrategia de paid media, gestión de campañas orientadas a captación, dinamización activa en redes sociales y diseño de mecánicas de engagement que impulsaron la participación continua de los usuarios.</p>
         <div class="cv-tags">
-          <span class="cv-tag">E-commerce</span>
-          <span class="cv-tag">Luminarc</span>
-          <span class="cv-tag">Catálogo digital</span>
+          <span class="cv-tag">Paid Media</span>
+          <span class="cv-tag">Community Management</span>
+          <span class="cv-tag">Redes Sociales</span>
+          <span class="cv-tag">Engagement</span>
+          <span class="cv-tag">Iris Studio</span>
         </div>
       </div>
 
       <div class="cv-project">
         <div class="cv-project-title">Contenido & Campañas Corlima</div>
-        <p class="cv-project-desc">Producción de contenido para Instagram, Facebook y WhatsApp con modelo de doble variante (aspiracional + urgencia). Prompts de fotografía de producto en Adobe Firefly para vidrio y cristalería con efectos de transparencia y refracción realista.</p>
+        <p class="cv-project-desc">Estrategia y producción de contenido multiplataforma para Instagram, Facebook y WhatsApp, con enfoque en conversión. Desarrollo de un modelo de comunicación de doble variante —aspiracional y de urgencia— aplicado de forma consistente a líneas de producto como Luminarc, KitchenAid y FTA Robust, siempre con la identidad de marca como eje.</p>
         <div class="cv-tags">
           <span class="cv-tag">Meta Ads</span>
-          <span class="cv-tag">Adobe Firefly</span>
           <span class="cv-tag">Copywriting</span>
           <span class="cv-tag">Social Media</span>
+          <span class="cv-tag">Adobe Firefly</span>
+          <span class="cv-tag">Estrategia de contenido</span>
         </div>
       </div>
     </div>
@@ -553,24 +589,28 @@
       </div>
     </div>
 
-    <!-- DISPONIBILIDAD -->
+    <!-- CONTACTO -->
     <div class="cv-section" style="animation-delay:.4s">
-      <div class="cv-section-label">Disponibilidad</div>
+      <div class="cv-section-label">Contacto</div>
       <div class="cv-avail-item">
-        <span class="cv-avail-label">Situación</span>
-        <span class="cv-avail-value">Búsqueda activa</span>
+        <span class="cv-avail-label">Email</span>
+        <a href="mailto:hatred.aka2a@gmail.com" class="cv-avail-value" style="color:rgba(255,255,255,0.6);text-decoration:none;transition:color .2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,0.6)'">hatred.aka2a@gmail.com</a>
+      </div>
+      <div class="cv-avail-item">
+        <span class="cv-avail-label">Teléfono</span>
+        <a href="tel:+34635923470" class="cv-avail-value" style="color:rgba(255,255,255,0.6);text-decoration:none;">+34 635 923 470</a>
+      </div>
+      <div class="cv-avail-item">
+        <span class="cv-avail-label">Ubicación</span>
+        <span class="cv-avail-value">Madrid, España · 28037</span>
       </div>
       <div class="cv-avail-item">
         <span class="cv-avail-label">Viajes</span>
         <span class="cv-avail-value">Buena disponibilidad</span>
       </div>
       <div class="cv-avail-item">
-        <span class="cv-avail-label">Cambio de residencia</span>
-        <span class="cv-avail-value">Depende de las condiciones</span>
-      </div>
-      <div class="cv-avail-item">
-        <span class="cv-avail-label">Ubicación actual</span>
-        <span class="cv-avail-value">Madrid, España</span>
+        <span class="cv-avail-label">Residencia</span>
+        <span class="cv-avail-value">Depende de condiciones</span>
       </div>
     </div>
 
