@@ -311,14 +311,10 @@
   .hero-banner-img {
     position: absolute;
     inset: -15%;            /* margen extra para el parallax */
-    background:
-      url('hero_banner.jpg') center 30% / cover no-repeat,
-      linear-gradient(135deg,
-        #0a0a0f 0%,
-        #0d1117 30%,
-        #111827 55%,
-        #0f172a 75%,
-        #080810 100%);
+    width: calc(100% + 30%);
+    height: calc(100% + 30%);
+    object-fit: cover;
+    object-position: center 30%;
     will-change: transform;
     transition: transform 0.1s linear;
     animation: heroZoomIn 1s cubic-bezier(0.44, 0, 0.56, 1) forwards;
@@ -864,7 +860,7 @@
   <!-- BANNER: imagen fullscreen con parallax -->
   <div class="hero-banner" id="heroBanner">
     <!-- Placeholder: reemplazar src por tu imagen cuando esté lista -->
-    <div class="hero-banner-img" id="heroBannerImg"></div>
+    <img class="hero-banner-img" id="heroBannerImg" src="hero_banner.jpg" alt="" aria-hidden="true">
     <div class="hero-banner-overlay"></div>
   </div>
 
