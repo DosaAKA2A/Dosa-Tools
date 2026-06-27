@@ -3215,17 +3215,23 @@ function switchFiltro(filtro) {
 
     // ── E: grain de alta frecuencia ──────────────────
     if (grain > 0) {
-      const grainData = ctx.createImageData(W, H);
+      // Renderizar grain en canvas offscreen y componerlo con drawImage (overlay)
+      const grainOff = document.createElement('canvas');
+      grainOff.width = W; grainOff.height = H;
+      const gctx = grainOff.getContext('2d');
+      const grainData = gctx.createImageData(W, H);
       for (let i = 0; i < W * H * 4; i += 4) {
-        const n = (Math.random() - 0.5) * 255 * grain;
-        grainData.data[i    ] = 128 + n;
-        grainData.data[i + 1] = 128 + n;
-        grainData.data[i + 2] = 128 + n;
-        grainData.data[i + 3] = Math.abs(n) * 0.6;
+        const n = (Math.random() * 255 * grain) | 0;
+        grainData.data[i    ] = n;
+        grainData.data[i + 1] = n;
+        grainData.data[i + 2] = n;
+        grainData.data[i + 3] = (grain * 180) | 0;
       }
+      gctx.putImageData(grainData, 0, 0);
       ctx.save();
       ctx.globalCompositeOperation = 'overlay';
-      ctx.putImageData(grainData, 0, 0);
+      ctx.globalAlpha = grain * 0.5;
+      ctx.drawImage(grainOff, 0, 0);
       ctx.restore();
     }
 
