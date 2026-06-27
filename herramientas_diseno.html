@@ -625,17 +625,40 @@ button:disabled { opacity: .3; cursor: default; }
     <input type="file" id="dreamyFile" accept="image/*" style="display:none">
   </div>
 
+  <div class="sec" style="margin-top:18px;">Punto focal &amp; modo de degradado</div>
+  <div style="font-size:11px;color:var(--muted);margin-bottom:10px;">
+    Haz clic en la preview para definir el origen del efecto
+  </div>
+
+  <!-- Selector de modo -->
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;">
+    <button type="button" class="small-btn active" id="dreamyModeRadial"  onclick="dreamySetMode('radial')">Radial</button>
+    <button type="button" class="small-btn"        id="dreamyModeLinear" onclick="dreamySetMode('linear')">Direccional</button>
+  </div>
+
+  <!-- Slider ángulo (solo visible en modo lineal) -->
+  <div class="ctrl" id="dreamyAngleRow" style="display:none;">
+    <div class="ctrl-lbl">Ángulo &nbsp;<span id="dreamyAngleVal">0</span>°</div>
+    <input type="range" id="dreamyAngle" min="0" max="360" value="0">
+  </div>
+
+  <!-- Slider radio de inicio limpio -->
+  <div class="ctrl">
+    <div class="ctrl-lbl">Radio limpio &nbsp;<span id="dreamyRadiusVal">30</span>%</div>
+    <input type="range" id="dreamyRadius" min="0" max="100" value="30">
+  </div>
+
   <div class="sec" style="margin-top:18px;">Efecto</div>
   <div class="controls">
 
     <div class="ctrl">
-      <div class="ctrl-lbl">RGB Split &nbsp;<span id="dreamyShiftVal">12</span>px</div>
-      <input type="range" id="dreamyShift" min="0" max="60" value="12">
+      <div class="ctrl-lbl">RGB Split &nbsp;<span id="dreamyShiftVal">18</span>px</div>
+      <input type="range" id="dreamyShift" min="0" max="60" value="18">
     </div>
 
     <div class="ctrl">
-      <div class="ctrl-lbl">Blur &nbsp;<span id="dreamyBlurVal">8</span>px</div>
-      <input type="range" id="dreamyBlur" min="0" max="40" value="8">
+      <div class="ctrl-lbl">Blur &nbsp;<span id="dreamyBlurVal">10</span>px</div>
+      <input type="range" id="dreamyBlur" min="0" max="40" value="10">
     </div>
 
     <div class="ctrl">
@@ -644,17 +667,17 @@ button:disabled { opacity: .3; cursor: default; }
     </div>
 
     <div class="ctrl">
-      <div class="ctrl-lbl">Saturación &nbsp;<span id="dreamySatVal">180</span>%</div>
-      <input type="range" id="dreamySat" min="100" max="400" value="180">
+      <div class="ctrl-lbl">Saturación &nbsp;<span id="dreamySatVal">200</span>%</div>
+      <input type="range" id="dreamySat" min="100" max="400" value="200">
     </div>
 
     <div class="ctrl">
-      <div class="ctrl-lbl">Brillo &nbsp;<span id="dreamyBriVal">110</span>%</div>
-      <input type="range" id="dreamyBri" min="60" max="200" value="110">
+      <div class="ctrl-lbl">Brillo &nbsp;<span id="dreamyBriVal">115</span>%</div>
+      <input type="range" id="dreamyBri" min="60" max="200" value="115">
     </div>
 
     <div class="ctrl">
-      <div class="ctrl-lbl">Opacidad vignette &nbsp;<span id="dreamyVigVal">60</span>%</div>
+      <div class="ctrl-lbl">Vignette &nbsp;<span id="dreamyVigVal">60</span>%</div>
       <input type="range" id="dreamyVig" min="0" max="100" value="60">
     </div>
 
@@ -665,8 +688,17 @@ button:disabled { opacity: .3; cursor: default; }
     <button class="small-btn" id="dreamyReset">Resetear</button>
   </div>
 
-  <div style="margin-top:16px; position:relative; display:inline-block; max-width:100%;">
-    <canvas id="dreamyCanvas" style="max-width:100%; border-radius:6px; display:none;"></canvas>
+  <!-- Preview con overlay de punto focal -->
+  <div style="margin-top:16px; position:relative; display:inline-block; max-width:100%;" id="dreamyWrap">
+    <canvas id="dreamyCanvas" style="max-width:100%; border-radius:6px; display:none; cursor:crosshair;"></canvas>
+    <!-- Punto focal visual -->
+    <div id="dreamyFocalDot" style="
+      display:none; position:absolute; width:14px; height:14px;
+      border-radius:50%; border:2px solid #fff;
+      box-shadow:0 0 0 1px rgba(0,0,0,.5), 0 0 8px rgba(255,255,255,.6);
+      pointer-events:none; transform:translate(-50%,-50%);
+      transition:left .08s, top .08s;
+    "></div>
   </div>
 
 </div>
@@ -2693,104 +2725,175 @@ function togglePwdVisibility() {
   'use strict';
 
   // ── Estado ──────────────────────────────────────
-  let srcImg = null;
+  let srcImg   = null;
+  let focalX   = 0.5;   // 0..1 relativo al canvas
+  let focalY   = 0.5;
+  let mode     = 'radial'; // 'radial' | 'linear'
 
-  const canvas  = document.getElementById('dreamyCanvas');
-  const ctx     = canvas.getContext('2d');
+  const canvas   = document.getElementById('dreamyCanvas');
+  const ctx      = canvas.getContext('2d');
+  const dot      = document.getElementById('dreamyFocalDot');
+  const wrap     = document.getElementById('dreamyWrap');
 
-  // Controles
   const sliders = {
-    shift : document.getElementById('dreamyShift'),
-    blur  : document.getElementById('dreamyBlur'),
-    scan  : document.getElementById('dreamyScan'),
-    sat   : document.getElementById('dreamySat'),
-    bri   : document.getElementById('dreamyBri'),
-    vig   : document.getElementById('dreamyVig'),
+    shift  : document.getElementById('dreamyShift'),
+    blur   : document.getElementById('dreamyBlur'),
+    scan   : document.getElementById('dreamyScan'),
+    sat    : document.getElementById('dreamySat'),
+    bri    : document.getElementById('dreamyBri'),
+    vig    : document.getElementById('dreamyVig'),
+    radius : document.getElementById('dreamyRadius'),
+    angle  : document.getElementById('dreamyAngle'),
   };
   const labels = {
-    shift : document.getElementById('dreamyShiftVal'),
-    blur  : document.getElementById('dreamyBlurVal'),
-    scan  : document.getElementById('dreamyScanVal'),
-    sat   : document.getElementById('dreamySatVal'),
-    bri   : document.getElementById('dreamyBriVal'),
-    vig   : document.getElementById('dreamyVigVal'),
+    shift  : document.getElementById('dreamyShiftVal'),
+    blur   : document.getElementById('dreamyBlurVal'),
+    scan   : document.getElementById('dreamyScanVal'),
+    sat    : document.getElementById('dreamySatVal'),
+    bri    : document.getElementById('dreamyBriVal'),
+    vig    : document.getElementById('dreamyVigVal'),
+    radius : document.getElementById('dreamyRadiusVal'),
+    angle  : document.getElementById('dreamyAngleVal'),
   };
 
-  // ── Render ──────────────────────────────────────
-  function render() {
-    if (!srcImg) return;
+  // ── Modo radial / lineal ─────────────────────────
+  window.dreamySetMode = function(m) {
+    mode = m;
+    document.getElementById('dreamyModeRadial').classList.toggle('active', m === 'radial');
+    document.getElementById('dreamyModeLinear').classList.toggle('active', m === 'linear');
+    document.getElementById('dreamyAngleRow').style.display = m === 'linear' ? 'flex' : 'none';
+    render();
+  };
 
-    const W = srcImg.naturalWidth;
-    const H = srcImg.naturalHeight;
-    canvas.width  = W;
-    canvas.height = H;
+  // ── Máscara de intensidad ────────────────────────
+  // Devuelve un Float32Array [W*H] con valores 0 (sin efecto) .. 1 (efecto máximo)
+  function buildMask(W, H) {
+    const mask    = new Float32Array(W * H);
+    const cx      = focalX * W;
+    const cy      = focalY * H;
+    const radius  = parseInt(sliders.radius.value) / 100;  // % del diagonal
+    const diag    = Math.sqrt(W * W + H * H);
+    const inner   = radius * diag * 0.5;          // zona sin efecto
+    const outer   = diag * 0.5;                   // zona máximo efecto
 
-    const shift = parseInt(sliders.shift.value);
-    const blur  = parseInt(sliders.blur.value);
-    const scan  = parseInt(sliders.scan.value) / 100;
-    const sat   = parseInt(sliders.sat.value)  / 100;
-    const bri   = parseInt(sliders.bri.value)  / 100;
-    const vig   = parseInt(sliders.vig.value)  / 100;
-
-    // ── Paso 1: dibujar imagen con filtros base ──
-    ctx.filter = `saturate(${sat}) brightness(${bri})`;
-    ctx.drawImage(srcImg, 0, 0, W, H);
-    ctx.filter = 'none';
-
-    // ── Paso 2: RGB split en offscreen canvases ──
-    if (shift > 0) {
-      const base = ctx.getImageData(0, 0, W, H);
-      const out  = ctx.createImageData(W, H);
-
-      // Para cada píxel: canal R de x+shift, G de x, B de x-shift
+    if (mode === 'radial') {
       for (let y = 0; y < H; y++) {
         for (let x = 0; x < W; x++) {
-          const i = (y * W + x) * 4;
+          const dx = x - cx, dy = y - cy;
+          const d  = Math.sqrt(dx*dx + dy*dy);
+          mask[y * W + x] = Math.min(1, Math.max(0, (d - inner) / (outer - inner)));
+        }
+      }
+    } else {
+      // Lineal: la intensidad crece en la dirección del ángulo desde el punto focal
+      const angle = (parseInt(sliders.angle.value) - 90) * Math.PI / 180;
+      const nx    = Math.cos(angle);   // normal de la dirección
+      const ny    = Math.sin(angle);
+      const proj0 = nx * cx + ny * cy; // proyección del focal
+      const maxP  = diag;
 
-          const xR = Math.min(x + shift, W - 1);
-          const xB = Math.max(x - shift, 0);
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const proj = nx * x + ny * y;
+          const d    = proj - proj0;   // negativo = "antes", positivo = "después"
+          mask[y * W + x] = Math.min(1, Math.max(0, (d - inner * 0.3) / (maxP * 0.6)));
+        }
+      }
+    }
+    return mask;
+  }
 
-          const iR = (y * W + xR) * 4;
-          const iB = (y * W + xB) * 4;
+  // ── Render principal ─────────────────────────────
+  function render() {
+    if (!srcImg) return;
+    const W = srcImg.naturalWidth;
+    const H = srcImg.naturalHeight;
+    canvas.width = W; canvas.height = H;
 
-          out.data[i    ] = base.data[iR    ]; // R desplazado +
-          out.data[i + 1] = base.data[i  + 1]; // G sin desplazar
-          out.data[i + 2] = base.data[iB + 2]; // B desplazado -
+    const shift  = parseInt(sliders.shift.value);
+    const blurPx = parseInt(sliders.blur.value);
+    const scan   = parseInt(sliders.scan.value)  / 100;
+    const sat    = parseInt(sliders.sat.value)   / 100;
+    const bri    = parseInt(sliders.bri.value)   / 100;
+    const vig    = parseInt(sliders.vig.value)   / 100;
+
+    // ── A: imagen base limpia ──────────────────────
+    const offClean = document.createElement('canvas');
+    offClean.width = W; offClean.height = H;
+    const ctxClean = offClean.getContext('2d');
+    ctxClean.drawImage(srcImg, 0, 0, W, H);
+    const cleanData = ctxClean.getImageData(0, 0, W, H);
+
+    // ── B: imagen con efecto completo ──────────────
+    const offFx = document.createElement('canvas');
+    offFx.width = W; offFx.height = H;
+    const ctxFx = offFx.getContext('2d');
+
+    // B1: saturación + brillo
+    ctxFx.filter = `saturate(${sat}) brightness(${bri})`;
+    ctxFx.drawImage(srcImg, 0, 0, W, H);
+    ctxFx.filter = 'none';
+
+    // B2: RGB split píxel a píxel
+    if (shift > 0) {
+      const base = ctxFx.getImageData(0, 0, W, H);
+      const out  = ctxFx.createImageData(W, H);
+      for (let y = 0; y < H; y++) {
+        for (let x = 0; x < W; x++) {
+          const i  = (y * W + x) * 4;
+          const iR = (y * W + Math.min(x + shift, W - 1)) * 4;
+          const iB = (y * W + Math.max(x - shift, 0))     * 4;
+          out.data[i    ] = base.data[iR    ];
+          out.data[i + 1] = base.data[i  + 1];
+          out.data[i + 2] = base.data[iB + 2];
           out.data[i + 3] = 255;
         }
       }
-      ctx.putImageData(out, 0, 0);
+      ctxFx.putImageData(out, 0, 0);
     }
 
-    // ── Paso 3: blur gaussiano con CSS filter ───
-    if (blur > 0) {
+    // B3: blur gaussiano
+    if (blurPx > 0) {
       const tmp = document.createElement('canvas');
       tmp.width = W; tmp.height = H;
       const tctx = tmp.getContext('2d');
-      tctx.filter = `blur(${blur}px)`;
-      tctx.drawImage(canvas, 0, 0);
+      tctx.filter = `blur(${blurPx}px)`;
+      tctx.drawImage(offFx, 0, 0);
       tctx.filter = 'none';
-      ctx.clearRect(0, 0, W, H);
-      ctx.drawImage(tmp, 0, 0);
+      ctxFx.clearRect(0, 0, W, H);
+      ctxFx.drawImage(tmp, 0, 0);
     }
 
-    // ── Paso 4: scanlines ───────────────────────
+    const fxData = ctxFx.getImageData(0, 0, W, H);
+
+    // ── C: mezcla píxel a píxel usando máscara ─────
+    const mask   = buildMask(W, H);
+    const out    = ctx.createImageData(W, H);
+
+    for (let i = 0; i < W * H; i++) {
+      const t  = mask[i];           // 0 = limpio, 1 = efecto
+      const p  = i * 4;
+      out.data[p    ] = cleanData.data[p    ] * (1 - t) + fxData.data[p    ] * t;
+      out.data[p + 1] = cleanData.data[p + 1] * (1 - t) + fxData.data[p + 1] * t;
+      out.data[p + 2] = cleanData.data[p + 2] * (1 - t) + fxData.data[p + 2] * t;
+      out.data[p + 3] = 255;
+    }
+    ctx.putImageData(out, 0, 0);
+
+    // ── D: scanlines encima ────────────────────────
     if (scan > 0) {
-      const step = 3; // grosor + gap en px
       ctx.save();
       ctx.globalAlpha = scan * 0.35;
-      ctx.fillStyle = '#000000';
-      for (let y = 0; y < H; y += step) {
-        ctx.fillRect(0, y, W, 1);
-      }
+      ctx.fillStyle   = '#000';
+      for (let y = 0; y < H; y += 3) ctx.fillRect(0, y, W, 1);
       ctx.restore();
     }
 
-    // ── Paso 5: vignette radial ─────────────────
+    // ── E: vignette ────────────────────────────────
     if (vig > 0) {
       const grad = ctx.createRadialGradient(
-        W / 2, H / 2, Math.min(W, H) * 0.3,
-        W / 2, H / 2, Math.max(W, H) * 0.8
+        W/2, H/2, Math.min(W,H) * 0.3,
+        W/2, H/2, Math.max(W,H) * 0.8
       );
       grad.addColorStop(0, 'rgba(0,0,0,0)');
       grad.addColorStop(1, `rgba(0,0,0,${vig * 0.75})`);
@@ -2799,9 +2902,41 @@ function togglePwdVisibility() {
     }
 
     canvas.style.display = 'block';
+    updateDot();
   }
 
-  // ── Carga de imagen ─────────────────────────────
+  // ── Punto focal visual ───────────────────────────
+  function updateDot() {
+    if (!srcImg) return;
+    const rect = canvas.getBoundingClientRect();
+    // posición relativa al wrap (que es el contenedor del dot)
+    const wRect = wrap.getBoundingClientRect();
+    dot.style.left    = ((rect.left - wRect.left) + focalX * rect.width)  + 'px';
+    dot.style.top     = ((rect.top  - wRect.top)  + focalY * rect.height) + 'px';
+    dot.style.display = 'block';
+  }
+
+  canvas.addEventListener('click', e => {
+    if (!srcImg) return;
+    const rect = canvas.getBoundingClientRect();
+    focalX = (e.clientX - rect.left) / rect.width;
+    focalY = (e.clientY - rect.top)  / rect.height;
+    render();
+  });
+
+  // También drag continuo para reposicionar sin soltar
+  let draggingFocal = false;
+  canvas.addEventListener('mousedown', () => { draggingFocal = true; });
+  window.addEventListener('mouseup',   () => { draggingFocal = false; });
+  canvas.addEventListener('mousemove', e => {
+    if (!draggingFocal || !srcImg) return;
+    const rect = canvas.getBoundingClientRect();
+    focalX = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
+    focalY = Math.min(1, Math.max(0, (e.clientY - rect.top)  / rect.height));
+    render();
+  });
+
+  // ── Carga imagen ─────────────────────────────────
   function loadFile(file) {
     if (!file || !file.type.startsWith('image/')) return;
     const url = URL.createObjectURL(file);
@@ -2810,21 +2945,18 @@ function togglePwdVisibility() {
     img.src = url;
   }
 
-  // Drop zone
-  const drop = document.getElementById('dreamyDrop');
+  const drop      = document.getElementById('dreamyDrop');
   const fileInput = document.getElementById('dreamyFile');
-
   drop.addEventListener('click', () => fileInput.click());
   fileInput.addEventListener('change', () => { if (fileInput.files[0]) loadFile(fileInput.files[0]); });
-  drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor = 'var(--accent)'; });
+  drop.addEventListener('dragover',  e => { e.preventDefault(); drop.style.borderColor = 'var(--accent)'; });
   drop.addEventListener('dragleave', () => { drop.style.borderColor = ''; });
   drop.addEventListener('drop', e => {
-    e.preventDefault();
-    drop.style.borderColor = '';
+    e.preventDefault(); drop.style.borderColor = '';
     if (e.dataTransfer.files[0]) loadFile(e.dataTransfer.files[0]);
   });
 
-  // Sliders
+  // ── Sliders ──────────────────────────────────────
   Object.keys(sliders).forEach(k => {
     sliders[k].addEventListener('input', () => {
       labels[k].textContent = sliders[k].value;
@@ -2832,7 +2964,7 @@ function togglePwdVisibility() {
     });
   });
 
-  // Descarga
+  // ── Descarga ─────────────────────────────────────
   document.getElementById('dreamyDl').addEventListener('click', () => {
     if (!srcImg) return;
     const a = document.createElement('a');
@@ -2841,13 +2973,16 @@ function togglePwdVisibility() {
     a.click();
   });
 
-  // Reset
-  const defaults = { shift: 12, blur: 8, scan: 70, sat: 180, bri: 110, vig: 60 };
+  // ── Reset ────────────────────────────────────────
+  const defaults = { shift:18, blur:10, scan:70, sat:200, bri:115, vig:60, radius:30, angle:0 };
   document.getElementById('dreamyReset').addEventListener('click', () => {
     Object.keys(defaults).forEach(k => {
-      sliders[k].value  = defaults[k];
+      sliders[k].value = defaults[k];
       labels[k].textContent = defaults[k];
     });
+    focalX = 0.5; focalY = 0.5;
+    mode   = 'radial';
+    window.dreamySetMode('radial');
     render();
   });
 
