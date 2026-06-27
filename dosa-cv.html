@@ -52,7 +52,6 @@
     background: rgba(8,8,8,0.85);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
   }
 
   .nav-back {
@@ -65,33 +64,96 @@
     text-decoration: none;
     font-family: 'Inter', sans-serif;
     transition: color .2s;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(15,15,15,0.85);
   }
-  .nav-back:hover { color: var(--white); }
+  .nav-back:hover { color: var(--white); border-color: rgba(255,255,255,0.25); }
   .nav-back svg { width: 14px; height: 14px; }
 
-  .nav-logo {
-    font-family: 'Clash Display', sans-serif;
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    color: var(--white);
+  /* Logo pill — igual que index */
+  .nav-logo-center {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     text-decoration: none;
   }
-  .nav-logo .s { color: var(--red); }
-
-  .nav-tag {
-    font-size: 10px;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    font-family: 'Inter', sans-serif;
+  .nav-logo-pill {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 10px 20px 10px 14px;
+    border-radius: 100px;
+    background: rgba(12,12,12,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.12);
+    transition: border-color .2s;
   }
+  .nav-logo-pill:hover { border-color: rgba(255,255,255,0.25); }
+  .nav-logo-pill svg {
+    width: 24px; height: 24px;
+    background: #dc402a;
+    border-radius: 6px;
+    padding: 2px;
+  }
+  .nav-logo-pill svg rect { fill: transparent; }
+  .nav-logo-pill svg path { fill: #f5f5f5; }
+  .nav-wordmark {
+    font-family: 'Clash Display', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    color: var(--white);
+    text-transform: uppercase;
+  }
+
+  /* Botón descargar PDF */
+  .nav-dl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    border-radius: 100px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(15,15,15,0.85);
+    color: rgba(255,255,255,0.7);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .06em;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background .2s, border-color .2s, color .2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .nav-dl-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--white);
+    transform: translateY(100%);
+    transition: transform .28s cubic-bezier(0.4,0,0.2,1);
+  }
+  .nav-dl-btn:hover { color: var(--black); border-color: var(--white); }
+  .nav-dl-btn:hover::before { transform: translateY(0); }
+  .nav-dl-btn span { position: relative; z-index: 1; }
+  .nav-dl-btn svg { position: relative; z-index: 1; width: 12px; height: 12px; }
 
   /* ── HERO HEADER ── */
   .cv-hero {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 140px 80px 80px;
-    border-bottom: 1px solid var(--border);
     animation: fadeUp .7s cubic-bezier(0.44,0,0.34,0.98) .1s both;
+  }
+  .cv-hero-divider {
+    max-width: 1200px;
+    margin: 0 auto 0;
+    border: none;
+    border-top: 1px solid var(--border);
   }
 
   .cv-hero-eyebrow {
@@ -152,7 +214,7 @@
   /* ── LAYOUT ── */
   .cv-body {
     display: grid;
-    grid-template-columns: 1fr 340px;
+    grid-template-columns: 1fr 320px;
     gap: 0;
     max-width: 1200px;
     margin: 0 auto;
@@ -393,14 +455,35 @@
 
 <!-- NAV -->
 <nav>
+  <!-- Izquierda: volver -->
   <a class="nav-back" href="index.html">
     <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path d="M8.5 2.5L4 7l4.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     Volver
   </a>
-  <a class="nav-logo" href="index.html">DO<span class="s">S</span>A</a>
-  <span class="nav-tag">Perfil</span>
+
+  <!-- Centro: logo pill igual que index -->
+  <a class="nav-logo-center nav-logo-pill" href="index.html">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.98 19.98">
+      <rect width="19.98" height="19.98" fill="transparent"/>
+      <g fill="#f5f5f5">
+        <path d="M9.54,6.21c0,.99-.35,1.83-1.05,2.53s-1.54,1.05-2.53,1.05-1.83-.35-2.53-1.05-1.05-1.54-1.05-2.53.35-1.83,1.05-2.53,1.54-1.05,2.53-1.05h1.01v-.53h2.56v4.1ZM7.5,5.95c0-.36-.12-.66-.38-.91s-.55-.38-.9-.38-.65.13-.91.38-.38.55-.38.91.12.65.38.9.55.38.91.38.65-.12.9-.38.38-.55.38-.9Z"/>
+        <path d="M17.4,5.95c0,1.06-.38,1.96-1.12,2.71s-1.65,1.12-2.71,1.12-1.97-.38-2.72-1.12-1.12-1.65-1.12-2.71.38-1.96,1.13-2.72,1.66-1.13,2.72-1.13,1.96.38,2.71,1.12,1.12,1.66,1.12,2.72ZM14.84,5.95c0-.36-.12-.66-.38-.91s-.55-.38-.9-.38-.65.13-.91.38-.38.55-.38.91.12.65.38.9.55.38.91.38.65-.12.9-.38.38-.55.38-.9Z"/>
+        <path d="M9.96,12.76h-1.17c-.36,0-.66.12-.91.38s-.38.55-.38.9c0,1.06-.38,1.96-1.12,2.71s-1.66,1.12-2.72,1.12h-1.17v-2.55h1.17c.36,0,.66-.12.91-.38s.38-.55.38-.9c0-1.06.38-1.96,1.12-2.71s1.66-1.12,2.72-1.12h1.17v2.56Z"/>
+        <path d="M17.61,17.79h-2.56v-3.63c0-.36-.12-.66-.38-.91s-.55-.38-.9-.38-.65.12-.9.38-.38.55-.38.91v3.63h-2.56v-3.63c0-1.06.38-1.97,1.12-2.72s1.65-1.12,2.71-1.12,1.96.38,2.71,1.12,1.12,1.66,1.12,2.72v3.63ZM14.3,17.27c0,.14-.05.27-.16.37s-.23.15-.38.15-.27-.05-.37-.15-.16-.22-.16-.37.05-.27.16-.37.23-.16.37-.16.27.05.38.16.16.23.16.37Z"/>
+      </g>
+    </svg>
+    <span class="nav-wordmark">DOSA</span>
+  </a>
+
+  <!-- Derecha: descargar PDF -->
+  <button class="nav-dl-btn" onclick="downloadCV()">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Descargar CV</span>
+  </button>
 </nav>
 
 <!-- HERO HEADER -->
@@ -432,6 +515,7 @@
     </div>
   </div>
 </div>
+<hr class="cv-hero-divider">
 
 <!-- BODY -->
 <div class="cv-body">
@@ -619,5 +703,45 @@
 </div><!-- /cv-body -->
 
 </div><!-- /site-frame -->
+<script>
+function downloadCV() {
+  window.print();
+}
+</script>
+
+<style media="print">
+  @page { margin: 20mm; size: A4; }
+  nav, .nav-dl-btn { display: none !important; }
+  body, #site-frame, .cv-hero, .cv-body, .cv-main, .cv-side {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .cv-hero-name, .cv-job-title, .cv-edu-degree, .cv-project-title, .cv-skill-item {
+    color: #111 !important;
+  }
+  .cv-hero-eyebrow, .cv-section-label, .cv-job-period, .cv-edu-period,
+  .cv-job-company, .cv-avail-label, .cv-lang-level {
+    color: #555 !important;
+  }
+  .cv-job-desc, .cv-project-desc, .cv-hero-role, .cv-contact-item,
+  .cv-avail-value, .cv-lang-name {
+    color: #333 !important;
+  }
+  .cv-job-company, .cv-edu-school { color: #c0392b !important; }
+  .cv-tag {
+    border-color: #ccc !important;
+    color: #444 !important;
+  }
+  .cv-section, .cv-hero-divider, .cv-main, .cv-skill-item, .cv-lang,
+  .cv-avail-item, .cv-project { border-color: #ddd !important; }
+  .cv-hero { padding-top: 20px !important; }
+  .cv-avail-badge { border-color: #27ae60 !important; color: #27ae60 !important; }
+  .cv-avail-dot { background: #27ae60 !important; }
+  .cv-hero-contacts { display: none !important; }
+  a { color: inherit !important; text-decoration: none !important; }
+  .cv-section-label::after { background: #ddd !important; }
+  .cv-skill-dot { background: #c0392b !important; }
+</style>
+
 </body>
 </html>
