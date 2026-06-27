@@ -252,6 +252,46 @@
   }
 
   /* HERO */
+
+  /* Grilla de fondo tipo Norvin */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    animation: gridAppear 1s cubic-bezier(0.44, 0, 0.56, 1) both;
+  }
+  .hero-cross {
+    position: relative;
+    border: 0.5px solid rgba(255,255,255,0.07);
+  }
+  .hero-cross::before,
+  .hero-cross::after {
+    content: '';
+    position: absolute;
+    background: rgba(255,255,255,0.25);
+  }
+  /* Cruz en cada intersección de la grilla */
+  .hero-cross:nth-child(1)::before  { width: 1px; height: 14px; top: 50%; left: 100%; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(1)::after   { width: 14px; height: 1px; top: 50%; left: 100%; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(2)::before  { width: 1px; height: 14px; top: 50%; left: 0; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(2)::after   { width: 14px; height: 1px; top: 50%; left: 0; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(3)::before  { width: 1px; height: 14px; top: 0; left: 50%; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(3)::after   { width: 14px; height: 1px; top: 0; left: 50%; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(4)::before  { width: 1px; height: 14px; top: 0; left: 100%; transform: translate(-50%,-50%); }
+  .hero-cross:nth-child(4)::after   { width: 14px; height: 1px; top: 0; left: 100%; transform: translate(-50%,-50%); }
+
+  /* Animaciones de entrada */
+  nav { animation: slideDown 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both; }
+  .hero-eyebrow { animation: fadeUp 0.5s cubic-bezier(0.44, 0, 0.34, 0.98) 0.4s both; }
+  .hero-title   { animation: fadeUp 0.5s cubic-bezier(0.44, 0, 0.34, 0.98) 0.5s both; }
+  .hero-sub     { animation: fadeUp 0.5s cubic-bezier(0.44, 0, 0.34, 0.98) 0.6s both; }
+  .hero-tags    { animation: fadeUp 0.5s cubic-bezier(0.44, 0, 0.34, 0.98) 0.7s both; }
+  .scroll-hint  { animation: slideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both; }
+
   .hero {
     position: relative;
     min-height: 100vh;
@@ -281,12 +321,39 @@
         #080810 100%);
     will-change: transform;
     transition: transform 0.1s linear;
-    animation: heroZoomIn 1.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation: heroZoomIn 1s cubic-bezier(0.44, 0, 0.56, 1) forwards;
   }
 
+  /* ── Animaciones de entrada — basadas en Norvin ── */
+
+  /* Imagen hero: scale 1.2→1 + fade, ease [0.44,0,0.56,1] */
   @keyframes heroZoomIn {
-    0%   { transform: scale(1.14); opacity: 0; }
-    100% { transform: scale(1);    opacity: 1; }
+    0%   { transform: scale(1.2); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Header: cae desde arriba con spring */
+  @keyframes slideDown {
+    0%   { transform: translateY(-100px); opacity: 0; }
+    100% { transform: translateY(0);      opacity: 1; }
+  }
+
+  /* Texto hero: sube ligeramente + fade */
+  @keyframes fadeUp {
+    0%   { transform: translateY(10px); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+  }
+
+  /* Grilla/cruces: scale 1.2→1 + fade */
+  @keyframes gridAppear {
+    0%   { transform: scale(1.2); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+
+  /* Scroll hint: sube desde abajo */
+  @keyframes slideUp {
+    0%   { transform: translateY(100px); opacity: 0; }
+    100% { transform: translateY(0);     opacity: 1; }
   }
 
   /* Ruido de grano sutil encima del placeholder */
@@ -784,7 +851,15 @@
 <div class="nav-drawer-backdrop" id="navBackdrop" onclick="toggleMenu()"></div>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero" id="heroSection">
+
+  <!-- Grilla de fondo con cruces tipo Norvin -->
+  <div class="hero-grid" aria-hidden="true">
+    <div class="hero-cross"></div>
+    <div class="hero-cross"></div>
+    <div class="hero-cross"></div>
+    <div class="hero-cross"></div>
+  </div>
 
   <!-- BANNER: imagen fullscreen con parallax -->
   <div class="hero-banner" id="heroBanner">
