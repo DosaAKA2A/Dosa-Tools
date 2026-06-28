@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 529.1 529.1">
-  <defs>
-    <mask id="star-mask">
-      <rect width="529.1" height="529.1" fill="white"/>
-      <!-- Estrella de 4 puntas transparente (recorte) -->
-      <path fill="black" d="M264.55,469.05c0-112.95-91.57-204.5-204.5-204.5,112.93,0,204.5-91.56,204.5-204.49,0,112.93,91.56,204.49,204.49,204.49-112.93,0-204.49,91.55-204.49,204.5Z"/>
-      <path fill="black" d="M324.6,264.55c-33.17,0-60.06,26.89-60.06,60.06,0-33.17-26.89-60.06-60.06-60.06,33.17,0,60.06-26.89,60.06-60.06,0,33.17,26.89,60.06,60.06,60.06Z"/>
-    </mask>
-  </defs>
-  <!-- Círculo con recorte de estrella -->
-  <circle cx="264.55" cy="264.55" r="264.55" fill="#ffffff" mask="url(#star-mask)"/>
+  <!--
+    Círculo blanco con estrella de 4 puntas recortada.
+    fill-rule="evenodd" hace que el interior sea transparente.
+    El círculo exterior y la estrella interior se "restan".
+  -->
+  <path fill="white" fill-rule="evenodd" d="
+    M264.55,529.1
+    C264.55,529.1 529.1,529.1 529.1,264.55
+    C529.1,264.55 529.1,0 264.55,0
+    C264.55,0 0,0 0,264.55
+    C0,264.55 0,529.1 264.55,529.1
+    Z
+    M264.55,469.05
+    C264.55,356.1 172.98,264.55 60.05,264.55
+    C172.98,264.55 264.55,172.99 264.55,60.05
+    C264.55,172.99 356.11,264.55 469.05,264.55
+    C356.11,264.55 264.55,356.1 264.55,469.05
+    Z
+  "/>
 </svg>
