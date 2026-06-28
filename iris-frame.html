@@ -769,6 +769,8 @@ window.setIrisTheme = function(theme) {
   if (logoEl) {
     const navColors = { dark:'#f5f5f5', light:'#1847e8', gold:'#1a1410' };
     const logoColor = navColors[theme];
+    // Forzar color destino en el elemento ANTES de que empiece la animación
+    logoEl.style.color = logoColor;
     scatterText(logoEl, () => gatherText(logoEl, d.logo, theme, logoColor));
   }
 
