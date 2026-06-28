@@ -990,6 +990,106 @@
 <style>
 @font-face { font-family: "Clash Display"; src: url("https://framerusercontent.com/third-party-assets/fontshare/wf/BFBSY7LX5W2U2EROCLVVTQP4VS7S4PC3/IIUX4FGTMD2LK2VWD3RVTAS4SSMUN7B5/53RZKGODFYDW3QHTIL7IPOWTBCSUEZK7.woff2"); font-display: swap; font-style: normal; font-weight: 700 }
 </style>
+<style>
+  /* ── IRIS SHOWCASE ── */
+  .iris-section {
+    padding: 80px 40px 100px;
+    border-top: 1px solid var(--border);
+  }
+  .iris-header { margin-bottom: 48px; }
+  .iris-meta {
+    display: flex; align-items: baseline; gap: 32px;
+    margin-top: 16px; flex-wrap: wrap;
+  }
+  .iris-title {
+    font-family: 'Clash Display', sans-serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 700; letter-spacing: -.03em;
+    color: var(--white); line-height: 1;
+    display: flex; align-items: baseline; gap: 12px;
+  }
+  .iris-title-num {
+    font-size: 13px; font-family: 'Inter', sans-serif;
+    font-weight: 400; letter-spacing: .12em;
+    color: var(--grey2); align-self: center;
+  }
+  .iris-desc {
+    font-size: 13px; color: var(--grey);
+    line-height: 1.65; max-width: 320px; font-family: 'Inter', sans-serif;
+  }
+  .iris-layout {
+    display: grid; grid-template-columns: 200px 1fr;
+    gap: 28px; align-items: start;
+  }
+  .iris-themes {
+    display: flex; flex-direction: column; gap: 8px;
+    position: sticky; top: 80px;
+  }
+  .iris-theme-btn {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; border-radius: 12px;
+    border: 1px solid var(--border); background: transparent;
+    cursor: pointer; transition: border-color .25s, background .25s, transform .2s;
+    text-align: left; width: 100%;
+  }
+  .iris-theme-btn:hover {
+    border-color: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.03); transform: translateX(3px);
+  }
+  .iris-theme-btn.active {
+    border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05);
+  }
+  .itb-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    flex-shrink: 0; transition: transform .2s;
+  }
+  .iris-theme-btn.active .itb-dot { transform: scale(1.3); }
+  .itb-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .itb-name {
+    font-size: 12px; font-weight: 600; color: var(--white);
+    font-family: 'Inter', sans-serif; letter-spacing: .02em;
+  }
+  .itb-sub {
+    font-size: 10px; color: var(--grey2); font-family: 'Inter', sans-serif;
+    letter-spacing: .04em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .itb-arr {
+    font-size: 12px; color: var(--grey2); opacity: 0;
+    transition: opacity .2s, transform .2s;
+  }
+  .iris-theme-btn.active .itb-arr,
+  .iris-theme-btn:hover .itb-arr { opacity: 1; transform: translateX(2px); }
+  .iris-browser {
+    border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--border); background: #0a0a0c;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.5);
+  }
+  .iris-browser-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 16px; background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border);
+  }
+  .iris-browser-dots { display: flex; gap: 5px; flex-shrink: 0; }
+  .iris-browser-dots span { width: 8px; height: 8px; border-radius: 50%; }
+  .iris-browser-dots span:nth-child(1) { background: rgba(255,95,87,0.7); }
+  .iris-browser-dots span:nth-child(2) { background: rgba(255,189,46,0.7); }
+  .iris-browser-dots span:nth-child(3) { background: rgba(40,200,64,0.7); }
+  .iris-browser-url {
+    flex: 1; background: rgba(255,255,255,0.05); border-radius: 6px;
+    padding: 4px 10px; font-size: 10px; color: var(--grey); font-family: monospace;
+    letter-spacing: .04em; text-align: center; max-width: 180px; margin: 0 auto;
+  }
+  .iris-browser-body { position: relative; height: 460px; overflow: hidden; }
+  .iris-browser-body iframe { width: 100%; height: 100%; border: none; display: block; }
+  @media (max-width: 860px) {
+    .iris-layout { grid-template-columns: 1fr; }
+    .iris-themes { flex-direction: row; position: static; }
+    .iris-theme-btn { flex: 1; flex-direction: column; align-items: flex-start; gap: 6px; }
+    .itb-arr { display: none; }
+    .iris-browser-body { height: 320px; }
+    .iris-section { padding: 60px 20px 80px; }
+  }
+</style>
 </head>
 <body>
 
@@ -1149,6 +1249,61 @@
       <div class="card-cta">
         Acceder
         <span class="cta-arr">&#8599;</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- IRIS SHOWCASE -->
+<section class="iris-section">
+
+  <div class="iris-header">
+    <div class="eyebrow">Diseño web</div>
+    <div class="iris-meta">
+      <h2 class="iris-title">IRIS <span class="iris-title-num">03</span></h2>
+      <p class="iris-desc">Un mismo sitio. Tres identidades. Así adapta DOSA el diseño a cada marca.</p>
+    </div>
+  </div>
+
+  <div class="iris-layout">
+
+    <div class="iris-themes">
+      <button class="iris-theme-btn active" data-theme="dark" data-flash="rgba(220,64,42,0.15)" onclick="switchTheme(this)">
+        <span class="itb-dot" style="background:#dc402a;"></span>
+        <div class="itb-info">
+          <span class="itb-name">Dark</span>
+          <span class="itb-sub">Agencia · Portfolio</span>
+        </div>
+        <span class="itb-arr">→</span>
+      </button>
+      <button class="iris-theme-btn" data-theme="light" data-flash="rgba(29,95,232,0.12)" onclick="switchTheme(this)">
+        <span class="itb-dot" style="background:#1d5fe8;"></span>
+        <div class="itb-info">
+          <span class="itb-name">Light</span>
+          <span class="itb-sub">SaaS · Corporativo</span>
+        </div>
+        <span class="itb-arr">→</span>
+      </button>
+      <button class="iris-theme-btn" data-theme="gold" data-flash="rgba(184,146,58,0.15)" onclick="switchTheme(this)">
+        <span class="itb-dot" style="background:#b8923a;"></span>
+        <div class="itb-info">
+          <span class="itb-name">Gold</span>
+          <span class="itb-sub">Joyería · Lujo</span>
+        </div>
+        <span class="itb-arr">→</span>
+      </button>
+    </div>
+
+    <div class="iris-browser">
+      <div class="iris-browser-bar">
+        <div class="iris-browser-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="iris-browser-url" id="irisUrl">iris.studio</div>
+      </div>
+      <div class="iris-browser-body">
+        <iframe id="irisFrame" src="iris-frame.html" scrolling="no" frameborder="0"></iframe>
       </div>
     </div>
 
@@ -1454,6 +1609,24 @@ document.addEventListener('keydown', function(e) {
 </script>
 
 </div><!-- /site-frame -->
+
+<script>
+// ── IRIS theme switcher ──────────────────────────────
+function switchTheme(btn) {
+  const theme = btn.dataset.theme;
+  const flash = btn.dataset.flash;
+
+  // Actualizar botones activos
+  document.querySelectorAll('.iris-theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Enviar mensaje al iframe
+  const iframe = document.getElementById('irisFrame');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ type: 'SET_THEME', theme, flashColor: flash }, '*');
+  }
+}
+</script>
 
 </body>
 </html>
