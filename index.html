@@ -343,9 +343,7 @@
   .scroll-hint  { animation: slideUp 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both; }
 
   .hero-wrap {
-    border-radius: 28px;
     overflow: hidden;
-    /* El clip se hace aquí, no en el hero */
   }
 
   .hero {
@@ -686,7 +684,7 @@
 
   .card {
     position: relative;
-    border: 1px solid var(--border);
+    border: none;
     border-radius: 18px;
     background: rgba(255,255,255,0.025);
     padding: 38px;
@@ -698,7 +696,7 @@
     flex-direction: column;
   }
   .card:hover {
-    border-color: rgba(255,255,255,0.14);
+    border-color: transparent;
     transform: translateY(-4px);
   }
 
