@@ -752,9 +752,24 @@ window.setIrisTheme = function(theme) {
     }
   }
 
+  // ── 3b. Aplicar clase del tema al iris YA — para que CSS logo funcione ─
+  // (solo cambia colores CSS, el contenido se actualiza en el paso 7)
+  iris.className = 'theme-' + theme;
+  // Pero preservar el fondo inline que ya pusimos
+  iris.style.background = BG_COLOR[from];
+  iris.style.transition = 'background 0.8s ease';
+  setTimeout(() => { iris.style.background=''; iris.style.transition=''; }, 900);
+
   // ── 4. LOGO scatter → gather ─────────────────────────
   const logoEl = document.getElementById('logo-text');
-  if (logoEl) scatterText(logoEl, () => gatherText(logoEl, d.logo, theme));
+  if (logoEl) {
+    // Forzar color del logo inmediatamente via style inline
+    const navColors = { dark:'#f5f5f5', light:'#1847e8', gold:'#1a1410' };
+    scatterText(logoEl, () => {
+      gatherText(logoEl, d.logo, theme);
+      // Una vez que gather termina (~500ms), el className ya está actualizado
+    });
+  }
 
   // ── 5. NAV CTA color ─────────────────────────────────
   const cta = document.getElementById('nav-cta');
@@ -782,7 +797,7 @@ window.setIrisTheme = function(theme) {
 
   // ── 7. Resto del contenido al punto medio ────────────
   setTimeout(() => {
-    iris.className = 'theme-' + theme;
+    // (iris.className ya aplicado en paso 3b)
     iris.style.background = '';
     iris.style.transition = '';
 
