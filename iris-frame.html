@@ -531,9 +531,10 @@ function apply(t){
   document.getElementById('hero-title').innerHTML=d.heroTitle;
   document.getElementById('hero-sub').textContent=d.heroSub;
   document.getElementById('hero-cta').textContent=d.heroCta;
-  const hi=document.getElementById('hero-img'),fb=document.getElementById('fluid-bg'),fg=document.getElementById('fluid-grain');
-  if(d.heroImg){hi.src=d.heroImg;hi.style.display='block';fb.style.display='none';fg.style.display='none';}
-  else{hi.style.display='none';fb.style.display='block';fg.style.display='block';}
+  // fluid-bg always shown, hero-bg-img handled by transition
+  const fb=document.getElementById('fluid-bg'),fg=document.getElementById('fluid-grain');
+  if(fb) fb.style.display='block';
+  if(fg) fg.style.display='block';
   document.getElementById('section-title').textContent=d.secTitle;
   document.getElementById('section-link').textContent=d.secLink;
   document.getElementById('promo-brand').innerHTML=d.promoBrand;
