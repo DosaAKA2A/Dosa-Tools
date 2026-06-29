@@ -618,7 +618,7 @@ function gatherText(el, html, targetTheme, baseColor) {
         const dist = 30 + Math.random() * 40;
         const delay = i++ * 0.02;
         const col = isAccent ? accentColor : normalColor;
-        return `<span style="display:inline-block;color:${col};transform:translateY(${up?-dist:dist}px);opacity:0;transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1) ${delay}s,opacity 0.22s ease ${delay}s">${ch}</span>`;
+        return `<span style="display:inline-block;color:${col};transform:translateY(${up?-dist:dist}px);opacity:0;transition:transform 0.3s cubic-bezier(0.34,1.4,0.64,1) ${delay}s,opacity 0.22s ease ${delay}s;font-size:inherit;font-family:inherit;font-weight:inherit;font-style:inherit;line-height:1;letter-spacing:inherit;vertical-align:baseline;">${ch}</span>`;
       }).join('');
     } else if (node.nodeType === 1 && node.tagName === 'BR') {
       return '<br>';
@@ -878,3 +878,4 @@ window.addEventListener('message', e => { if(e.data && e.data.type==='SET_THEME'
 </script>
 </body>
 </html>
+
