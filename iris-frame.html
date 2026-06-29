@@ -66,36 +66,37 @@ html,body{width:100%;height:100%;overflow-x:hidden;overflow-y:auto}
 /* Estructura idéntica a NOVO original */
 .i-hero-banner{position:relative;overflow:hidden;height:420px;}
 
-/* NOVO: imagen de fondo */
-.i-hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;display:block;}
+/* Imagen de fondo — debajo del gradiente */
+.i-hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;display:none;opacity:0;transition:opacity 0.8s ease;z-index:0;}
 
-/* DOSA: gradiente fluido animado */
+/* Gradiente fluido animado — encima de la imagen */
 .i-fluid-bg{
   position:absolute;inset:-20%;
   animation:fluidMove 8s ease-in-out infinite alternate;
   filter:blur(40px);
+  z-index:1;
 }
 /* Gradiente y opacidad por tema — transición suave via JS */
 #fluid-bg { transition: opacity 1.2s ease; }
 
-.i-hero-bg-img{display:none;} /* siempre oculto */@keyframes fluidMove{
+@keyframes fluidMove{
   0%  {transform:scale(1) rotate(0deg) translate(0,0);}
   25% {transform:scale(1.08) rotate(2deg) translate(2%,3%);}
   50% {transform:scale(1.04) rotate(-1deg) translate(-3%,1%);}
   75% {transform:scale(1.1) rotate(3deg) translate(1%,-2%);}
   100%{transform:scale(1.06) rotate(-2deg) translate(-2%,2%);}
 }
-.i-fluid-grain{position:absolute;inset:0;opacity:.04;
+.i-fluid-grain{position:absolute;inset:0;opacity:.04;z-index:2;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Overlay */
-.i-hero-overlay{position:absolute;inset:0;display:flex;align-items:center;}
+.i-hero-overlay{position:absolute;inset:0;display:flex;align-items:center;z-index:3;}
 .theme-dark  .i-hero-overlay{background:linear-gradient(90deg,rgba(9,9,11,.55) 0%,rgba(9,9,11,.05) 100%);}
 .theme-light .i-hero-overlay{background:linear-gradient(100deg,rgba(10,31,110,.82) 0%,rgba(24,71,232,.5) 40%,rgba(0,0,0,.0) 65%);}
 .theme-gold  .i-hero-overlay{background:linear-gradient(90deg,rgba(10,7,4,.65) 0%,rgba(10,7,4,.3) 30%,rgba(0,0,0,.0) 45%);}
 
-.i-hero-content{padding:0 52px;display:flex;flex-direction:column;gap:14px;max-width:560px;position:relative;z-index:1;}
+.i-hero-content{padding:0 52px;display:flex;flex-direction:column;gap:14px;max-width:560px;position:relative;z-index:4;}
 
 .i-hero-tag{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;}
 .theme-dark  .i-hero-tag{color:#ff6b35;font-family:'Inter',sans-serif;}
@@ -456,12 +457,12 @@ const T = {
     col2Title:'Áreas',col2Links:['Planeamiento','Espacio público','Paisajismo'],
     contact:'hola@arbu.studio',copy:'© 2026 ARBU. Todos los derechos reservados.',
     products:[
-      {img:'arbu-img1.jpg',pos:'center center',disc:null,brand:null,name:'Regeneración del frente fluvial',old:null,price:null},
-      {img:'arbu-img2.jpg',pos:'center center',disc:null,brand:null,name:'Corredor verde periurbano',old:null,price:null},
-      {img:'arbu-img3.jpg',pos:'center center',disc:null,brand:null,name:'Plaza de la memoria',old:null,price:null},
-      {img:'arbu-img4.jpg',pos:'center center',disc:null,brand:null,name:'Nodo de movilidad intermodal',old:null,price:null},
-      {img:'arbu-img5.jpg',pos:'center center',disc:null,brand:null,name:'Barrio de innovación',old:null,price:null},
-      {img:'arbu-img6.jpg',pos:'center center',disc:null,brand:null,name:'Microurbanismo táctico',old:null,price:null},
+      {img:'arbu-img1.jpg',pos:'center 40%',disc:null,brand:null,name:'Nodo de movilidad intermodal',old:null,price:null},
+      {img:'arbu-img2.jpg',pos:'center 30%',disc:null,brand:null,name:'Corredor de transporte público',old:null,price:null},
+      {img:'arbu-img3.jpg',pos:'center center',disc:null,brand:null,name:'Infraestructura subterránea',old:null,price:null},
+      {img:'arbu-img4.jpg',pos:'center 35%',disc:null,brand:null,name:'Regeneración del frente ferroviario',old:null,price:null},
+      {img:'arbu-img1.jpg',pos:'center 60%',disc:null,brand:null,name:'Espacio público de tránsito',old:null,price:null},
+      {img:'arbu-img2.jpg',pos:'center 50%',disc:null,brand:null,name:'Microurbanismo táctico',old:null,price:null},
     ]
   },
   light:{
@@ -542,7 +543,7 @@ function apply(t){
       heroBgImgInit.src=d.heroImg;
       heroBgImgInit.style.objectPosition=T_heroPos[t]||'center';
       heroBgImgInit.style.display='block';
-      setTimeout(()=>{ heroBgImgInit.style.opacity=t==='gold'?'1':'0.45'; },50);
+      setTimeout(()=>{ heroBgImgInit.style.opacity=t==='gold'?'1':'0.38'; },50);
     } else {
       heroBgImgInit.style.display='none'; heroBgImgInit.style.opacity='0';
     }
@@ -767,7 +768,7 @@ window.setIrisTheme = function(theme) {
         heroBgImg.style.display = 'block';
         requestAnimationFrame(() => requestAnimationFrame(() => {
           heroBgImg.style.transition = 'opacity 0.8s ease';
-          heroBgImg.style.opacity = theme === 'gold' ? '1' : '0.45';
+          heroBgImg.style.opacity = theme === 'gold' ? '1' : '0.38';
         }));
       }, 300);
     }
