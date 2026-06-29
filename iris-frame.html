@@ -531,10 +531,22 @@ function apply(t){
   document.getElementById('hero-title').innerHTML=d.heroTitle;
   document.getElementById('hero-sub').textContent=d.heroSub;
   document.getElementById('hero-cta').textContent=d.heroCta;
-  // fluid-bg always shown, hero-bg-img handled by transition
+  // fluid-bg always shown, hero-bg-img handled by theme
   const fb=document.getElementById('fluid-bg'),fg=document.getElementById('fluid-grain');
   if(fb) fb.style.display='block';
   if(fg) fg.style.display='block';
+  const heroBgImgInit = document.getElementById('hero-bg-img');
+  if(heroBgImgInit){
+    const T_heroPos={light:'center 40%',dark:'center 60%',gold:'right center'};
+    if(d.heroImg){
+      heroBgImgInit.src=d.heroImg;
+      heroBgImgInit.style.objectPosition=T_heroPos[t]||'center';
+      heroBgImgInit.style.display='block';
+      setTimeout(()=>{ heroBgImgInit.style.opacity=t==='gold'?'1':'0.45'; },50);
+    } else {
+      heroBgImgInit.style.display='none'; heroBgImgInit.style.opacity='0';
+    }
+  }
   document.getElementById('section-title').textContent=d.secTitle;
   document.getElementById('section-link').textContent=d.secLink;
   document.getElementById('promo-brand').innerHTML=d.promoBrand;
@@ -745,9 +757,8 @@ window.setIrisTheme = function(theme) {
     heroBgImg.style.transition = 'none';
     heroBgImg.style.opacity = '0';
     heroBgImg.style.display = 'none';
-    const T_heroImg = { light: 'novo-hero.jpg', dark: null, gold: 'celestia-hero.jpg' };
-    const T_heroPos = { light: 'center 40%', dark: null, gold: 'right center' };
-    const imgSrc = T_heroImg[theme];
+    const T_heroPos = { light: 'center 40%', dark: 'center 60%', gold: 'right center' };
+    const imgSrc = d.heroImg;
     const imgPos = T_heroPos[theme] || 'center';
     if (imgSrc) {
       setTimeout(() => {
@@ -756,7 +767,7 @@ window.setIrisTheme = function(theme) {
         heroBgImg.style.display = 'block';
         requestAnimationFrame(() => requestAnimationFrame(() => {
           heroBgImg.style.transition = 'opacity 0.8s ease';
-          heroBgImg.style.opacity = theme === 'gold' ? '1' : '0.35';
+          heroBgImg.style.opacity = theme === 'gold' ? '1' : '0.45';
         }));
       }, 300);
     }
