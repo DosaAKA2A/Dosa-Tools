@@ -63,20 +63,17 @@ html,body{width:100%;height:100%;overflow-x:hidden;overflow-y:auto}
 .theme-gold  .i-cart-badge{background:#b8923a;}
 
 /* ─── HERO BANNER ─────────────────────────────────── */
-/* Estructura idéntica a NOVO original */
 .i-hero-banner{position:relative;overflow:hidden;height:420px;}
 
-/* Imagen de fondo — debajo del gradiente */
-.i-hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;display:none;opacity:0;transition:opacity 0.8s ease;z-index:0;}
+/* Imagen de fondo — sin z-index, orden DOM la sitúa entre fluid-bg y overlay */
+.i-hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 40%;display:none;opacity:0;transition:opacity 0.8s ease;}
 
-/* Gradiente fluido animado — encima de la imagen */
+/* Gradiente fluido animado */
 .i-fluid-bg{
   position:absolute;inset:-20%;
   animation:fluidMove 8s ease-in-out infinite alternate;
   filter:blur(40px);
-  z-index:1;
 }
-/* Gradiente y opacidad por tema — transición suave via JS */
 #fluid-bg { transition: opacity 1.2s ease; }
 
 @keyframes fluidMove{
@@ -86,17 +83,17 @@ html,body{width:100%;height:100%;overflow-x:hidden;overflow-y:auto}
   75% {transform:scale(1.1) rotate(3deg) translate(1%,-2%);}
   100%{transform:scale(1.06) rotate(-2deg) translate(-2%,2%);}
 }
-.i-fluid-grain{position:absolute;inset:0;opacity:.04;z-index:2;
+.i-fluid-grain{position:absolute;inset:0;opacity:.04;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Overlay */
-.i-hero-overlay{position:absolute;inset:0;display:flex;align-items:center;z-index:3;}
+.i-hero-overlay{position:absolute;inset:0;display:flex;align-items:center;}
 .theme-dark  .i-hero-overlay{background:linear-gradient(90deg,rgba(9,9,11,.55) 0%,rgba(9,9,11,.05) 100%);}
 .theme-light .i-hero-overlay{background:linear-gradient(100deg,rgba(10,31,110,.82) 0%,rgba(24,71,232,.5) 40%,rgba(0,0,0,.0) 65%);}
 .theme-gold  .i-hero-overlay{background:linear-gradient(90deg,rgba(10,7,4,.65) 0%,rgba(10,7,4,.3) 30%,rgba(0,0,0,.0) 45%);}
 
-.i-hero-content{padding:0 52px;display:flex;flex-direction:column;gap:14px;max-width:560px;position:relative;z-index:4;}
+.i-hero-content{padding:0 52px;display:flex;flex-direction:column;gap:14px;max-width:560px;position:relative;z-index:1;}
 
 .i-hero-tag{font-size:9px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;}
 .theme-dark  .i-hero-tag{color:#ff6b35;font-family:'Inter',sans-serif;}
@@ -538,13 +535,15 @@ function apply(t){
   if(fg) fg.style.display='block';
   const heroBgImgInit = document.getElementById('hero-bg-img');
   if(heroBgImgInit){
-    const T_heroPos={light:'center 40%',dark:'center 50%',gold:'right center'};
-    heroBgImgInit.style.zIndex = IMG_ZINDEX[t];
-    if(d.heroImg){
-      heroBgImgInit.src=d.heroImg;
+    const T_heroImg={light:'novo-hero.jpg', dark:'arbu-hero.jpg', gold:'celestia-hero.jpg'};
+    const T_heroPos={light:'center 40%', dark:'center 50%', gold:'right center'};
+    heroBgImgInit.style.zIndex = '';
+    const imgSrc = T_heroImg[t];
+    if(imgSrc){
+      heroBgImgInit.src=imgSrc;
       heroBgImgInit.style.objectPosition=T_heroPos[t]||'center';
       heroBgImgInit.style.display='block';
-      setTimeout(()=>{ heroBgImgInit.style.opacity = IMG_OPACITY[t]; },50);
+      setTimeout(()=>{ heroBgImgInit.style.opacity='0.35'; },50);
     } else {
       heroBgImgInit.style.display='none'; heroBgImgInit.style.opacity='0';
     }
@@ -715,14 +714,7 @@ const FLUID_GRADIENTS = {
   light: 'radial-gradient(ellipse 80% 60% at 20% 50%,#1847e8 0%,transparent 55%),radial-gradient(ellipse 60% 80% at 80% 30%,#00d4ff 0%,transparent 50%),radial-gradient(ellipse 50% 50% at 60% 80%,#2563eb 0%,transparent 50%),#1035c0',
   gold:  'radial-gradient(ellipse 80% 60% at 20% 50%,#b8923a 0%,transparent 55%),radial-gradient(ellipse 60% 80% at 80% 30%,#d4af6a 0%,transparent 50%),radial-gradient(ellipse 50% 50% at 60% 80%,#8a6820 0%,transparent 50%),#09090b',
 };
-// dark: fluid es el fondo (imagen debajo velada)
-// light: fluid encima de la imagen como tinte azul suave
-// gold: fluid oculto, imagen visible directo
-const FLUID_OPACITY  = { dark: 0.92, light: 0.55, gold: 0 };
-// z-index imagen: dark debajo del fluid, light/gold encima
-const IMG_ZINDEX     = { dark: 0,     light: 2,    gold: 2 };
-// opacidad imagen: dark velada, light visible, gold visible total
-const IMG_OPACITY    = { dark: 0.38,  light: 1,    gold: 1 };
+const FLUID_OPACITY = { dark: 0.85, light: 0.85, gold: 0 };
 const BG_COLOR = { dark:'#09090b', light:'#f4f4f2', gold:'#faf6f0' };
 
 let cur='dark', busy=false;
@@ -768,16 +760,19 @@ window.setIrisTheme = function(theme) {
     heroBgImg.style.transition = 'none';
     heroBgImg.style.opacity = '0';
     heroBgImg.style.display = 'none';
-    heroBgImg.style.zIndex = IMG_ZINDEX[theme];
+    heroBgImg.style.zIndex = '';
+    const T_heroImg = { light: 'novo-hero.jpg', dark: 'arbu-hero.jpg', gold: 'celestia-hero.jpg' };
     const T_heroPos = { light: 'center 40%', dark: 'center 50%', gold: 'right center' };
-    if (d.heroImg) {
+    const imgSrc = T_heroImg[theme];
+    const imgPos = T_heroPos[theme] || 'center';
+    if (imgSrc) {
       setTimeout(() => {
-        heroBgImg.src = d.heroImg;
-        heroBgImg.style.objectPosition = T_heroPos[theme] || 'center';
+        heroBgImg.src = imgSrc;
+        heroBgImg.style.objectPosition = imgPos;
         heroBgImg.style.display = 'block';
         requestAnimationFrame(() => requestAnimationFrame(() => {
           heroBgImg.style.transition = 'opacity 0.8s ease';
-          heroBgImg.style.opacity = IMG_OPACITY[theme];
+          heroBgImg.style.opacity = '0.35';
         }));
       }, 300);
     }
