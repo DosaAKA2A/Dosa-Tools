@@ -1272,8 +1272,12 @@
     </div>
 
     <!-- VELARO — blanco / rojo -->
-    <div class="card card--velaro" onclick="window.location.href='velaro.html'">
+    <div class="card card--velaro" onclick="openModal('velaro')">
       <div class="card-glow"></div>
+      <div class="badge-lock">
+        <svg width="9" height="11" viewBox="0 0 9 11" fill="none"><rect x="1" y="4.5" width="7" height="6" rx="1" stroke="currentColor" stroke-width="1"/><path d="M2.5 4.5V3a2 2 0 014 0v1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg>
+        Acceso privado
+      </div>
       <div class="card-num">03</div>
       <div class="card-icon">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
@@ -1384,6 +1388,20 @@
   </div>
 </div>
 
+<!-- MODAL VELARO -->
+<div class="modal-overlay" id="modalVelaro">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('velaro')">&#215;</button>
+    <div class="modal-label">403 / Velaro</div>
+    <div class="modal-title">Acceso privado</div>
+    <div class="modal-sub">Introduce el PIN para acceder al estudio.</div>
+    <input class="modal-input" type="password" inputmode="numeric" maxlength="6" id="pwdVelaro" placeholder="PIN"
+           onkeydown="if(event.key==='Enter') checkPwd('velaro')">
+    <div class="modal-err" id="errVelaro"></div>
+    <button class="modal-btn" onclick="checkPwd('velaro')">Entrar</button>
+  </div>
+</div>
+
 <script>
 const TTL = 24 * 60 * 60 * 1000; // 24 horas en ms
 
@@ -1408,15 +1426,18 @@ function setUnlocked(key) {
 
 const PASSWORDS = {
   corlima: 'Corlima2026',
-  diseno:  'Socrates99@'
+  diseno:  'Socrates99@',
+  velaro:  '455211'
 };
 const DESTINATIONS = {
   corlima: 'herramientas_corlima.html',
-  diseno:  'herramientas_diseno.html'
+  diseno:  'herramientas_diseno.html',
+  velaro:  'velaro.html'
 };
 const STORAGE_KEYS = {
   corlima: 'corlimaAccess',
-  diseno:  'disenoAccess'
+  diseno:  'disenoAccess',
+  velaro:  'velaroAccess'
 };
 
 function openModal(which) {
