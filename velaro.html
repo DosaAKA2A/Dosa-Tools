@@ -97,61 +97,108 @@
     text-transform:uppercase;
   }
 
-  /* ---------- HERO ---------- */
+  /* ---------- HERO (split sidebar + imagen, estructura Rama) ---------- */
   .hero{
     min-height:100vh;
     display:flex;
     position:relative;
     align-items:stretch;
+    background:var(--carbon);
     border-bottom:1px solid var(--hairline);
   }
 
-  .hero-copy{
-    width:42%;
+  .hero-sidebar{
+    width:420px;
+    flex-shrink:0;
     display:flex;
     flex-direction:column;
-    justify-content:center;
-    padding:0 0 0 48px;
+    justify-content:space-between;
+    padding:118px 40px 40px;
+    border-right:1px solid rgba(255,255,255,0.08);
     position:relative;
     z-index:2;
   }
 
+  .hero-status{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:rgba(255,255,255,0.75);
+  }
+
+  .status-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  .status-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 0 0 rgba(231,19,26,0.6);
+    animation:pulseDot 2s infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulseDot{
+    0%{box-shadow:0 0 0 0 rgba(231,19,26,0.5);}
+    70%{box-shadow:0 0 0 6px rgba(231,19,26,0);}
+    100%{box-shadow:0 0 0 0 rgba(231,19,26,0);}
+  }
+
+  .status-right{text-align:right;line-height:1.5;color:rgba(255,255,255,0.75);}
+  .status-city{color:rgba(255,255,255,0.4);}
+
   .hero-eyebrow{
     font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    letter-spacing:0.12em;
-    color:var(--steel);
+    font-style:italic;
+    font-size:13px;
+    letter-spacing:0.06em;
+    color:var(--red);
+    margin-bottom:20px;
+  }
+
+  .hero-sidebar .hero-title{
+    color:var(--white);
+    font-size:clamp(40px,4.2vw,58px);
+    line-height:0.95;
     margin-bottom:24px;
+  }
+
+  .hero-sidebar .hero-title .red{color:var(--red);}
+
+  .hero-sidebar .hero-desc{
+    max-width:340px;
+    font-size:14.5px;
+    line-height:1.65;
+    color:rgba(255,255,255,0.55);
+    margin-bottom:32px;
+  }
+
+  .hero-cta{
     display:flex;
     align-items:center;
-    gap:10px;
-  }
-
-  .hero-eyebrow::before{
-    content:'';
-    width:24px;
-    height:1px;
+    justify-content:space-between;
     background:var(--red);
+    color:var(--white);
+    text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:18px 20px;
+    transition:background .2s;
   }
+  .hero-cta:hover{background:#c30f15;}
 
-  .hero-title{
-    font-size:clamp(48px,7vw,104px);
-    line-height:0.92;
-    margin-bottom:28px;
-  }
-
-  .hero-title .red{color:var(--red);}
-
-  .hero-desc{
-    max-width:380px;
-    font-size:16px;
-    line-height:1.6;
-    color:#3a3a3c;
-    margin-bottom:40px;
+  .cta-arrow{
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.5);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
   }
 
   .hero-image{
-    width:58%;
+    flex:1;
     position:relative;
     overflow:hidden;
   }
@@ -160,8 +207,8 @@
     width:100%;
     height:100%;
     object-fit:cover;
-    object-position:center 30%;
-    filter:grayscale(15%) contrast(1.05);
+    object-position:center 22%;
+    filter:grayscale(20%) contrast(1.1) brightness(0.92);
     transform:scale(1.04);
   }
 
@@ -169,7 +216,28 @@
     content:'';
     position:absolute;
     inset:0;
-    background:linear-gradient(90deg, var(--white) 0%, transparent 12%);
+    background:linear-gradient(90deg, var(--carbon) 0%, transparent 14%);
+  }
+
+  .hero-badge{
+    position:absolute;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--white);
+    background:rgba(10,10,11,0.55);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.25);
+    padding:10px 16px;
+    z-index:3;
+    animation:floatBadge 6s ease-in-out infinite;
+  }
+  .badge-1{top:14%;left:8%;border-radius:50%;width:74px;height:74px;display:flex;align-items:center;justify-content:center;text-align:center;border-color:var(--red);animation-delay:0s;}
+  .badge-2{bottom:20%;right:9%;border-left:3px solid var(--red);animation-delay:1.2s;}
+  @keyframes floatBadge{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .status-dot,.hero-badge{animation:none;}
   }
 
   /* ---------- SPEC STRIP ---------- */
@@ -751,9 +819,8 @@
   /* ---------- RESPONSIVE (colapso básico bajo 900px) ---------- */
   @media (max-width:900px){
     .hero{flex-direction:column;}
-    .hero-copy,.hero-image{width:100%;}
-    .hero-copy{padding:80px 24px 40px;}
-    .hero-image{height:60vh;}
+    .hero-sidebar{width:100%;padding:100px 24px 32px;}
+    .hero-image{width:100%;height:60vh;}
     .spec-strip{grid-template-columns:1fr 1fr;}
     .spec-item:nth-child(3){border-left:none;}
     section{padding:80px 24px;}
@@ -837,13 +904,31 @@
 <div id="site-frame">
 
 <section class="hero">
-  <div class="hero-copy">
-    <div class="hero-eyebrow mono">CLASE 403 · SIEMENS VELARO · 1999—HOY</div>
-    <h1 class="hero-title display"><span class="word-wrap"><span class="word">FORMA</span></span><br><span class="word-wrap"><span class="word">SIN</span></span><br><span class="word-wrap"><span class="word red">ADORNO</span></span></h1>
-    <p class="hero-desc">Un estudio del ICE 3 como objeto: la geometría que resulta de eliminar todo lo que no reduce la resistencia del aire.</p>
+  <div class="hero-sidebar">
+    <div class="hero-status">
+      <div class="status-left">
+        <span class="status-dot"></span>
+        En archivo
+      </div>
+      <div class="status-right">
+        <span id="heroClock">--:--</span><br>
+        <span class="status-city">Fráncfort, DE</span>
+      </div>
+    </div>
+    <div class="hero-bottom">
+      <div class="hero-eyebrow">— Estudio de diseño industrial</div>
+      <h1 class="hero-title display"><span class="word-wrap"><span class="word">FORMA</span></span><br><span class="word-wrap"><span class="word">SIN</span></span><br><span class="word-wrap"><span class="word red">ADORNO</span></span></h1>
+      <p class="hero-desc">Un estudio del ICE 3 como objeto: la geometría que resulta de eliminar todo lo que no reduce la resistencia del aire.</p>
+      <a href="#manifesto" class="hero-cta">
+        Ver el objeto
+        <span class="cta-arrow">&#8599;</span>
+      </a>
+    </div>
   </div>
   <div class="hero-image">
     <img src="velaro-hero.jpg" alt="Morro del ICE 3 en andén, luz roja de posición encendida">
+    <div class="hero-badge badge-1">ICE 3</div>
+    <div class="hero-badge badge-2">DB · CLASE 403</div>
   </div>
 </section>
 
@@ -1272,6 +1357,15 @@
       heroImg.style.transform = 'translateY(' + (y * 0.15) + 'px) scale(1.08)';
     }
   });
+  // Reloj en vivo del hero (hora de Fráncfort)
+  function updateHeroClock(){
+    var el = document.getElementById('heroClock');
+    if(!el) return;
+    var now = new Date();
+    el.textContent = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Berlin' });
+  }
+  updateHeroClock();
+  setInterval(updateHeroClock, 30000);
 </script>
 
 </body>
