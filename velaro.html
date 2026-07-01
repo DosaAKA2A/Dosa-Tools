@@ -297,6 +297,415 @@
 
   .gallery-item:hover .gallery-caption{opacity:1;}
 
+  /* ---------- 03 · SPEC CARDS (Services) ---------- */
+  .spec-cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+
+  .spec-card{
+    background:var(--white);
+    padding:36px 28px;
+    display:flex;
+    flex-direction:column;
+    min-height:260px;
+  }
+
+  .spec-card-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--red);
+    margin-bottom:20px;
+  }
+
+  .spec-card-title{
+    font-size:19px;
+    font-weight:600;
+    margin-bottom:12px;
+  }
+
+  .spec-card-desc{
+    font-size:13.5px;
+    line-height:1.65;
+    color:#3a3a3c;
+    flex:1;
+  }
+
+  .spec-card-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--steel);
+    margin-top:20px;
+    padding-top:16px;
+    border-top:1px solid var(--hairline);
+  }
+
+  /* ---------- 04 · POR QUÉ ESTA FORMA (Benefits) ---------- */
+  .benefits{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;
+    border-top:1px solid var(--hairline);
+  }
+
+  .benefit{
+    padding:40px 32px 40px 0;
+    border-right:1px solid var(--hairline);
+    padding-right:32px;
+  }
+
+  .benefit:last-child{border-right:none;}
+  .benefit:not(:first-child){padding-left:32px;}
+
+  .benefit-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:44px;
+    font-weight:500;
+    color:var(--red);
+    line-height:1;
+    margin-bottom:20px;
+  }
+
+  .benefit-num sup{font-size:16px;color:var(--steel);}
+
+  .benefit-title{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .benefit-desc{
+    font-size:13.5px;
+    line-height:1.65;
+    color:#3a3a3c;
+  }
+
+  /* ---------- 05 · VOCES TÉCNICAS (Testimonials) ---------- */
+  .quotes{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+
+  .quote-card{
+    border:1px solid var(--hairline);
+    padding:32px 28px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:220px;
+  }
+
+  .quote-mark{
+    font-family:'Archivo Expanded',sans-serif;
+    font-size:40px;
+    color:var(--red);
+    line-height:1;
+    margin-bottom:16px;
+  }
+
+  .quote-text{
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:24px;
+  }
+
+  .quote-attr{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    color:var(--steel);
+    text-transform:uppercase;
+  }
+
+  /* ---------- 06 · CRÉDITOS (Team) ---------- */
+  .credits{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+
+  .credit-card{
+    background:var(--white);
+    padding:32px 24px;
+  }
+
+  .credit-role{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:14px;
+  }
+
+  .credit-name{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:8px;
+    line-height:1.25;
+  }
+
+  .credit-desc{
+    font-size:12.5px;
+    line-height:1.6;
+    color:var(--steel);
+  }
+
+  /* ---------- 07 · GENERACIONES (Pricing tabs) ---------- */
+  .gen-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:0;
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .gen-tab{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:16px 24px;
+    cursor:pointer;
+    color:var(--steel);
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+    transition:color .2s, border-color .2s;
+    background:none;
+    border-left:none;
+    border-right:none;
+    border-top:none;
+  }
+
+  .gen-tab.active{
+    color:var(--black);
+    border-bottom:2px solid var(--red);
+  }
+
+  .gen-panel{
+    display:none;
+    padding-top:48px;
+    grid-template-columns:280px 1fr;
+    gap:64px;
+  }
+
+  .gen-panel.active{display:grid;}
+
+  .gen-panel-head .gen-year{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--red);
+    margin-bottom:8px;
+  }
+
+  .gen-panel-head h3{
+    font-size:34px;
+    line-height:1.1;
+    margin-bottom:16px;
+  }
+
+  .gen-panel-head p{
+    font-size:13.5px;
+    line-height:1.7;
+    color:#3a3a3c;
+  }
+
+  .gen-specs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+    align-content:start;
+  }
+
+  .gen-spec-item{
+    background:var(--white);
+    padding:24px;
+  }
+
+  .gen-spec-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:24px;
+    margin-bottom:6px;
+  }
+
+  .gen-spec-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--steel);
+  }
+
+  /* ---------- 08 · PREGUNTAS TÉCNICAS (FAQ accordion) ---------- */
+  .accordion{
+    border-top:1px solid var(--hairline);
+  }
+
+  .accordion-item{
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .accordion-q{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:26px 0;
+    cursor:pointer;
+    font-size:17px;
+    font-weight:600;
+  }
+
+  .accordion-q .plus{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:20px;
+    color:var(--red);
+    transition:transform .25s;
+    flex-shrink:0;
+    margin-left:24px;
+  }
+
+  .accordion-item.open .accordion-q .plus{transform:rotate(45deg);}
+
+  .accordion-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+  }
+
+  .accordion-item.open .accordion-a{max-height:260px;}
+
+  .accordion-a p{
+    font-size:14px;
+    line-height:1.7;
+    color:#3a3a3c;
+    padding-bottom:26px;
+    max-width:640px;
+  }
+
+  /* ---------- 09 · CRONOLOGÍA (Timeline) ---------- */
+  .timeline{
+    position:relative;
+    padding-left:0;
+  }
+
+  .timeline-track{
+    display:flex;
+    overflow-x:auto;
+    gap:0;
+    border-top:1px solid var(--hairline);
+    padding-top:40px;
+    scrollbar-width:none;
+  }
+
+  .timeline-track::-webkit-scrollbar{display:none;}
+
+  .timeline-item{
+    flex:0 0 260px;
+    padding-right:40px;
+    position:relative;
+  }
+
+  .timeline-item::before{
+    content:'';
+    position:absolute;
+    top:-41px;
+    left:0;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--red);
+  }
+
+  .timeline-year{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    color:var(--red);
+    margin-bottom:14px;
+  }
+
+  .timeline-title{
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .timeline-desc{
+    font-size:13px;
+    line-height:1.6;
+    color:var(--steel);
+  }
+
+  /* ---------- FOOTER (expanded) ---------- */
+  .footer-main{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:48px;
+    padding:80px 48px 60px;
+    border-top:1px solid var(--hairline);
+  }
+
+  .footer-brand .display{
+    font-size:28px;
+    margin-bottom:16px;
+  }
+
+  .footer-brand p{
+    font-size:13px;
+    line-height:1.7;
+    color:var(--steel);
+    max-width:280px;
+  }
+
+  .footer-col-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--steel);
+    margin-bottom:18px;
+  }
+
+  .footer-col a{
+    display:block;
+    font-size:13.5px;
+    color:var(--black);
+    text-decoration:none;
+    margin-bottom:12px;
+  }
+
+  .footer-col a:hover{color:var(--red);}
+
+  /* ---------- RESPONSIVE (colapso básico bajo 900px) ---------- */
+  @media (max-width:900px){
+    .hero{flex-direction:column;}
+    .hero-copy,.hero-image{width:100%;}
+    .hero-copy{padding:80px 24px 40px;}
+    .hero-image{height:60vh;}
+    .spec-strip{grid-template-columns:1fr 1fr;}
+    .spec-item:nth-child(3){border-left:none;}
+    section{padding:80px 24px;}
+    .manifesto{grid-template-columns:1fr;gap:32px;}
+    .gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
+    .gallery-item.g1,.gallery-item.g2,.gallery-item.g3,.gallery-item.g4,.gallery-item.g5,.gallery-item.g6{grid-column:auto;grid-row:auto;}
+    .spec-cards{grid-template-columns:1fr 1fr;}
+    .benefits{grid-template-columns:1fr;}
+    .benefit{border-right:none;border-bottom:1px solid var(--hairline);padding:32px 0;}
+    .benefit:not(:first-child){padding-left:0;}
+    .quotes{grid-template-columns:1fr;}
+    .credits{grid-template-columns:1fr 1fr;}
+    .gen-panel{grid-template-columns:1fr;gap:32px;}
+    .gen-panel.active{display:block;}
+    .gen-specs{grid-template-columns:1fr 1fr;}
+    .footer-main{grid-template-columns:1fr 1fr;}
+  }
+
   /* ---------- FOOTER ---------- */
   footer{
     padding:48px;
@@ -354,7 +763,8 @@
     <a href="index.html">&larr; Iris</a>
     <a href="#manifesto">Estudio</a>
     <a href="#gallery">Forma</a>
-    <a href="#specs">Ficha</a>
+    <a href="#generations">Generaciones</a>
+    <a href="#faq">Preguntas</a>
   </nav>
 </header>
 
@@ -444,22 +854,309 @@
 <section id="specs">
   <div class="section-head">
     <div>
-      <div class="section-number mono">03 — FICHA</div>
-      <h2 class="section-title display">DATOS</h2>
+      <div class="section-number mono">03 — ESPECIFICACIONES</div>
+      <h2 class="section-title display">CADA PIEZA<br>TIENE UN MOTIVO</h2>
     </div>
   </div>
-  <p class="mono" style="color:var(--steel);font-size:13px;">— sección de ficha técnica extendida, pendiente de definir contenido —</p>
+  <div class="spec-cards">
+    <div class="spec-card">
+      <div class="spec-card-num mono">01</div>
+      <div class="spec-card-title">Aerodinámica</div>
+      <div class="spec-card-desc">El perfil del morro se alarga hacia el techo para evitar el "tunnel boom" — el estampido que produce el aire comprimido al entrar en un túnel a alta velocidad.</div>
+      <div class="spec-card-value mono">Cd optimizado</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card-num mono">02</div>
+      <div class="spec-card-title">Tracción distribuida</div>
+      <div class="spec-card-desc">Sin locomotora: los motores viven bajo los bogies, repartidos a lo largo del tren. Todo el espacio, incluido el primer coche, queda libre para pasajeros.</div>
+      <div class="spec-card-value mono">+20% espacio útil</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card-num mono">03</div>
+      <div class="spec-card-title">Frenado regenerativo</div>
+      <div class="spec-card-desc">La energía cinética de la frenada se devuelve a la catenaria en vez de disiparse como calor. Menos desgaste, menos consumo.</div>
+      <div class="spec-card-value mono">−10% consumo</div>
+    </div>
+    <div class="spec-card">
+      <div class="spec-card-num mono">04</div>
+      <div class="spec-card-title">Materiales</div>
+      <div class="spec-card-desc">Carrocería de aluminio: reduce el peso sin sacrificar rigidez estructural. Al final de su vida útil, la mayor parte del tren es reciclable.</div>
+      <div class="spec-card-value mono">98% reciclable</div>
+    </div>
+  </div>
+</section>
+
+<section id="benefits">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">04 — RAZONES</div>
+      <h2 class="section-title display">POR QUÉ<br>ESTA FORMA</h2>
+    </div>
+  </div>
+  <div class="benefits">
+    <div class="benefit">
+      <div class="benefit-num mono">01</div>
+      <div class="benefit-title">Silencio al entrar en túnel</div>
+      <div class="benefit-desc">Un morro de 8 metros disipa progresivamente la onda de presión, en vez de generarla de golpe contra una superficie plana.</div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-num mono">02</div>
+      <div class="benefit-title">Más asientos, menos tren</div>
+      <div class="benefit-desc">Al eliminar las locomotoras de cabeza y cola, un tren de la misma longitud gana capacidad real de pasajeros.</div>
+    </div>
+    <div class="benefit">
+      <div class="benefit-num mono">03</div>
+      <div class="benefit-title">Menos energía por kilómetro</div>
+      <div class="benefit-desc">El peso distribuido y el frenado regenerativo bajan el consumo eléctrico frente a la generación anterior de trenes de alta velocidad.</div>
+    </div>
+  </div>
+</section>
+
+<section id="voices">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">05 — VOCES TÉCNICAS</div>
+      <h2 class="section-title display">LECTURAS<br>DEL OBJETO</h2>
+    </div>
+  </div>
+  <div class="quotes">
+    <div class="quote-card">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">El Velaro no tiene una parte "de diseño" y otra "de ingeniería". Son la misma decisión vista desde dos lados.</p>
+      </div>
+      <div class="quote-attr">Diseño industrial ferroviario</div>
+    </div>
+    <div class="quote-card">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">Cada generación de ICE no rediseña el tren desde cero: afina lo que la anterior dejó sin resolver.</p>
+      </div>
+      <div class="quote-attr">Ingeniería de sistemas ferroviarios</div>
+    </div>
+    <div class="quote-card">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">La tracción distribuida cambió la pregunta: ya no era cómo tirar del tren, sino cómo repartir la fuerza sin que se note.</p>
+      </div>
+      <div class="quote-attr">Operación de alta velocidad</div>
+    </div>
+  </div>
+</section>
+
+<section id="credits">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">06 — CRÉDITOS</div>
+      <h2 class="section-title display">QUIÉN<br>LO HIZO</h2>
+    </div>
+  </div>
+  <div class="credits">
+    <div class="credit-card">
+      <div class="credit-role mono">Diseño exterior</div>
+      <div class="credit-name">Alexander Neumeister</div>
+      <div class="credit-desc">N+P Industrial Design. Responsable de la línea exterior de las tres primeras generaciones de ICE.</div>
+    </div>
+    <div class="credit-card">
+      <div class="credit-role mono">Fabricante</div>
+      <div class="credit-name">Siemens Mobility</div>
+      <div class="credit-desc">Desarrolló la plataforma Velaro sobre la que se construye el ICE 3 y sus variantes de exportación.</div>
+    </div>
+    <div class="credit-card">
+      <div class="credit-role mono">Tracción</div>
+      <div class="credit-name">ABB</div>
+      <div class="credit-desc">Transformador de tracción compacto desarrollado específicamente para la clase 407 (Velaro D).</div>
+    </div>
+    <div class="credit-card">
+      <div class="credit-role mono">Operador</div>
+      <div class="credit-name">Deutsche Bahn</div>
+      <div class="credit-desc">Opera la flota ICE en la red alemana y en servicios internacionales hacia Francia, Bélgica y Países Bajos.</div>
+    </div>
+  </div>
+</section>
+
+<section id="generations">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">07 — GENERACIONES</div>
+      <h2 class="section-title display">CUATRO<br>DECISIONES</h2>
+    </div>
+  </div>
+
+  <div class="gen-tabs mono">
+    <button class="gen-tab active" onclick="switchGen(this,'g1')">ICE 1 · 1991</button>
+    <button class="gen-tab" onclick="switchGen(this,'g2')">ICE 2 · 1996</button>
+    <button class="gen-tab" onclick="switchGen(this,'g3')">ICE 3 · 2000</button>
+    <button class="gen-tab" onclick="switchGen(this,'g4')">ICE 4 · 2017</button>
+  </div>
+
+  <div class="gen-panel active" id="g1">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE 401</div>
+      <h3 class="display">ICE 1</h3>
+      <p>El primer ICE. Dos locomotoras de cabeza y cola con hasta 14 coches entre medio — la arquitectura clásica del tren de alta velocidad, heredada del ferrocarril convencional.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">280 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">2</div><div class="gen-spec-label">Locomotoras</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">10–14</div><div class="gen-spec-label">Coches</div></div>
+    </div>
+  </div>
+
+  <div class="gen-panel" id="g2">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE 402</div>
+      <h3 class="display">ICE 2</h3>
+      <p>Una sola locomotora y un coche de mando en el otro extremo. Pensado para dividirse: dos medios trenes pueden separarse en ruta hacia destinos distintos.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">280 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">1</div><div class="gen-spec-label">Locomotora</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">7</div><div class="gen-spec-label">Coches + coche de mando</div></div>
+    </div>
+  </div>
+
+  <div class="gen-panel" id="g3">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE 403 / 407 / 408</div>
+      <h3 class="display">ICE 3</h3>
+      <p>El objeto de este estudio. Primera generación sin locomotora: tracción distribuida bajo todo el tren. Primer ICE alemán en superar los 300 km/h en servicio regular.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">300 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Locomotoras</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">8</div><div class="gen-spec-label">Coches, tracción distribuida</div></div>
+    </div>
+  </div>
+
+  <div class="gen-panel" id="g4">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE 412</div>
+      <h3 class="display">ICE 4</h3>
+      <p>Hereda la tracción distribuida del ICE 3, pero cambia la pregunta: no busca velocidad máxima, busca capacidad. Configuración modular de 7 a 13 coches.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">265 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Locomotoras</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">7–13</div><div class="gen-spec-label">Coches, modular</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">08 — PREGUNTAS TÉCNICAS</div>
+      <h2 class="section-title display">DUDAS<br>FRECUENTES</h2>
+    </div>
+  </div>
+  <div class="accordion">
+    <div class="accordion-item open">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Por qué el ICE 3 no tiene locomotora?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Porque su tracción es distribuida: los motores están bajo los bogies a lo largo de todo el tren, en vez de concentrados en una cabeza tractora. Esto libera espacio y mejora la relación peso-potencia.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Qué significa "Velaro"?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Es el nombre comercial que da Siemens a la plataforma de tren de alta velocidad sobre la que se construye el ICE 3. La misma plataforma se exporta con variantes a España, China, Rusia y Turquía, entre otros.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Cuál es la diferencia entre la clase 403 y la 407?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>La 403 es la versión original para servicio nacional en Alemania. La 407 (Velaro D) es una generación posterior, multisistema, pensada para cruzar fronteras hacia Francia, Bélgica y Países Bajos.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Por qué el morro tiene esa forma específica?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Es un compromiso entre tres problemas: resistencia aerodinámica, ruido al entrar en túneles, y visibilidad para el maquinista. La curva no es estética — es la solución que satisface los tres a la vez.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿El rojo tiene alguna función además de identidad de marca?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>En este estudio sí: lo usamos exclusivamente para señalar elementos activos o interactivos, igual que el rojo en el tren aparece en las luces de posición y las franjas de advertencia — nunca como decoración.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="section-head">
+    <div>
+      <div class="section-number mono">09 — CRONOLOGÍA</div>
+      <h2 class="section-title display">LÍNEA DE<br>TIEMPO</h2>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-track">
+      <div class="timeline-item">
+        <div class="timeline-year mono">1991</div>
+        <div class="timeline-title">Entra en servicio el ICE 1</div>
+        <div class="timeline-desc">Primer tren de la familia ICE, conecta Hamburgo con Múnich.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2000</div>
+        <div class="timeline-title">Debut del ICE 3 (clase 403)</div>
+        <div class="timeline-desc">Primer ICE alemán con tracción distribuida y sin locomotora.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2002</div>
+        <div class="timeline-title">Línea Colonia–Fráncfort</div>
+        <div class="timeline-desc">Abre la línea de alta velocidad diseñada para los 300 km/h del ICE 3.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2013</div>
+        <div class="timeline-title">Llega el Velaro D (clase 407)</div>
+        <div class="timeline-desc">La EBA aprueba las primeras unidades multisistema para servicio internacional.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2017</div>
+        <div class="timeline-title">Programa ICE 3 Redesign</div>
+        <div class="timeline-desc">Modernización de la flota original, completada en 2020.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2020</div>
+        <div class="timeline-title">Pedido del Velaro MS</div>
+        <div class="timeline-desc">Deutsche Bahn encarga 30 unidades de nueva generación a Siemens.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-year mono">2022</div>
+        <div class="timeline-title">Entra en servicio el ICE 3neo</div>
+        <div class="timeline-desc">Clase 408, la generación más reciente de la familia ICE 3.</div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <footer>
-  <div>403 / VELARO — OBJECT STUDY</div>
-  <div>ESTUDIO CONCEPTUAL, NO AFILIADO A DEUTSCHE BAHN AG</div>
+  <div class="footer-main">
+    <div class="footer-brand">
+      <div class="display">403/VELARO</div>
+      <p>Estudio conceptual del ICE 3 como objeto de diseño industrial. Proyecto editorial, sin afiliación con Deutsche Bahn AG ni Siemens Mobility.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Índice</div>
+      <a href="#manifesto">Estudio</a>
+      <a href="#gallery">Forma</a>
+      <a href="#generations">Generaciones</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Referencias</div>
+      <a href="#specs">Especificaciones</a>
+      <a href="#voices">Voces técnicas</a>
+      <a href="#credits">Créditos</a>
+      <a href="#timeline">Cronología</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Proyecto</div>
+      <a href="index.html">&larr; Volver a Iris</a>
+    </div>
+  </div>
+  <div style="padding:24px 48px;display:flex;justify-content:space-between;border-top:1px solid var(--hairline);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--steel);">
+    <span>403 / VELARO — OBJECT STUDY</span>
+    <span>©2026</span>
+  </div>
 </footer>
 
 </div><!-- /site-frame -->
 
 <div class="build-note">
-  BORRADOR EN CONSTRUCCIÓN — revisar hero, spec-strip y gallery. Sección 03 pendiente de contenido.
+  BORRADOR EN CONSTRUCCIÓN — estructura completa (09 secciones) aplicada. Revisar copy y ajustar sección por sección.
 </div>
 
 <script>
@@ -469,6 +1166,20 @@
     var frameWidth = Math.min(window.innerWidth, 1920);
     document.getElementById('progressLine').style.width = (scrolled / 100 * frameWidth) + 'px';
   });
+
+  function switchGen(btn, id){
+    document.querySelectorAll('.gen-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.gen-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function toggleAcc(el){
+    var item = el.parentElement;
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.accordion-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!wasOpen) item.classList.add('open');
+  }
 </script>
 
 </body>
