@@ -22,7 +22,7 @@
   html{scroll-behavior:smooth;}
 
   body{
-    background:var(--carbon);
+    background:var(--white);
     color:var(--black);
     font-family:'Inter',sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -103,8 +103,9 @@
     display:flex;
     position:relative;
     align-items:stretch;
-    background:var(--carbon);
+    background:var(--white);
     border-bottom:1px solid var(--hairline);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 64px));
   }
 
   .hero-sidebar{
@@ -114,7 +115,7 @@
     flex-direction:column;
     justify-content:space-between;
     padding:118px 40px 40px;
-    border-right:1px solid rgba(255,255,255,0.08);
+    border-right:1px solid var(--hairline);
     position:relative;
     z-index:2;
   }
@@ -125,7 +126,7 @@
     align-items:flex-start;
     font-family:'IBM Plex Mono',monospace;
     font-size:11.5px;
-    color:rgba(255,255,255,0.75);
+    color:var(--black);
   }
 
   .status-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -143,8 +144,8 @@
     100%{box-shadow:0 0 0 0 rgba(231,19,26,0);}
   }
 
-  .status-right{text-align:right;line-height:1.5;color:rgba(255,255,255,0.75);}
-  .status-city{color:rgba(255,255,255,0.4);}
+  .status-right{text-align:right;line-height:1.5;color:var(--black);}
+  .status-city{color:var(--steel);}
 
   .hero-eyebrow{
     font-family:'IBM Plex Mono',monospace;
@@ -156,7 +157,7 @@
   }
 
   .hero-sidebar .hero-title{
-    color:var(--white);
+    color:var(--black);
     font-size:clamp(40px,4.2vw,58px);
     line-height:0.95;
     margin-bottom:24px;
@@ -168,7 +169,7 @@
     max-width:340px;
     font-size:14.5px;
     line-height:1.65;
-    color:rgba(255,255,255,0.55);
+    color:#3a3a3c;
     margin-bottom:32px;
   }
 
@@ -216,7 +217,7 @@
     content:'';
     position:absolute;
     inset:0;
-    background:linear-gradient(90deg, var(--carbon) 0%, transparent 14%);
+    background:linear-gradient(90deg, var(--white) 0%, transparent 14%);
   }
 
   .hero-badge{
@@ -874,10 +875,7 @@
 
   /* ═══════════════ EXCENTRICIDAD ═══════════════ */
 
-  /* Corte diagonal en el hero, como el borde cortado de un ticket */
-  .hero{
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 64px));
-  }
+  /* Corte diagonal en el hero: ya definido en la regla base .hero */
 
   /* Watermark numérico gigante detrás de cada sección */
   section{position:relative;}
