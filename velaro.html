@@ -872,7 +872,115 @@
     }
   }
 
-  /* ---------- RESPONSIVE (colapso básico bajo 900px) ---------- */
+  /* ═══════════════ EXCENTRICIDAD ═══════════════ */
+
+  /* Corte diagonal en el hero, como el borde cortado de un ticket */
+  .hero{
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 64px));
+  }
+
+  /* Watermark numérico gigante detrás de cada sección */
+  section{position:relative;}
+  .section-head{position:relative;z-index:1;}
+  .sec-watermark{
+    position:absolute;
+    top:8px;
+    right:16px;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    font-size:min(22vw,260px);
+    line-height:0.8;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(10,10,11,0.07);
+    pointer-events:none;
+    user-select:none;
+    z-index:0;
+    letter-spacing:-0.04em;
+  }
+
+  /* Cursor HUD tipo mira técnica sobre imágenes */
+  .hero-image, .gallery-item{cursor:none;}
+  #cursor-hud{
+    position:fixed;
+    top:0;left:0;
+    width:1px;height:1px;
+    pointer-events:none;
+    z-index:2000;
+    opacity:0;
+    transition:opacity .15s;
+  }
+  #cursor-hud.active{opacity:1;}
+  #cursor-hud svg{position:absolute;top:-16px;left:-16px;}
+  #cursor-hud .coord{
+    position:absolute;
+    top:16px;left:16px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.03em;
+    color:var(--red);
+    white-space:nowrap;
+    background:rgba(250,250,248,0.92);
+    padding:3px 7px;
+    border:1px solid var(--red);
+  }
+
+  /* Perforación tipo ticket en el marquee */
+  .marquee{position:relative;border-top:none;border-bottom:none;}
+  .marquee::before,.marquee::after{
+    content:'';
+    position:absolute;
+    left:0;right:0;
+    height:9px;
+    background-image:radial-gradient(circle, var(--white) 3.4px, transparent 3.8px);
+    background-size:18px 9px;
+    background-repeat:repeat-x;
+    z-index:2;
+  }
+  .marquee::before{top:-4.5px;}
+  .marquee::after{bottom:-4.5px;transform:rotate(180deg);}
+
+  /* Sello rotado, como un timbre de aduana/verificación */
+  .stamp{
+    position:absolute;
+    width:118px;height:118px;
+    border:2px dashed var(--red);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transform:rotate(-14deg);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--red);
+    line-height:1.6;
+    background:rgba(250,250,248,0.06);
+    z-index:3;
+    animation:floatBadge 7s ease-in-out infinite;
+    animation-delay:2.2s;
+  }
+
+  /* Grano de textura en toda la página */
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:900;
+    opacity:0.035;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .stamp{animation:none;}
+  }
+  @media (max-width:900px){
+    .hero{clip-path:none;}
+    .sec-watermark{display:none;}
+  }
   @media (max-width:900px){
     .hero{flex-direction:column;}
     .hero-sidebar{width:100%;padding:100px 24px 32px;}
@@ -985,6 +1093,7 @@
     <img src="velaro-hero.jpg" alt="Morro del ICE 3 en andén, luz roja de posición encendida">
     <div class="hero-badge badge-1">ICE 3</div>
     <div class="hero-badge badge-2">DB · CLASE 403</div>
+    <div class="stamp" style="top:56%;left:6%;">OBJETO<br>VERIFICADO<br>N.º 403</div>
   </div>
 </section>
 
@@ -1008,6 +1117,7 @@
 </div>
 
 <section id="manifesto">
+  <div class="sec-watermark">01</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">01 — ESTUDIO</div>
@@ -1024,6 +1134,7 @@
 </section>
 
 <section id="gallery">
+  <div class="sec-watermark">02</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">02 — ARCHIVO</div>
@@ -1066,6 +1177,7 @@
 </div>
 
 <section id="specs">
+  <div class="sec-watermark">03</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">03 — ESPECIFICACIONES</div>
@@ -1105,6 +1217,7 @@
 </section>
 
 <section id="benefits">
+  <div class="sec-watermark">04</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">04 — RAZONES</div>
@@ -1131,6 +1244,7 @@
 </section>
 
 <section id="voices">
+  <div class="sec-watermark">05</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">05 — VOCES TÉCNICAS</div>
@@ -1163,6 +1277,7 @@
 </section>
 
 <section id="credits">
+  <div class="sec-watermark">06</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">06 — CRÉDITOS</div>
@@ -1194,6 +1309,7 @@
 </section>
 
 <section id="generations">
+  <div class="sec-watermark">07</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">07 — GENERACIONES</div>
@@ -1262,6 +1378,7 @@
 </section>
 
 <section id="faq">
+  <div class="sec-watermark">08</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">08 — PREGUNTAS TÉCNICAS</div>
@@ -1293,6 +1410,7 @@
 </section>
 
 <section id="timeline">
+  <div class="sec-watermark">09</div>
   <div class="section-head reveal">
     <div>
       <div class="section-number mono">09 — CRONOLOGÍA</div>
@@ -1377,6 +1495,17 @@
   BORRADOR EN CONSTRUCCIÓN — estructura completa (09 secciones) aplicada. Revisar copy y ajustar sección por sección.
 </div>
 
+<div id="cursor-hud">
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+    <circle cx="16" cy="16" r="10" stroke="#E7131A" stroke-width="1"/>
+    <line x1="16" y1="0" x2="16" y2="8" stroke="#E7131A" stroke-width="1"/>
+    <line x1="16" y1="24" x2="16" y2="32" stroke="#E7131A" stroke-width="1"/>
+    <line x1="0" y1="16" x2="8" y2="16" stroke="#E7131A" stroke-width="1"/>
+    <line x1="24" y1="16" x2="32" y2="16" stroke="#E7131A" stroke-width="1"/>
+  </svg>
+  <div class="coord mono" id="hudCoord">X:0000 Y:0000</div>
+</div>
+
 <script>
   window.addEventListener('scroll', function(){
     var h = document.documentElement;
@@ -1452,6 +1581,25 @@
       });
     }, { threshold: 0.5 });
     countEls.forEach(function(el){ countObserver.observe(el); });
+  }
+
+  // Cursor HUD técnico sobre imágenes
+  var hud = document.getElementById('cursor-hud');
+  var hudCoord = document.getElementById('hudCoord');
+  var hudTargets = document.querySelectorAll('.hero-image, .gallery-item');
+  if(hud && !reducedMotion){
+    document.addEventListener('mousemove', function(e){
+      hud.style.transform = 'translate(' + e.clientX + 'px,' + e.clientY + 'px)';
+      if(hudCoord){
+        var x = String(e.clientX).padStart(4,'0');
+        var y = String(e.clientY).padStart(4,'0');
+        hudCoord.textContent = 'X:' + x + ' Y:' + y;
+      }
+    });
+    hudTargets.forEach(function(el){
+      el.addEventListener('mouseenter', function(){ hud.classList.add('active'); });
+      el.addEventListener('mouseleave', function(){ hud.classList.remove('active'); });
+    });
   }
 
   // Reloj en vivo del hero (hora de Fráncfort)
