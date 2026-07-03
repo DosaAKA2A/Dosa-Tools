@@ -1863,12 +1863,13 @@
     var marks = Array.prototype.slice.call(document.querySelectorAll('.sec-watermark'));
     if(!marks.length) return;
     var ticking = false;
+    var MAX_SHIFT = 22;
     function update(){
       var vh = window.innerHeight;
       marks.forEach(function(el){
         var rect = el.getBoundingClientRect();
         var centerDelta = (rect.top + rect.height/2) - vh/2;
-        var shift = centerDelta * -0.06;
+        var shift = Math.max(-MAX_SHIFT, Math.min(MAX_SHIFT, centerDelta * -0.02));
         el.style.transform = 'translateY(' + shift.toFixed(1) + 'px)';
       });
       ticking = false;
