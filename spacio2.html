@@ -132,8 +132,13 @@
     z-index:1;
     pointer-events:none;
     background:
-      linear-gradient(180deg, transparent 78%, rgba(250,250,248,0.55) 90%, rgba(250,250,248,0.9) 95%, var(--white) 99%),
-      linear-gradient(90deg, rgba(250,250,248,0.22) 0%, transparent 12%, transparent 88%, rgba(250,250,248,0.22) 100%);
+      linear-gradient(180deg,
+        transparent 74%,
+        rgba(250,250,248,0.12) 80%,
+        rgba(250,250,248,0.32) 86%,
+        rgba(250,250,248,0.6) 91%,
+        rgba(250,250,248,0.85) 95%,
+        var(--white) 100%);
   }
 
   /* ---------- Liquid glass sidebar ---------- */
@@ -1762,7 +1767,7 @@
         var size = 1 + t * 1.8;
         ctx.beginPath();
         ctx.arc(d.x, d.y, size, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(231,19,26,' + alpha.toFixed(3) + ')';
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(3) + ')';
         ctx.fill();
       }
       requestAnimationFrame(draw);
