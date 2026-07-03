@@ -356,6 +356,9 @@
   .spec-strip .reveal:nth-child(2){transition-delay:0.08s;}
   .spec-strip .reveal:nth-child(3){transition-delay:0.16s;}
   .spec-strip .reveal:nth-child(4){transition-delay:0.24s;}
+  .gen-masonry .reveal:nth-child(1){transition-delay:0s;}
+  .gen-masonry .reveal:nth-child(2){transition-delay:0.12s;}
+  .gen-masonry .reveal:nth-child(3){transition-delay:0.24s;}
 
   @media (prefers-reduced-motion: reduce){
     .word-title{animation:none;transform:none;}
@@ -668,90 +671,116 @@
     color:var(--steel);
   }
 
-  /* ---------- 07 · GENERACIONES (Pricing tabs) ---------- */
-  .gen-tabs{
+  /* ---------- 07 · GENERACIONES (masonry escalonado, ref. Hanza Process) ---------- */
+  .gen-masonry{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    align-items:start;
+  }
+
+  .gen-masonry .gen-card:nth-child(1){margin-top:0;}
+  .gen-masonry .gen-card:nth-child(2){margin-top:56px;}
+  .gen-masonry .gen-card:nth-child(3){margin-top:112px;}
+
+  .gen-card{
+    border:1px solid var(--hairline);
+    border-top:3px solid transparent;
+    background:var(--white);
+    transition:border-top-color .3s ease, transform .3s ease;
+  }
+
+  .gen-card:hover{
+    border-top-color:var(--red);
+    transform:translateY(-4px);
+  }
+
+  .gen-card--active{
+    border-top-color:var(--red);
+  }
+
+  .gen-card-inner{
+    padding:32px 28px;
+  }
+
+  .gen-card-top{
     display:flex;
-    gap:8px;
-    margin-bottom:0;
-    border-bottom:1px solid var(--hairline);
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:22px;
   }
 
-  .gen-tab{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:12px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    padding:16px 24px;
-    cursor:pointer;
-    color:var(--steel);
-    border-bottom:2px solid transparent;
-    margin-bottom:-1px;
-    transition:color .2s, border-color .2s;
-    background:none;
-    border-left:none;
-    border-right:none;
-    border-top:none;
-  }
-
-  .gen-tab.active{
+  .gen-card-num{
+    font-family:'Archivo Expanded',sans-serif;
+    font-weight:900;
+    font-size:32px;
     color:var(--black);
-    border-bottom:2px solid var(--red);
   }
 
-  .gen-panel{
-    display:none;
-    padding-top:48px;
-    grid-template-columns:280px 1fr;
-    gap:64px;
+  .gen-dots{
+    display:flex;
+    gap:5px;
   }
 
-  .gen-panel.active{display:grid;}
+  .gen-dots span{
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:var(--hairline);
+  }
 
-  .gen-panel-head .gen-year{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:13px;
+  .gen-dots span.on{
+    background:var(--red);
+  }
+
+  .gen-card-pill{
+    display:inline-block;
+    background:rgba(231,19,26,0.08);
     color:var(--red);
-    margin-bottom:8px;
-  }
-
-  .gen-panel-head h3{
-    font-size:34px;
-    line-height:1.1;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    padding:5px 12px;
     margin-bottom:16px;
   }
 
-  .gen-panel-head p{
+  .gen-card-title{
+    font-size:21px;
+    font-weight:600;
+    margin-bottom:12px;
+    line-height:1.15;
+  }
+
+  .gen-card-desc{
     font-size:13.5px;
-    line-height:1.7;
+    line-height:1.65;
     color:#3a3a3c;
+    margin-bottom:24px;
   }
 
-  .gen-specs{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:1px;
-    background:var(--hairline);
-    border:1px solid var(--hairline);
-    align-content:start;
+  .gen-card-specs{
+    border-top:1px solid var(--hairline);
+    padding-top:16px;
+    display:flex;
+    flex-direction:column;
+    gap:9px;
   }
 
-  .gen-spec-item{
-    background:var(--white);
-    padding:24px;
-  }
-
-  .gen-spec-value{
+  .gen-card-spec-row{
+    display:flex;
+    justify-content:space-between;
     font-family:'IBM Plex Mono',monospace;
-    font-size:24px;
-    margin-bottom:6px;
+    font-size:12px;
   }
 
-  .gen-spec-label{
-    font-family:'IBM Plex Mono',monospace;
-    font-size:10.5px;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    color:var(--steel);
+  .gen-card-spec-row .glabel{color:var(--steel);}
+
+  @media (max-width:900px){
+    .gen-masonry{grid-template-columns:1fr;}
+    .gen-masonry .gen-card:nth-child(1),
+    .gen-masonry .gen-card:nth-child(2),
+    .gen-masonry .gen-card:nth-child(3){margin-top:0;}
   }
 
   /* ---------- 08 · PREGUNTAS TÉCNICAS (FAQ accordion) ---------- */
@@ -1500,48 +1529,56 @@
     </div>
   </div>
 
-  <div class="gen-tabs mono reveal">
-    <button class="gen-tab active" onclick="switchGen(this,'g1')">SPACIO¹ · 2071</button>
-    <button class="gen-tab" onclick="switchGen(this,'g2')">SPACIO² · 2084</button>
-    <button class="gen-tab" onclick="switchGen(this,'g3')">SPACIO³ · En desarrollo</button>
-  </div>
+<div class="gen-masonry">
+    <div class="gen-card reveal">
+      <div class="gen-card-inner">
+        <div class="gen-card-top">
+          <div class="gen-card-num">01</div>
+          <div class="gen-dots"><span class="on"></span><span></span><span></span></div>
+        </div>
+        <div class="gen-card-pill mono">SPACIO¹ · 2071</div>
+        <div class="gen-card-title">Clase ARCA-01</div>
+        <p class="gen-card-desc">La primera nave del programa ARCA. Tripulada, con propulsión química y cabinas de control — la arquitectura clásica del transporte espacial, heredada de los primeros programas orbitales.</p>
+        <div class="gen-card-specs mono">
+          <div class="gen-card-spec-row"><span class="glabel">Velocidad máxima</span><span>45.000 km/h</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Tripulación</span><span>6</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Propulsión</span><span>Química</span></div>
+        </div>
+      </div>
+    </div>
 
-  <div class="gen-panel active" id="g1">
-    <div class="gen-panel-head">
-      <div class="gen-year mono">CLASE ARCA-01</div>
-      <h3 class="display">SPACIO¹</h3>
-      <p>La primera nave del programa ARCA. Tripulada, con propulsión química y cabinas de control — la arquitectura clásica del transporte espacial, heredada de los primeros programas orbitales.</p>
+    <div class="gen-card gen-card--active reveal">
+      <div class="gen-card-inner">
+        <div class="gen-card-top">
+          <div class="gen-card-num">02</div>
+          <div class="gen-dots"><span class="on"></span><span class="on"></span><span></span></div>
+        </div>
+        <div class="gen-card-pill mono">SPACIO² · 2084</div>
+        <div class="gen-card-title">Clase Meridian</div>
+        <p class="gen-card-desc">El objeto de este estudio. Primera generación autónoma: sin tripulación, con propulsión de fusión pulsada. La primera nave del programa ARCA en cruzar a menos de 32 años.</p>
+        <div class="gen-card-specs mono">
+          <div class="gen-card-spec-row"><span class="glabel">Velocidad máxima</span><span>126.000 km/h</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Tripulación</span><span>0</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Propulsión</span><span>Fusión pulsada</span></div>
+        </div>
+      </div>
     </div>
-    <div class="gen-specs">
-      <div class="gen-spec-item"><div class="gen-spec-value mono">45.000 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">6</div><div class="gen-spec-label">Tripulación</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">Química</div><div class="gen-spec-label">Propulsión</div></div>
-    </div>
-  </div>
 
-  <div class="gen-panel" id="g2">
-    <div class="gen-panel-head">
-      <div class="gen-year mono">CLASE MERIDIAN</div>
-      <h3 class="display">SPACIO²</h3>
-      <p>El objeto de este estudio. Primera generación autónoma: sin tripulación, con propulsión de fusión pulsada. La primera nave del programa ARCA en cruzar a menos de 32 años.</p>
-    </div>
-    <div class="gen-specs">
-      <div class="gen-spec-item"><div class="gen-spec-value mono">126.000 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Tripulación</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">Fusión pulsada</div><div class="gen-spec-label">Propulsión</div></div>
-    </div>
-  </div>
-
-  <div class="gen-panel" id="g3">
-    <div class="gen-panel-head">
-      <div class="gen-year mono">CLASE MERIDIAN-X</div>
-      <h3 class="display">SPACIO³</h3>
-      <p>Hereda la propulsión autónoma de SPACIO², pero cambia la pregunta: no busca velocidad máxima, busca volumen. En fase de pruebas para rutas de carga múltiple.</p>
-    </div>
-    <div class="gen-specs">
-      <div class="gen-spec-item"><div class="gen-spec-value mono">210.000 km/h</div><div class="gen-spec-label">Velocidad máxima (est.)</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Tripulación</div></div>
-      <div class="gen-spec-item"><div class="gen-spec-value mono">Fusión mejorada</div><div class="gen-spec-label">Propulsión</div></div>
+    <div class="gen-card reveal">
+      <div class="gen-card-inner">
+        <div class="gen-card-top">
+          <div class="gen-card-num">03</div>
+          <div class="gen-dots"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+        </div>
+        <div class="gen-card-pill mono">SPACIO³ · En desarrollo</div>
+        <div class="gen-card-title">Clase Meridian-X</div>
+        <p class="gen-card-desc">Hereda la propulsión autónoma de SPACIO², pero cambia la pregunta: no busca velocidad máxima, busca volumen. En fase de pruebas para rutas de carga múltiple.</p>
+        <div class="gen-card-specs mono">
+          <div class="gen-card-spec-row"><span class="glabel">Velocidad máxima (est.)</span><span>210.000 km/h</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Tripulación</span><span>0</span></div>
+          <div class="gen-card-spec-row"><span class="glabel">Propulsión</span><span>Fusión mejorada</span></div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -1694,13 +1731,6 @@
     document.getElementById('progressLine').style.width = (scrolled / 100 * frameWidth) + 'px';
   });
 
-  function switchGen(btn, id){
-    document.querySelectorAll('.gen-tab').forEach(function(t){ t.classList.remove('active'); });
-    document.querySelectorAll('.gen-panel').forEach(function(p){ p.classList.remove('active'); });
-    btn.classList.add('active');
-    document.getElementById(id).classList.add('active');
-  }
-
   function toggleAcc(el){
     var item = el.parentElement;
     var wasOpen = item.classList.contains('open');
@@ -1827,6 +1857,31 @@
     countEls.forEach(function(el){ countObserver.observe(el); });
   }
 
+  // Paralaje sutil en los watermarks numéricos de cada sección (fluidez al hacer scroll)
+  (function(){
+    if(reducedMotion) return;
+    var marks = Array.prototype.slice.call(document.querySelectorAll('.sec-watermark'));
+    if(!marks.length) return;
+    var ticking = false;
+    function update(){
+      var vh = window.innerHeight;
+      marks.forEach(function(el){
+        var rect = el.getBoundingClientRect();
+        var centerDelta = (rect.top + rect.height/2) - vh/2;
+        var shift = centerDelta * -0.06;
+        el.style.transform = 'translateY(' + shift.toFixed(1) + 'px)';
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive:true });
+    update();
+  })();
+
   // Cursor personalizado global: cruz → burbuja "VER" al pasar sobre elementos activos
   (function(){
     var isFinePointer = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
@@ -1840,7 +1895,7 @@
       cursor.style.top = e.clientY + 'px';
     });
 
-    var interactiveSelector = 'a, button, .gallery-item, .spec-card, .quote-card, .credit-card, .gen-tab, .accordion-q, .hero-cta, [onclick]';
+    var interactiveSelector = 'a, button, .gallery-item, .spec-card, .quote-card, .credit-card, .gen-card, .accordion-q, .hero-cta, [onclick]';
     document.querySelectorAll(interactiveSelector).forEach(function(el){
       el.addEventListener('mouseenter', function(){ cursor.classList.add('active'); });
       el.addEventListener('mouseleave', function(){ cursor.classList.remove('active'); });
