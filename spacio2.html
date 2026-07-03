@@ -455,12 +455,22 @@
     background:var(--carbon);
   }
 
+  .gallery-parallax{
+    position:absolute;
+    top:-15%;
+    left:0;
+    width:100%;
+    height:130%;
+    will-change:transform;
+  }
+
   .gallery-item img{
     width:100%;
     height:100%;
     object-fit:cover;
     filter:grayscale(30%);
     transition:filter 0.4s ease, transform 0.6s ease;
+    display:block;
   }
 
   .gallery-item:hover img{
@@ -1355,27 +1365,27 @@
   </div>
   <div class="gallery">
     <div class="gallery-item g1 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">ESCANEO DE CASCO — SECTOR 04</div>
     </div>
     <div class="gallery-item g2 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">TELEMETRÍA — PROPULSIÓN</div>
     </div>
     <div class="gallery-item g3 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">DIAGNÓSTICO — BLINDAJE TÉRMICO</div>
     </div>
     <div class="gallery-item g4 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">DETALLE — ALEACIÓN TI-G</div>
     </div>
     <div class="gallery-item g5 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">CAMPO DE NAVEGACIÓN</div>
     </div>
     <div class="gallery-item g6 reveal">
-      <div class="gallery-placeholder"><span>Imagen pendiente</span></div>
+      <div class="gallery-parallax"><div class="gallery-placeholder"><span>Imagen pendiente</span></div></div>
       <div class="gallery-caption mono">TANQUE DE O&#8322; — EXTERIOR</div>
     </div>
   </div>
@@ -1856,6 +1866,35 @@
     }, { threshold: 0.5 });
     countEls.forEach(function(el){ countObserver.observe(el); });
   }
+
+  // Paralaje en las imágenes de la galería (imagen sobredimensionada, se desplaza más lento que el scroll)
+  (function(){
+    if(reducedMotion) return;
+    var els = Array.prototype.slice.call(document.querySelectorAll('.gallery-parallax'));
+    if(!els.length) return;
+    var ticking = false;
+    function update(){
+      var vh = window.innerHeight;
+      els.forEach(function(el){
+        var parent = el.parentElement;
+        var rect = parent.getBoundingClientRect();
+        var center = rect.top + rect.height/2;
+        var progress = (center - vh/2) / (vh/2 + rect.height/2);
+        var maxShift = rect.height * 0.12;
+        var shift = Math.max(-maxShift, Math.min(maxShift, -progress * maxShift));
+        el.style.transform = 'translateY(' + shift.toFixed(1) + 'px)';
+      });
+      ticking = false;
+    }
+    window.addEventListener('scroll', function(){
+      if(!ticking){
+        requestAnimationFrame(update);
+        ticking = true;
+      }
+    }, { passive:true });
+    window.addEventListener('resize', update);
+    update();
+  })();
 
   // Paralaje sutil en los watermarks numéricos de cada sección (fluidez al hacer scroll)
   (function(){
