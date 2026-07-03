@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPACIO² — Object Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Expanded:wght@700;900&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FAFAF8;
+    --black:#0A0A0B;
+    --red:#E7131A;
+    --steel:#8B8D8F;
+    --hairline:#D8D7D2;
+    --carbon:#1C1D1F;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    background:var(--white);
+    color:var(--black);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  /* ── Frame fijo 1920px (FHD) — no se estira en pantallas mayores ── */
+  #site-frame{
+    max-width:1920px;
+    width:100%;
+    margin:0 auto;
+    background:var(--white);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .mono{
+    font-family:'IBM Plex Mono',monospace;
+  }
+
+  .display{
+    font-family:'Archivo Expanded',sans-serif;
+    font-weight:900;
+    text-transform:uppercase;
+    letter-spacing:-0.02em;
+  }
+
+  /* ---------- SIGNATURE: red progress line ---------- */
+  .progress-line{
+    position:fixed;
+    top:0;
+    left:max(0px, calc(50% - 960px));
+    height:3px;
+    width:0;
+    background:var(--red);
+    z-index:1000;
+    transition:width 0.05s linear;
+  }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed;
+    top:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:100%;
+    max-width:1920px;
+    padding:28px 48px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    z-index:100;
+    mix-blend-mode:difference;
+    color:var(--white);
+  }
+
+  .brand-mark{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    letter-spacing:0.05em;
+  }
+
+  .brand-mark span{color:var(--red);mix-blend-mode:normal;}
+
+  nav a{
+    color:inherit;
+    text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    margin-left:32px;
+    text-transform:uppercase;
+  }
+
+  /* ---------- HERO (split sidebar + imagen, estructura Rama) ---------- */
+  .hero{
+    min-height:100vh;
+    display:flex;
+    position:relative;
+    align-items:stretch;
+    background:var(--white);
+    border-bottom:1px solid var(--hairline);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - 64px));
+    overflow:hidden;
+  }
+
+  .hero-bg-video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    z-index:0;
+  }
+
+  /* Degradado suave entre el video y el blanco del sitio, para que combinen sin corte */
+  .hero-fade{
+    position:absolute;
+    inset:0;
+    z-index:1;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg, transparent 62%, rgba(250,250,248,0.55) 85%, var(--white) 100%),
+      linear-gradient(90deg, rgba(250,250,248,0.25) 0%, transparent 10%, transparent 90%, rgba(250,250,248,0.25) 100%);
+  }
+
+  /* ---------- Liquid glass sidebar ---------- */
+  .hero-sidebar{
+    width:420px;
+    flex-shrink:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:118px 40px 40px;
+    position:relative;
+    z-index:3;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.32) 100%);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    border-right:1px solid rgba(255,255,255,0.6);
+    box-shadow:
+      inset 1px 0 0 rgba(255,255,255,0.8),
+      inset -40px 0 60px -40px rgba(255,255,255,0.4),
+      inset 0 -1px 0 rgba(10,10,11,0.04);
+  }
+  .hero-sidebar::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.9), transparent);
+  }
+
+  /* ---------- Elementos HUD extra: brackets de mira + telemetría ---------- */
+  .hero-corner{
+    position:absolute;
+    width:26px;height:26px;
+    border-color:rgba(255,255,255,0.55);
+    z-index:3;
+    pointer-events:none;
+  }
+  .corner-tl{top:28px;left:28px;border-top:1px solid;border-left:1px solid;}
+  .corner-tr{top:28px;right:28px;border-top:1px solid;border-right:1px solid;}
+  .corner-bl{bottom:28px;left:28px;border-bottom:1px solid;border-left:1px solid;}
+  .corner-br{bottom:28px;right:28px;border-bottom:1px solid;border-right:1px solid;}
+
+  .hero-telemetry{
+    position:absolute;
+    bottom:28px;
+    left:28px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.04em;
+    color:var(--white);
+    background:rgba(10,10,11,0.42);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.22);
+    padding:12px 16px;
+    line-height:1.7;
+    z-index:3;
+  }
+  .hero-telemetry .tm-row{display:flex;justify-content:space-between;gap:20px;}
+  .hero-telemetry .tm-label{color:rgba(255,255,255,0.55);}
+
+  .hero-status{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--black);
+  }
+
+  .status-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+  .status-dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--red);
+    box-shadow:0 0 0 0 rgba(231,19,26,0.6);
+    animation:pulseDot 2s infinite;
+    flex-shrink:0;
+  }
+  @keyframes pulseDot{
+    0%{box-shadow:0 0 0 0 rgba(231,19,26,0.5);}
+    70%{box-shadow:0 0 0 6px rgba(231,19,26,0);}
+    100%{box-shadow:0 0 0 0 rgba(231,19,26,0);}
+  }
+
+  .status-right{text-align:right;line-height:1.5;color:var(--black);}
+  .status-city{color:var(--steel);}
+
+  .hero-eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-style:italic;
+    font-size:13px;
+    letter-spacing:0.06em;
+    color:var(--red);
+    margin-bottom:20px;
+  }
+
+  .hero-sidebar .hero-title{
+    color:var(--black);
+    font-size:clamp(40px,4.2vw,58px);
+    line-height:0.95;
+    margin-bottom:24px;
+  }
+
+  .hero-sidebar .hero-title .red{color:var(--red);}
+
+  .hero-sidebar .hero-desc{
+    max-width:340px;
+    font-size:14.5px;
+    line-height:1.65;
+    color:#3a3a3c;
+    margin-bottom:32px;
+  }
+
+  .hero-cta{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    background:var(--red);
+    color:var(--white);
+    text-decoration:none;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:18px 20px;
+    transition:background .2s;
+  }
+  .hero-cta:hover{background:#c30f15;}
+
+  .cta-arrow{
+    width:26px;height:26px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.5);
+    display:flex;align-items:center;justify-content:center;
+    font-size:13px;
+    flex-shrink:0;
+  }
+
+  .hero-image{
+    flex:1;
+    position:relative;
+    z-index:2;
+    overflow:hidden;
+  }
+
+  .hero-badge{
+    position:absolute;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    color:var(--white);
+    background:rgba(10,10,11,0.55);
+    backdrop-filter:blur(6px);
+    border:1px solid rgba(255,255,255,0.25);
+    padding:10px 16px;
+    z-index:3;
+    animation:floatBadge 6s ease-in-out infinite;
+  }
+  .badge-1{top:14%;left:8%;border-radius:50%;width:74px;height:74px;display:flex;align-items:center;justify-content:center;text-align:center;border-color:var(--red);animation-delay:0s;}
+  .badge-2{bottom:20%;right:9%;border-left:3px solid var(--red);animation-delay:1.2s;}
+  @keyframes floatBadge{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+
+  @media (prefers-reduced-motion: reduce){
+    .status-dot,.hero-badge{animation:none;}
+  }
+
+  /* ---------- Word-reveal en títulos de sección (scroll-triggered) ---------- */
+  .word-title{
+    display:inline-block;
+    transform:translateY(110%);
+    animation:wordUpTitle .7s cubic-bezier(.16,.84,.44,1) forwards;
+    animation-play-state:paused;
+  }
+  .section-head.visible .word-title{animation-play-state:running;}
+  @keyframes wordUpTitle{to{transform:translateY(0);}}
+
+  /* ---------- Líneas que se dibujan (line-draw) ---------- */
+  .draw-line{
+    height:1px;
+    background:var(--hairline);
+    width:0;
+    transition:width 1s cubic-bezier(.4,0,.2,1) .15s;
+    margin:16px 0;
+  }
+  .reveal.visible .draw-line{width:100%;}
+
+  /* ---------- Marquee / ticker horizontal ---------- */
+  .marquee{
+    overflow:hidden;
+    white-space:nowrap;
+    border-top:1px solid var(--hairline);
+    border-bottom:1px solid var(--hairline);
+    padding:16px 0;
+    background:var(--carbon);
+  }
+  .marquee-track{
+    display:inline-flex;
+    gap:36px;
+    animation:marqueeScroll 24s linear infinite;
+  }
+  .marquee-track span{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.6);
+  }
+  .marquee-track span.accent{color:var(--red);}
+  @keyframes marqueeScroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- Spec-strip: reveal + count-up ---------- */
+  .spec-strip .reveal:nth-child(1){transition-delay:0s;}
+  .spec-strip .reveal:nth-child(2){transition-delay:0.08s;}
+  .spec-strip .reveal:nth-child(3){transition-delay:0.16s;}
+  .spec-strip .reveal:nth-child(4){transition-delay:0.24s;}
+
+  @media (prefers-reduced-motion: reduce){
+    .word-title{animation:none;transform:none;}
+    .draw-line{transition:none;width:100%;}
+    .marquee-track{animation:none;}
+  }
+
+  /* ---------- SPEC STRIP ---------- */
+  .spec-strip{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .spec-item{
+    padding:28px 32px;
+    border-left:1px solid var(--hairline);
+  }
+
+  .spec-item:first-child{border-left:none;}
+
+  .spec-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:28px;
+    font-weight:500;
+    margin-bottom:6px;
+  }
+
+  .spec-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--steel);
+  }
+
+  /* ---------- SECTION GENERIC ---------- */
+  section{
+    padding:140px 48px;
+    position:relative;
+  }
+
+  .section-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:64px;
+    border-bottom:1px solid var(--hairline);
+    padding-bottom:24px;
+  }
+
+  .section-number{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--red);
+  }
+
+  .section-title{
+    font-size:clamp(32px,4vw,56px);
+    line-height:1;
+  }
+
+  /* ---------- MANIFESTO ---------- */
+  .manifesto{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:80px;
+  }
+
+  .manifesto-lead{
+    font-size:clamp(24px,2.4vw,34px);
+    line-height:1.35;
+    font-weight:500;
+  }
+
+  .manifesto-body p{
+    font-size:15px;
+    line-height:1.8;
+    color:#3a3a3c;
+    margin-bottom:20px;
+  }
+
+  /* ---------- GALLERY ---------- */
+  .gallery{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    grid-auto-rows:120px;
+    gap:2px;
+  }
+
+  .gallery-item{
+    position:relative;
+    overflow:hidden;
+    background:var(--carbon);
+  }
+
+  .gallery-item img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    filter:grayscale(30%);
+    transition:filter 0.4s ease, transform 0.6s ease;
+  }
+
+  .gallery-item:hover img{
+    filter:grayscale(0%);
+    transform:scale(1.04);
+  }
+
+  .gallery-item.g1{grid-column:1/4;grid-row:1/5;}
+  .gallery-item.g2{grid-column:4/7;grid-row:1/3;}
+  .gallery-item.g3{grid-column:4/6;grid-row:3/5;}
+  .gallery-item.g4{grid-column:6/7;grid-row:3/5;}
+  .gallery-item.g5{grid-column:1/3;grid-row:5/8;}
+  .gallery-item.g6{grid-column:3/7;grid-row:5/8;}
+
+  .gallery-caption{
+    position:absolute;
+    bottom:0;
+    left:0;
+    right:0;
+    padding:14px 16px;
+    background:linear-gradient(0deg, rgba(0,0,0,0.7), transparent);
+    color:var(--white);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    opacity:0;
+    transition:opacity 0.3s ease;
+  }
+
+  .gallery-item:hover .gallery-caption{opacity:1;}
+
+  /* ---------- 03 · SPEC CARDS (Services) ---------- */
+  .spec-cards{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+
+  .spec-card{
+    background:var(--white);
+    padding:36px 28px;
+    display:flex;
+    flex-direction:column;
+    min-height:260px;
+  }
+
+  .spec-card-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--red);
+    margin-bottom:20px;
+  }
+
+  .spec-card-title{
+    font-size:19px;
+    font-weight:600;
+    margin-bottom:12px;
+  }
+
+  .spec-card-desc{
+    font-size:13.5px;
+    line-height:1.65;
+    color:#3a3a3c;
+    flex:1;
+  }
+
+  .spec-card-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--steel);
+    margin-top:20px;
+    padding-top:16px;
+    border-top:1px solid var(--hairline);
+  }
+
+  /* ---------- 04 · POR QUÉ ESTA FORMA (Benefits) ---------- */
+  .benefits{
+    display:grid;
+    grid-template-columns:1fr 1fr 1fr;
+    gap:0;
+    border-top:1px solid var(--hairline);
+  }
+
+  .benefit{
+    padding:40px 32px 40px 0;
+    border-right:1px solid var(--hairline);
+    padding-right:32px;
+  }
+
+  .benefit:last-child{border-right:none;}
+  .benefit:not(:first-child){padding-left:32px;}
+
+  .benefit-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:44px;
+    font-weight:500;
+    color:var(--red);
+    line-height:1;
+    margin-bottom:20px;
+  }
+
+  .benefit-num sup{font-size:16px;color:var(--steel);}
+
+  .benefit-title{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .benefit-desc{
+    font-size:13.5px;
+    line-height:1.65;
+    color:#3a3a3c;
+  }
+
+  /* ---------- 05 · VOCES TÉCNICAS (Testimonials) ---------- */
+  .quotes{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:24px;
+  }
+
+  .quote-card{
+    border:1px solid var(--hairline);
+    padding:32px 28px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    min-height:220px;
+  }
+
+  .quote-mark{
+    font-family:'Archivo Expanded',sans-serif;
+    font-size:40px;
+    color:var(--red);
+    line-height:1;
+    margin-bottom:16px;
+  }
+
+  .quote-text{
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:24px;
+  }
+
+  .quote-attr{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    color:var(--steel);
+    text-transform:uppercase;
+  }
+
+  /* ---------- 06 · CRÉDITOS (Team) ---------- */
+  .credits{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+  }
+
+  .credit-card{
+    background:var(--white);
+    padding:32px 24px;
+  }
+
+  .credit-role{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--red);
+    margin-bottom:14px;
+  }
+
+  .credit-name{
+    font-size:17px;
+    font-weight:600;
+    margin-bottom:8px;
+    line-height:1.25;
+  }
+
+  .credit-desc{
+    font-size:12.5px;
+    line-height:1.6;
+    color:var(--steel);
+  }
+
+  /* ---------- 07 · GENERACIONES (Pricing tabs) ---------- */
+  .gen-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:0;
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .gen-tab{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:16px 24px;
+    cursor:pointer;
+    color:var(--steel);
+    border-bottom:2px solid transparent;
+    margin-bottom:-1px;
+    transition:color .2s, border-color .2s;
+    background:none;
+    border-left:none;
+    border-right:none;
+    border-top:none;
+  }
+
+  .gen-tab.active{
+    color:var(--black);
+    border-bottom:2px solid var(--red);
+  }
+
+  .gen-panel{
+    display:none;
+    padding-top:48px;
+    grid-template-columns:280px 1fr;
+    gap:64px;
+  }
+
+  .gen-panel.active{display:grid;}
+
+  .gen-panel-head .gen-year{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    color:var(--red);
+    margin-bottom:8px;
+  }
+
+  .gen-panel-head h3{
+    font-size:34px;
+    line-height:1.1;
+    margin-bottom:16px;
+  }
+
+  .gen-panel-head p{
+    font-size:13.5px;
+    line-height:1.7;
+    color:#3a3a3c;
+  }
+
+  .gen-specs{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:1px;
+    background:var(--hairline);
+    border:1px solid var(--hairline);
+    align-content:start;
+  }
+
+  .gen-spec-item{
+    background:var(--white);
+    padding:24px;
+  }
+
+  .gen-spec-value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:24px;
+    margin-bottom:6px;
+  }
+
+  .gen-spec-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--steel);
+  }
+
+  /* ---------- 08 · PREGUNTAS TÉCNICAS (FAQ accordion) ---------- */
+  .accordion{
+    border-top:1px solid var(--hairline);
+  }
+
+  .accordion-item{
+    border-bottom:1px solid var(--hairline);
+  }
+
+  .accordion-q{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:26px 0;
+    cursor:pointer;
+    font-size:17px;
+    font-weight:600;
+  }
+
+  .accordion-q .plus{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:20px;
+    color:var(--red);
+    transition:transform .25s;
+    flex-shrink:0;
+    margin-left:24px;
+  }
+
+  .accordion-item.open .accordion-q .plus{transform:rotate(45deg);}
+
+  .accordion-a{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .3s ease;
+  }
+
+  .accordion-item.open .accordion-a{max-height:260px;}
+
+  .accordion-a p{
+    font-size:14px;
+    line-height:1.7;
+    color:#3a3a3c;
+    padding-bottom:26px;
+    max-width:640px;
+  }
+
+  /* ---------- 09 · CRONOLOGÍA (Timeline) ---------- */
+  .timeline{
+    position:relative;
+    padding-left:0;
+  }
+
+  .timeline-track{
+    display:flex;
+    overflow-x:auto;
+    gap:0;
+    border-top:1px solid var(--hairline);
+    padding-top:40px;
+    scrollbar-width:none;
+  }
+
+  .timeline-track::-webkit-scrollbar{display:none;}
+
+  .timeline-item{
+    flex:0 0 260px;
+    padding-right:40px;
+    position:relative;
+  }
+
+  .timeline-item::before{
+    content:'';
+    position:absolute;
+    top:-41px;
+    left:0;
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--red);
+  }
+
+  .timeline-year{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    color:var(--red);
+    margin-bottom:14px;
+  }
+
+  .timeline-title{
+    font-size:15px;
+    font-weight:600;
+    margin-bottom:10px;
+  }
+
+  .timeline-desc{
+    font-size:13px;
+    line-height:1.6;
+    color:var(--steel);
+  }
+
+  /* ---------- FOOTER (expanded) ---------- */
+  .footer-main{
+    display:grid;
+    grid-template-columns:1.4fr 1fr 1fr 1fr;
+    gap:48px;
+    padding:80px 48px 60px;
+    border-top:1px solid var(--hairline);
+  }
+
+  .footer-brand .display{
+    font-size:28px;
+    margin-bottom:16px;
+  }
+
+  .footer-brand p{
+    font-size:13px;
+    line-height:1.7;
+    color:var(--steel);
+    max-width:280px;
+  }
+
+  .footer-col-title{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--steel);
+    margin-bottom:18px;
+  }
+
+  .footer-col a{
+    display:block;
+    font-size:13.5px;
+    color:var(--black);
+    text-decoration:none;
+    margin-bottom:12px;
+  }
+
+  .footer-col a:hover{color:var(--red);}
+
+  /* ---------- SCROLL REVEAL SYSTEM (equivalente a las animaciones de Rama) ---------- */
+  .reveal{
+    opacity:0;
+    transform:translateY(32px);
+    transition:opacity 0.8s cubic-bezier(.16,.84,.44,1), transform 0.8s cubic-bezier(.16,.84,.44,1);
+  }
+  .reveal.visible{
+    opacity:1;
+    transform:none;
+  }
+
+  /* Delay escalonado para grids (nth-child) */
+  .spec-cards .reveal:nth-child(1),.benefits .reveal:nth-child(1),.quotes .reveal:nth-child(1),.credits .reveal:nth-child(1){transition-delay:0s;}
+  .spec-cards .reveal:nth-child(2),.benefits .reveal:nth-child(2),.quotes .reveal:nth-child(2),.credits .reveal:nth-child(2){transition-delay:0.08s;}
+  .spec-cards .reveal:nth-child(3),.benefits .reveal:nth-child(3),.quotes .reveal:nth-child(3),.credits .reveal:nth-child(3){transition-delay:0.16s;}
+  .spec-cards .reveal:nth-child(4),.credits .reveal:nth-child(4){transition-delay:0.24s;}
+
+  .gallery-item.reveal:nth-child(1){transition-delay:0s;}
+  .gallery-item.reveal:nth-child(2){transition-delay:0.06s;}
+  .gallery-item.reveal:nth-child(3){transition-delay:0.12s;}
+  .gallery-item.reveal:nth-child(4){transition-delay:0.18s;}
+  .gallery-item.reveal:nth-child(5){transition-delay:0.24s;}
+  .gallery-item.reveal:nth-child(6){transition-delay:0.3s;}
+
+  .timeline-item.reveal:nth-child(1){transition-delay:0s;}
+  .timeline-item.reveal:nth-child(2){transition-delay:0.05s;}
+  .timeline-item.reveal:nth-child(3){transition-delay:0.1s;}
+  .timeline-item.reveal:nth-child(4){transition-delay:0.15s;}
+  .timeline-item.reveal:nth-child(5){transition-delay:0.2s;}
+  .timeline-item.reveal:nth-child(6){transition-delay:0.25s;}
+  .timeline-item.reveal:nth-child(7){transition-delay:0.3s;}
+
+  /* Reveal de palabras del titular hero, al cargar la página */
+  .word-wrap{display:inline-block;overflow:hidden;vertical-align:top;}
+  .word{
+    display:inline-block;
+    transform:translateY(110%);
+    animation:wordUp 0.9s cubic-bezier(.16,.84,.44,1) forwards;
+  }
+  .hero-title .word-wrap:nth-child(1) .word{animation-delay:0.1s;}
+  .hero-title .word-wrap:nth-child(2) .word{animation-delay:0.22s;}
+  .hero-title .word-wrap:nth-child(3) .word{animation-delay:0.34s;}
+  @keyframes wordUp{to{transform:translateY(0);}}
+
+  .hero-eyebrow,.hero-desc{
+    opacity:0;
+    transform:translateY(16px);
+    animation:fadeUp 0.8s cubic-bezier(.16,.84,.44,1) forwards;
+  }
+  .hero-eyebrow{animation-delay:0s;}
+  .hero-desc{animation-delay:0.55s;}
+  @keyframes fadeUp{to{opacity:1;transform:none;}}
+
+  /* Parallax sutil en la imagen del hero */
+  .hero-bg-video{will-change:auto;}
+
+  @media (prefers-reduced-motion: reduce){
+    .reveal,.word,.hero-eyebrow,.hero-desc{
+      opacity:1 !important;
+      transform:none !important;
+      animation:none !important;
+      transition:none !important;
+    }
+  }
+
+  /* ═══════════════ EXCENTRICIDAD ═══════════════ */
+
+  /* Corte diagonal en el hero: ya definido en la regla base .hero */
+
+  /* Watermark numérico gigante detrás de cada sección */
+  section{position:relative;}
+  .section-head{position:relative;z-index:1;}
+  .sec-watermark{
+    position:absolute;
+    top:8px;
+    right:16px;
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    font-size:min(22vw,260px);
+    line-height:0.8;
+    color:transparent;
+    -webkit-text-stroke:1px rgba(10,10,11,0.07);
+    pointer-events:none;
+    user-select:none;
+    z-index:0;
+    letter-spacing:-0.04em;
+  }
+
+  /* ---------- Cursor personalizado global: cruz → burbuja "VER" ---------- */
+  html.has-custom-cursor, html.has-custom-cursor *{cursor:none !important;}
+
+  #custom-cursor{
+    position:fixed;
+    top:0;left:0;
+    width:0;height:0;
+    pointer-events:none;
+    z-index:3000;
+  }
+
+  .cursor-cross{
+    position:absolute;
+    top:0;left:0;
+    width:22px;height:22px;
+    transform:translate(-50%,-50%);
+    transition:opacity .35s ease, transform .35s ease;
+  }
+  .cursor-cross::before,.cursor-cross::after{
+    content:'';
+    position:absolute;
+    background:var(--red);
+  }
+  .cursor-cross::before{top:50%;left:0;width:100%;height:1.5px;transform:translateY(-50%);}
+  .cursor-cross::after{left:50%;top:0;height:100%;width:1.5px;transform:translateX(-50%);}
+  #custom-cursor.active .cursor-cross{opacity:0;transform:translate(-50%,-50%) scale(0.5);}
+
+  .cursor-goo-wrap{
+    position:absolute;
+    top:0;left:0;
+    filter:url(#gooFilter);
+  }
+
+  .cursor-drop{
+    position:absolute;
+    top:0;left:0;
+    width:11px;height:11px;
+    border-radius:50%;
+    background:var(--red);
+    opacity:0;
+  }
+  #custom-cursor.active .drop-1{animation:dropMerge1 .95s cubic-bezier(.22,.9,.35,1) forwards;}
+  #custom-cursor.active .drop-2{animation:dropMerge2 .95s cubic-bezier(.22,.9,.35,1) .06s forwards;}
+  #custom-cursor.active .drop-3{animation:dropMerge3 .95s cubic-bezier(.22,.9,.35,1) .12s forwards;}
+  #custom-cursor.active .drop-4{animation:dropMerge4 .95s cubic-bezier(.22,.9,.35,1) .03s forwards;}
+
+  @keyframes dropMerge1{
+    0%{opacity:1;transform:translate(calc(-50% - 26px), calc(-50% - 7px)) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
+  }
+  @keyframes dropMerge2{
+    0%{opacity:1;transform:translate(calc(-50% + 25px), calc(-50% + 9px)) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
+  }
+  @keyframes dropMerge3{
+    0%{opacity:1;transform:translate(calc(-50% + 4px), calc(-50% - 22px)) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
+  }
+  @keyframes dropMerge4{
+    0%{opacity:1;transform:translate(calc(-50% - 9px), calc(-50% + 21px)) scale(1);}
+    100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
+  }
+
+  .cursor-bubble-shape{
+    position:absolute;
+    top:0;left:0;
+    width:72px;height:30px;
+    margin-top:-15px;
+    margin-left:-36px;
+    border-radius:6px;
+    background:var(--red);
+    opacity:0;
+    transform:scale(0.15,0.15);
+    transform-origin:center;
+    transition:opacity .25s ease;
+  }
+  #custom-cursor.active .cursor-bubble-shape{
+    opacity:1;
+    animation:bubbleFormLiquid 1s cubic-bezier(.22,1,.36,1) forwards, bubblePulse 2.2s ease-in-out 1s infinite;
+  }
+
+  @keyframes bubbleFormLiquid{
+    0%{border-radius:50%; transform:scale(0.15,0.15);}
+    28%{border-radius:45% 55% 52% 48% / 60% 55% 45% 40%; transform:scale(0.9,1.15);}
+    50%{border-radius:26px; transform:scale(1.06,0.9);}
+    72%{border-radius:12px; transform:scale(0.97,1.04);}
+    100%{border-radius:6px; transform:scale(1,1);}
+  }
+
+  .cursor-bubble-text{
+    position:absolute;
+    top:0;left:0;
+    transform:translate(-50%,-50%);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.05em;
+    color:var(--white);
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .3s ease;
+  }
+  #custom-cursor.active .cursor-bubble-text{opacity:1;transition-delay:.65s;}
+
+  @keyframes bubblePulse{
+    0%,100%{border-radius:6px;transform:scale(1,1);}
+    50%{border-radius:8px;transform:scale(1.03,1.05);}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #custom-cursor.active .cursor-bubble-shape{animation:none;opacity:1;transform:scale(1,1);}
+    #custom-cursor.active .cursor-bubble-text{transition-delay:0s;}
+    .cursor-drop{display:none;}
+  }
+
+  /* Perforación tipo ticket en el marquee */
+  .marquee{position:relative;border-top:none;border-bottom:none;}
+  .marquee::before,.marquee::after{
+    content:'';
+    position:absolute;
+    left:0;right:0;
+    height:9px;
+    background-image:radial-gradient(circle, var(--white) 3.4px, transparent 3.8px);
+    background-size:18px 9px;
+    background-repeat:repeat-x;
+    z-index:2;
+  }
+  .marquee::before{top:-4.5px;}
+  .marquee::after{bottom:-4.5px;transform:rotate(180deg);}
+
+  /* Sello rotado, como un timbre de aduana/verificación */
+  .stamp{
+    position:absolute;
+    width:118px;height:118px;
+    border:2px dashed var(--red);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transform:rotate(-14deg);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--red);
+    line-height:1.6;
+    background:rgba(250,250,248,0.06);
+    z-index:3;
+    animation:floatBadge 7s ease-in-out infinite;
+    animation-delay:2.2s;
+  }
+
+  /* Grano de textura en toda la página */
+  body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:900;
+    opacity:0.035;
+    mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .stamp{animation:none;}
+  }
+  @media (max-width:900px){
+    .hero{clip-path:none;}
+    .sec-watermark{display:none;}
+  }
+  @media (max-width:900px){
+    .hero{flex-direction:column;}
+    .hero-sidebar{width:100%;padding:100px 24px 32px;}
+    .hero-image{width:100%;height:60vh;}
+    .spec-strip{grid-template-columns:1fr 1fr;}
+    .spec-item:nth-child(3){border-left:none;}
+    section{padding:80px 24px;}
+    .manifesto{grid-template-columns:1fr;gap:32px;}
+    .gallery{grid-template-columns:repeat(2,1fr);grid-auto-rows:160px;}
+    .gallery-item.g1,.gallery-item.g2,.gallery-item.g3,.gallery-item.g4,.gallery-item.g5,.gallery-item.g6{grid-column:auto;grid-row:auto;}
+    .spec-cards{grid-template-columns:1fr 1fr;}
+    .benefits{grid-template-columns:1fr;}
+    .benefit{border-right:none;border-bottom:1px solid var(--hairline);padding:32px 0;}
+    .benefit:not(:first-child){padding-left:0;}
+    .quotes{grid-template-columns:1fr;}
+    .credits{grid-template-columns:1fr 1fr;}
+    .gen-panel{grid-template-columns:1fr;gap:32px;}
+    .gen-panel.active{display:block;}
+    .gen-specs{grid-template-columns:1fr 1fr;}
+    .footer-main{grid-template-columns:1fr 1fr;}
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{
+    padding:48px;
+    border-top:1px solid var(--hairline);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--steel);
+  }
+
+  /* ---------- PLACEHOLDER NOTE ---------- */
+  .build-note{
+    position:fixed;
+    bottom:16px;
+    right:16px;
+    background:var(--carbon);
+    color:var(--white);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    padding:10px 14px;
+    z-index:999;
+    max-width:260px;
+    line-height:1.5;
+    opacity:0.85;
+  }
+</style>
+</head>
+<body>
+
+<script>
+(function() {
+  var key = 'spacioAccess';
+  var ok = false;
+  if (sessionStorage.getItem(key)) { ok = true; }
+  if (!ok) {
+    try {
+      var item = localStorage.getItem(key);
+      if (item) {
+        var data = JSON.parse(item);
+        if ((Date.now() - data.ts) < 86400000) { sessionStorage.setItem(key, '1'); ok = true; }
+      }
+    } catch(e) {}
+  }
+  if (!ok) window.location.href = 'index.html';
+})();
+</script>
+
+<div class="progress-line" id="progressLine"></div>
+
+<header>
+  <div class="brand-mark">SPACIO<span>²</span></div>
+  <nav>
+    <a href="index.html">&larr; Iris</a>
+    <a href="#manifesto">Estudio</a>
+    <a href="#gallery">Forma</a>
+    <a href="#generations">Generaciones</a>
+    <a href="#faq">Preguntas</a>
+  </nav>
+</header>
+
+<div id="site-frame">
+
+<section class="hero">
+  <video class="hero-bg-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="velaro-hero-quality.mp4" type="video/mp4">
+  </video>
+  <div class="hero-fade"></div>
+  <div class="hero-sidebar">
+    <div class="hero-status">
+      <div class="status-left">
+        <span class="status-dot"></span>
+        En tránsito
+      </div>
+      <div class="status-right">
+        <span id="heroClock">--:--</span><br>
+        <span class="status-city">Estación Helion · LEO</span>
+      </div>
+    </div>
+    <div class="hero-bottom">
+      <div class="hero-eyebrow">— Estudio de diseño aeroespacial</div>
+      <h1 class="hero-title display"><span class="word-wrap"><span class="word">FORMA</span></span><br><span class="word-wrap"><span class="word">SIN</span></span><br><span class="word-wrap"><span class="word red">ADORNO</span></span></h1>
+      <p class="hero-desc">Un estudio de SPACIO² como objeto: la geometría que resulta de transportar lo esencial a través del vacío, sin nada de más.</p>
+      <a href="#manifesto" class="hero-cta">
+        Ver el objeto
+        <span class="cta-arrow">&#8599;</span>
+      </a>
+    </div>
+  </div>
+  <div class="hero-image">
+    <div class="hero-corner corner-tl"></div>
+    <div class="hero-corner corner-tr"></div>
+    <div class="hero-corner corner-bl"></div>
+    <div class="hero-corner corner-br"></div>
+    <div class="hero-telemetry mono">
+      <div class="tm-row"><span class="tm-label">VEL</span><span>0,12C</span></div>
+      <div class="tm-row"><span class="tm-label">O&#8322; CARGA</span><span>2,4M L</span></div>
+      <div class="tm-row"><span class="tm-label">RUMBO</span><span>KESS-9B</span></div>
+    </div>
+    <div class="hero-badge badge-1">SPACIO&#178;</div>
+    <div class="hero-badge badge-2">ARCA · CLASE MERIDIAN</div>
+    <div class="stamp" style="top:56%;left:6%;">TRÁNSITO<br>VERIFICADO<br>ARCA-02</div>
+  </div>
+</section>
+
+<div class="spec-strip mono">
+  <div class="spec-item reveal">
+    <div class="spec-value"><span class="count" data-target="126000">0</span><span style="font-size:14px;color:var(--steel)"> km/h</span></div>
+    <div class="spec-label">Velocidad de crucero</div>
+  </div>
+  <div class="spec-item reveal">
+    <div class="spec-value"><span class="count" data-target="48000">0</span><span style="font-size:14px;color:var(--steel)"> MW</span></div>
+    <div class="spec-label">Potencia del reactor</div>
+  </div>
+  <div class="spec-item reveal">
+    <div class="spec-value"><span class="count" data-target="340">0</span><span style="font-size:14px;color:var(--steel)"> m</span></div>
+    <div class="spec-label">Longitud del casco</div>
+  </div>
+  <div class="spec-item reveal">
+    <div class="spec-value">Ti-G</div>
+    <div class="spec-label">Aleación titanio-grafeno</div>
+  </div>
+</div>
+
+<section id="manifesto">
+  <div class="sec-watermark">01</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">01 — ESTUDIO</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">EL</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">OBJETO</span></span></h2>
+    </div>
+  </div>
+  <div class="manifesto">
+    <p class="manifesto-lead reveal">No hay tripulación. La nave existe para una sola tarea — llevar oxígeno a través del vacío, sin nada de más a bordo que lo que esa tarea requiere.</p>
+    <div class="manifesto-body reveal">
+      <p>SPACIO² elimina lo que no es carga: sin cabinas, sin ventanas, sin espacio habitable. Cada metro cúbico del casco es tanque o estructura. La forma no es estilo — es la consecuencia directa de mover 2,4 millones de litros de oxígeno líquido a través del vacío interestelar, minimizando la sección expuesta a radiación y micrometeoritos.</p>
+      <p>Este estudio documenta esa lógica: superficies que existen porque tienen una función, un rojo que aparece solo donde señala algo activo, y un blanco que es en realidad la aleación de titanio-grafeno vista de cerca.</p>
+    </div>
+  </div>
+</section>
+
+<section id="gallery">
+  <div class="sec-watermark">02</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">02 — ARCHIVO</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">EN</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">TRÁNSITO</span></span></h2>
+    </div>
+  </div>
+  <div class="gallery">
+    <div class="gallery-item g1 reveal">
+      <img src="spacio-scan1.jpg" alt="Escaneo de casco, sector de proa">
+      <div class="gallery-caption mono">ESCANEO DE CASCO — SECTOR 04</div>
+    </div>
+    <div class="gallery-item g2 reveal">
+      <img src="spacio-scan2.jpg" alt="Telemetría de propulsión">
+      <div class="gallery-caption mono">TELEMETRÍA — PROPULSIÓN</div>
+    </div>
+    <div class="gallery-item g3 reveal">
+      <img src="spacio-scan3.jpg" alt="Diagnóstico térmico del blindaje">
+      <div class="gallery-caption mono">DIAGNÓSTICO — BLINDAJE TÉRMICO</div>
+    </div>
+    <div class="gallery-item g4 reveal">
+      <img src="spacio-scan4.jpg" alt="Detalle de la aleación del casco">
+      <div class="gallery-caption mono">DETALLE — ALEACIÓN TI-G</div>
+    </div>
+    <div class="gallery-item g5 reveal">
+      <img src="spacio-scan5.jpg" alt="Patrón de radiación en el campo de navegación">
+      <div class="gallery-caption mono">CAMPO DE NAVEGACIÓN</div>
+    </div>
+    <div class="gallery-item g6 reveal">
+      <img src="spacio-scan6.jpg" alt="Superficie del tanque de oxígeno">
+      <div class="gallery-caption mono">TANQUE DE O&#8322; — EXTERIOR</div>
+    </div>
+  </div>
+</section>
+
+<div class="marquee">
+  <div class="marquee-track">
+    <span>SPACIO&#178;</span><span class="accent">·</span><span>PROGRAMA ARCA</span><span class="accent">·</span><span>CLASE MERIDIAN</span><span class="accent">·</span><span>0,12C</span><span class="accent">·</span><span>PROPULSIÓN DE FUSIÓN PULSADA</span><span class="accent">·</span>
+    <span>SPACIO&#178;</span><span class="accent">·</span><span>PROGRAMA ARCA</span><span class="accent">·</span><span>CLASE MERIDIAN</span><span class="accent">·</span><span>0,12C</span><span class="accent">·</span><span>PROPULSIÓN DE FUSIÓN PULSADA</span><span class="accent">·</span>
+  </div>
+</div>
+
+<section id="specs">
+  <div class="sec-watermark">03</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">03 — ESPECIFICACIONES</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">CADA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">PIEZA</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TIENE</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">UN</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.1s">MOTIVO</span></span></h2>
+    </div>
+  </div>
+  <div class="spec-cards">
+    <div class="spec-card reveal">
+      <div class="spec-card-num mono">01</div>
+      <div class="spec-card-title">Propulsión de fusión pulsada</div>
+      <div class="draw-line"></div>
+      <div class="spec-card-desc">Reactores de fusión que generan pulsos de empuje continuo, sin depender de combustible químico. Permite operar el trayecto completo sin repostaje.</div>
+      <div class="spec-card-value mono">48.000 MW</div>
+    </div>
+    <div class="spec-card reveal">
+      <div class="spec-card-num mono">02</div>
+      <div class="spec-card-title">Soporte vital autónomo</div>
+      <div class="draw-line"></div>
+      <div class="spec-card-desc">Sin tripulación: no hay cabinas, aire respirable ni sistemas de gravedad artificial. Todo el volumen del casco es tanque de oxígeno o estructura.</div>
+      <div class="spec-card-value mono">+34% capacidad de carga</div>
+    </div>
+    <div class="spec-card reveal">
+      <div class="spec-card-num mono">03</div>
+      <div class="spec-card-title">Blindaje contra radiación</div>
+      <div class="draw-line"></div>
+      <div class="spec-card-desc">Capas de titanio-grafeno absorben radiación cósmica e impactos de micrometeoritos sin comprometer el peso total de la nave.</div>
+      <div class="spec-card-value mono">−18% masa vs. gen. anterior</div>
+    </div>
+    <div class="spec-card reveal">
+      <div class="spec-card-num mono">04</div>
+      <div class="spec-card-title">Materiales</div>
+      <div class="draw-line"></div>
+      <div class="spec-card-desc">Casco de aleación titanio-grafeno: reduce el peso sin sacrificar rigidez estructural. Resiste ciclos térmicos extremos entre sombra y luz solar directa.</div>
+      <div class="spec-card-value mono">−200°C / +180°C</div>
+    </div>
+  </div>
+</section>
+
+<section id="benefits">
+  <div class="sec-watermark">04</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">04 — RAZONES</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">POR</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">QUÉ</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">ESTA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">FORMA</span></span></h2>
+    </div>
+  </div>
+  <div class="benefits">
+    <div class="benefit reveal">
+      <div class="benefit-num mono">01</div>
+      <div class="benefit-title">Menor sección expuesta</div>
+      <div class="benefit-desc">Un casco alargado y cilíndrico reduce el área expuesta a radiación cósmica y a impactos de micrometeoritos durante el tránsito.</div>
+    </div>
+    <div class="benefit reveal">
+      <div class="benefit-num mono">02</div>
+      <div class="benefit-title">Más carga, menos nave</div>
+      <div class="benefit-desc">Al eliminar cabinas y sistemas de soporte vital tripulado, una nave del mismo tamaño transporta más oxígeno real.</div>
+    </div>
+    <div class="benefit reveal">
+      <div class="benefit-num mono">03</div>
+      <div class="benefit-title">Menos energía por año-luz</div>
+      <div class="benefit-desc">La masa reducida y la propulsión de fusión pulsada bajan el consumo energético frente a la generación anterior de naves de soporte.</div>
+    </div>
+  </div>
+</section>
+
+<section id="voices">
+  <div class="sec-watermark">05</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">05 — VOCES TÉCNICAS</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LECTURAS</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DEL</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">OBJETO</span></span></h2>
+    </div>
+  </div>
+  <div class="quotes">
+    <div class="quote-card reveal">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">SPACIO² no tiene una parte "de diseño" y otra "de ingeniería". Son la misma decisión vista desde dos lados.</p>
+      </div>
+      <div class="quote-attr">Diseño de naves autónomas</div>
+    </div>
+    <div class="quote-card reveal">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">Cada generación del programa ARCA no rediseña la nave desde cero: afina lo que la anterior dejó sin resolver.</p>
+      </div>
+      <div class="quote-attr">Ingeniería de sistemas de soporte vital</div>
+    </div>
+    <div class="quote-card reveal">
+      <div>
+        <div class="quote-mark">"</div>
+        <p class="quote-text">La propulsión de fusión pulsada cambió la pregunta: ya no era cuánto combustible cargar, sino cuánta carga útil se podía llevar en su lugar.</p>
+      </div>
+      <div class="quote-attr">Operaciones de tránsito interestelar</div>
+    </div>
+  </div>
+</section>
+
+<section id="credits">
+  <div class="sec-watermark">06</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">06 — CRÉDITOS</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">QUIÉN</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LO</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">HIZO</span></span></h2>
+    </div>
+  </div>
+  <div class="credits">
+    <div class="credit-card reveal">
+      <div class="credit-role mono">Diseño exterior</div>
+      <div class="credit-name">Kessler & Vann</div>
+      <div class="credit-desc">Estudio de diseño responsable de la línea exterior de las tres generaciones del programa ARCA.</div>
+    </div>
+    <div class="credit-card reveal">
+      <div class="credit-role mono">Fabricante</div>
+      <div class="credit-name">Helion Dynamics</div>
+      <div class="credit-desc">Desarrolló la plataforma Meridian sobre la que se construye SPACIO² y sus variantes de carga.</div>
+    </div>
+    <div class="credit-card reveal">
+      <div class="credit-role mono">Propulsión</div>
+      <div class="credit-name">Halcyon Propulsion</div>
+      <div class="credit-desc">Reactor de fusión pulsada compacto desarrollado específicamente para la clase Meridian.</div>
+    </div>
+    <div class="credit-card reveal">
+      <div class="credit-role mono">Operador</div>
+      <div class="credit-name">Programa ARCA</div>
+      <div class="credit-desc">Opera la flota de transporte de soporte vital entre Estación Helion y las bases de la galaxia exterior.</div>
+    </div>
+  </div>
+</section>
+
+<section id="generations">
+  <div class="sec-watermark">07</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">07 — GENERACIONES</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TRES</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DECISIONES</span></span></h2>
+    </div>
+  </div>
+
+  <div class="gen-tabs mono reveal">
+    <button class="gen-tab active" onclick="switchGen(this,'g1')">SPACIO¹ · 2071</button>
+    <button class="gen-tab" onclick="switchGen(this,'g2')">SPACIO² · 2084</button>
+    <button class="gen-tab" onclick="switchGen(this,'g3')">SPACIO³ · En desarrollo</button>
+  </div>
+
+  <div class="gen-panel active" id="g1">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE ARCA-01</div>
+      <h3 class="display">SPACIO¹</h3>
+      <p>La primera nave del programa ARCA. Tripulada, con propulsión química y cabinas de control — la arquitectura clásica del transporte espacial, heredada de los primeros programas orbitales.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">45.000 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">6</div><div class="gen-spec-label">Tripulación</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">Química</div><div class="gen-spec-label">Propulsión</div></div>
+    </div>
+  </div>
+
+  <div class="gen-panel" id="g2">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE MERIDIAN</div>
+      <h3 class="display">SPACIO²</h3>
+      <p>El objeto de este estudio. Primera generación autónoma: sin tripulación, con propulsión de fusión pulsada. La primera nave del programa ARCA en cruzar a menos de 32 años.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">126.000 km/h</div><div class="gen-spec-label">Velocidad máxima</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Tripulación</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">Fusión pulsada</div><div class="gen-spec-label">Propulsión</div></div>
+    </div>
+  </div>
+
+  <div class="gen-panel" id="g3">
+    <div class="gen-panel-head">
+      <div class="gen-year mono">CLASE MERIDIAN-X</div>
+      <h3 class="display">SPACIO³</h3>
+      <p>Hereda la propulsión autónoma de SPACIO², pero cambia la pregunta: no busca velocidad máxima, busca volumen. En fase de pruebas para rutas de carga múltiple.</p>
+    </div>
+    <div class="gen-specs">
+      <div class="gen-spec-item"><div class="gen-spec-value mono">210.000 km/h</div><div class="gen-spec-label">Velocidad máxima (est.)</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">0</div><div class="gen-spec-label">Tripulación</div></div>
+      <div class="gen-spec-item"><div class="gen-spec-value mono">Fusión mejorada</div><div class="gen-spec-label">Propulsión</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="sec-watermark">08</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">08 — PREGUNTAS TÉCNICAS</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DUDAS</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">FRECUENTES</span></span></h2>
+    </div>
+  </div>
+  <div class="accordion reveal">
+    <div class="accordion-item open">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Por qué SPACIO² no tiene tripulación?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Porque su navegación es autónoma: los sistemas de guiado y propulsión operan sin intervención humana, en vez de depender de una cabina de control. Esto libera todo el volumen del casco para carga de oxígeno.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Qué significa el "²" en SPACIO²?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Es la marca de la segunda generación del programa ARCA — cada salto de clase se expresa como una potencia, reflejando el alcance exponencial que gana la nave en cada generación.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Cuál es la diferencia entre SPACIO¹ y SPACIO²?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>SPACIO¹ era tripulada y usaba propulsión química. SPACIO² es autónoma, con propulsión de fusión pulsada — más del doble de velocidad de crucero y sin necesidad de soporte vital humano.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿Por qué el casco tiene esa forma específica?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>Es un compromiso entre tres problemas: sección expuesta a radiación, distribución del tanque de oxígeno, y disipación térmica. La curva no es estética — es la solución que satisface los tres a la vez.</p></div>
+    </div>
+    <div class="accordion-item">
+      <div class="accordion-q" onclick="toggleAcc(this)">¿El rojo tiene alguna función además de identidad de marca?<span class="plus">+</span></div>
+      <div class="accordion-a"><p>En este estudio sí: lo usamos exclusivamente para señalar elementos activos o interactivos, igual que el rojo en la nave aparece en las luces de posición y las válvulas de carga — nunca como decoración.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <div class="sec-watermark">09</div>
+  <div class="section-head reveal">
+    <div>
+      <div class="section-number mono">09 — CRONOLOGÍA</div>
+      <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LÍNEA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">DE</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TIEMPO</span></span></h2>
+    </div>
+  </div>
+  <div class="timeline">
+    <div class="timeline-track">
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2071</div>
+        <div class="timeline-title">Se funda el programa ARCA</div>
+        <div class="timeline-desc">Primer vuelo de SPACIO¹, tripulado, desde Estación Helion.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2079</div>
+        <div class="timeline-title">Se establece Base Meridian</div>
+        <div class="timeline-desc">Primera base permanente en Kess-9b, punto de destino del programa ARCA.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2084</div>
+        <div class="timeline-title">Debut de SPACIO² (clase Meridian)</div>
+        <div class="timeline-desc">Primera nave del programa ARCA con navegación autónoma y propulsión de fusión pulsada.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2086</div>
+        <div class="timeline-title">Cruce en menos de 32 años</div>
+        <div class="timeline-desc">SPACIO² completa el trayecto a Base Meridian por debajo del tiempo de referencia.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2089</div>
+        <div class="timeline-title">Récord de carga</div>
+        <div class="timeline-desc">2,4 millones de litros de oxígeno líquido transportados en un solo viaje.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2091</div>
+        <div class="timeline-title">Se anuncia SPACIO³</div>
+        <div class="timeline-desc">Programa ARCA confirma el desarrollo de la clase Meridian-X, orientada a volumen de carga.</div>
+      </div>
+      <div class="timeline-item reveal">
+        <div class="timeline-year mono">2093</div>
+        <div class="timeline-title">Flota activa</div>
+        <div class="timeline-desc">12 unidades SPACIO² en servicio regular entre Estación Helion y Base Meridian.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-main">
+    <div class="footer-brand reveal">
+      <div class="display">SPACIO&#178;</div>
+      <p>Estudio conceptual y ficticio de una nave de soporte vital autónoma. Proyecto editorial — SPACIO², el programa ARCA y todas las entidades mencionadas son inventadas.</p>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Índice</div>
+      <a href="#manifesto">Estudio</a>
+      <a href="#gallery">Forma</a>
+      <a href="#generations">Generaciones</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Referencias</div>
+      <a href="#specs">Especificaciones</a>
+      <a href="#voices">Voces técnicas</a>
+      <a href="#credits">Créditos</a>
+      <a href="#timeline">Cronología</a>
+    </div>
+    <div class="footer-col">
+      <div class="footer-col-title mono">Proyecto</div>
+      <a href="index.html">&larr; Volver a Iris</a>
+    </div>
+  </div>
+  <div style="padding:24px 48px;display:flex;justify-content:space-between;border-top:1px solid var(--hairline);font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--steel);">
+    <span>SPACIO² — OBJECT STUDY</span>
+    <span>©2093</span>
+  </div>
+</footer>
+
+</div><!-- /site-frame -->
+
+<div class="build-note">
+  BORRADOR EN CONSTRUCCIÓN — SPACIO² (rebrand completo desde 403/Velaro). Faltan imágenes reales de la nave, se usan escaneos abstractos como placeholder.
+</div>
+
+<div id="custom-cursor">
+  <div class="cursor-cross"></div>
+  <div class="cursor-goo-wrap">
+    <div class="cursor-drop drop-1"></div>
+    <div class="cursor-drop drop-2"></div>
+    <div class="cursor-drop drop-3"></div>
+    <div class="cursor-drop drop-4"></div>
+    <div class="cursor-bubble-shape"></div>
+  </div>
+  <div class="cursor-bubble-text mono">VER</div>
+</div>
+
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="gooFilter">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur"/>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9" result="goo"/>
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+  window.addEventListener('scroll', function(){
+    var h = document.documentElement;
+    var scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    var frameWidth = Math.min(window.innerWidth, 1920);
+    document.getElementById('progressLine').style.width = (scrolled / 100 * frameWidth) + 'px';
+  });
+
+  function switchGen(btn, id){
+    document.querySelectorAll('.gen-tab').forEach(function(t){ t.classList.remove('active'); });
+    document.querySelectorAll('.gen-panel').forEach(function(p){ p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(id).classList.add('active');
+  }
+
+  function toggleAcc(el){
+    var item = el.parentElement;
+    var wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.accordion-item').forEach(function(i){ i.classList.remove('open'); });
+    if(!wasOpen) item.classList.add('open');
+  }
+
+  // Scroll reveal (equivalente a las animaciones de aparición de Rama)
+  var revealItems = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window){
+    var revealObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+    revealItems.forEach(function(el){ revealObserver.observe(el); });
+  } else {
+    revealItems.forEach(function(el){ el.classList.add('visible'); });
+  }
+
+  // Count-up animado para los números del spec-strip
+  var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Video de fondo del hero: failsafe por si el navegador bloquea el autoplay
+  (function(){
+    var video = document.querySelector('.hero-bg-video');
+    if(!video) return;
+    if(reducedMotion){ video.removeAttribute('autoplay'); video.pause(); return; }
+    var tryPlay = function(){ video.play().catch(function(){}); };
+    tryPlay();
+    document.addEventListener('visibilitychange', function(){
+      if(!document.hidden) tryPlay();
+    });
+  })();
+
+  var countEls = document.querySelectorAll('.count');
+  function animateCount(el){
+    var target = parseFloat(el.getAttribute('data-target'), 10);
+    if(reducedMotion){ el.textContent = target.toLocaleString('de-DE'); return; }
+    var duration = 1300;
+    var start = null;
+    function step(ts){
+      if(!start) start = ts;
+      var progress = Math.min((ts - start) / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var value = Math.round(target * eased);
+      el.textContent = value.toLocaleString('de-DE');
+      if(progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+  if('IntersectionObserver' in window && countEls.length){
+    var countObserver = new IntersectionObserver(function(entries){
+      entries.forEach(function(entry){
+        if(entry.isIntersecting){
+          animateCount(entry.target);
+          countObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.5 });
+    countEls.forEach(function(el){ countObserver.observe(el); });
+  }
+
+  // Cursor personalizado global: cruz → burbuja "VER" al pasar sobre elementos activos
+  (function(){
+    var isFinePointer = window.matchMedia && window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+    var cursor = document.getElementById('custom-cursor');
+    if(!isFinePointer || !cursor) return;
+
+    document.documentElement.classList.add('has-custom-cursor');
+
+    document.addEventListener('mousemove', function(e){
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+    });
+
+    var interactiveSelector = 'a, button, .gallery-item, .spec-card, .quote-card, .credit-card, .gen-tab, .accordion-q, .hero-cta, [onclick]';
+    document.querySelectorAll(interactiveSelector).forEach(function(el){
+      el.addEventListener('mouseenter', function(){ cursor.classList.add('active'); });
+      el.addEventListener('mouseleave', function(){ cursor.classList.remove('active'); });
+    });
+
+    document.addEventListener('mouseleave', function(){ cursor.style.opacity = '0'; });
+    document.addEventListener('mouseenter', function(){ cursor.style.opacity = '1'; });
+  })();
+
+  // Reloj en vivo del hero (hora de Fráncfort)
+  function updateHeroClock(){
+    var el = document.getElementById('heroClock');
+    if(!el) return;
+    var now = new Date();
+    el.textContent = now.toLocaleTimeString('es-ES', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/Berlin' });
+  }
+  updateHeroClock();
+  setInterval(updateHeroClock, 30000);
+</script>
+
+</body>
+</html>
