@@ -932,7 +932,7 @@
   .cursor-drop{
     position:absolute;
     top:0;left:0;
-    width:16px;height:16px;
+    width:11px;height:11px;
     border-radius:50%;
     background:var(--red);
     opacity:0;
@@ -943,29 +943,29 @@
   #custom-cursor.active .drop-4{animation:dropMerge4 .95s cubic-bezier(.22,.9,.35,1) .03s forwards;}
 
   @keyframes dropMerge1{
-    0%{opacity:1;transform:translate(calc(-50% - 40px), calc(-50% - 10px)) scale(1);}
+    0%{opacity:1;transform:translate(calc(-50% - 26px), calc(-50% - 7px)) scale(1);}
     100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
   }
   @keyframes dropMerge2{
-    0%{opacity:1;transform:translate(calc(-50% + 38px), calc(-50% + 14px)) scale(1);}
+    0%{opacity:1;transform:translate(calc(-50% + 25px), calc(-50% + 9px)) scale(1);}
     100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
   }
   @keyframes dropMerge3{
-    0%{opacity:1;transform:translate(calc(-50% + 6px), calc(-50% - 34px)) scale(1);}
+    0%{opacity:1;transform:translate(calc(-50% + 4px), calc(-50% - 22px)) scale(1);}
     100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
   }
   @keyframes dropMerge4{
-    0%{opacity:1;transform:translate(calc(-50% - 14px), calc(-50% + 32px)) scale(1);}
+    0%{opacity:1;transform:translate(calc(-50% - 9px), calc(-50% + 21px)) scale(1);}
     100%{opacity:0;transform:translate(-50%,-50%) scale(0.2);}
   }
 
   .cursor-bubble-shape{
     position:absolute;
     top:0;left:0;
-    width:112px;height:44px;
-    margin-top:-22px;
-    margin-left:-56px;
-    border-radius:8px;
+    width:72px;height:30px;
+    margin-top:-15px;
+    margin-left:-36px;
+    border-radius:6px;
     background:var(--red);
     opacity:0;
     transform:scale(0.15,0.15);
@@ -980,9 +980,9 @@
   @keyframes bubbleFormLiquid{
     0%{border-radius:50%; transform:scale(0.15,0.15);}
     28%{border-radius:45% 55% 52% 48% / 60% 55% 45% 40%; transform:scale(0.9,1.15);}
-    50%{border-radius:40px; transform:scale(1.06,0.9);}
-    72%{border-radius:18px; transform:scale(0.97,1.04);}
-    100%{border-radius:8px; transform:scale(1,1);}
+    50%{border-radius:26px; transform:scale(1.06,0.9);}
+    72%{border-radius:12px; transform:scale(0.97,1.04);}
+    100%{border-radius:6px; transform:scale(1,1);}
   }
 
   .cursor-bubble-text{
@@ -990,8 +990,8 @@
     top:0;left:0;
     transform:translate(-50%,-50%);
     font-family:'IBM Plex Mono',monospace;
-    font-size:11.5px;
-    letter-spacing:0.06em;
+    font-size:10px;
+    letter-spacing:0.05em;
     color:var(--white);
     opacity:0;
     pointer-events:none;
@@ -1000,8 +1000,8 @@
   #custom-cursor.active .cursor-bubble-text{opacity:1;transition-delay:.65s;}
 
   @keyframes bubblePulse{
-    0%,100%{border-radius:8px;transform:scale(1,1);}
-    50%{border-radius:10px;transform:scale(1.03,1.05);}
+    0%,100%{border-radius:6px;transform:scale(1,1);}
+    50%{border-radius:8px;transform:scale(1.03,1.05);}
   }
 
   @media (prefers-reduced-motion: reduce){
