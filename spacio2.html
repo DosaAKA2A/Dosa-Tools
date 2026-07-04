@@ -97,6 +97,10 @@
     text-transform:uppercase;
   }
 
+  /* elementos de nav mobile — ocultos en escritorio, no afectan el layout desktop */
+  .nav-toggle{display:none;}
+  .mobile-menu{display:none;}
+
   /* ---------- HERO (split sidebar + imagen, estructura Rama) ---------- */
   .hero{
     min-height:100vh;
@@ -1436,6 +1440,53 @@
     .footer-main{grid-template-columns:1fr 1fr;}
   }
 
+  /* ═══════ AJUSTES SOLO-MOBILE (escritorio intacto) ═══════ */
+  @media (max-width:900px){
+    /* Nav → hamburguesa */
+    header{padding:16px 20px;}
+    header nav{display:none;}
+    .nav-toggle{
+      display:flex;flex-direction:column;justify-content:center;
+      gap:5px;width:36px;height:36px;padding:0;
+      border:none;background:transparent;cursor:pointer;color:inherit;
+    }
+    .nav-toggle span{display:block;width:24px;height:2px;background:currentColor;}
+
+    .mobile-menu{
+      display:block;position:fixed;inset:0;z-index:500;
+      background:var(--carbon);
+      opacity:0;visibility:hidden;pointer-events:none;
+      transition:opacity .32s ease,visibility .32s ease;
+    }
+    .mobile-menu.open{opacity:1;visibility:visible;pointer-events:auto;}
+    .mobile-menu-inner{
+      display:flex;flex-direction:column;justify-content:center;
+      height:100%;padding:0 32px;gap:2px;
+    }
+    .mobile-menu-inner a{
+      color:var(--white);text-decoration:none;margin-left:0;
+      font-family:'Archivo Expanded',sans-serif;font-weight:700;
+      font-size:clamp(30px,8.5vw,46px);line-height:1.05;
+      text-transform:uppercase;letter-spacing:-.01em;
+      padding:18px 0;border-bottom:1px solid rgba(255,255,255,.1);
+    }
+    .mobile-menu-inner a:first-child{color:var(--red);}
+    .mobile-menu-close{
+      position:absolute;top:18px;right:22px;
+      width:44px;height:44px;background:transparent;border:none;
+      color:var(--white);font-size:34px;line-height:1;cursor:pointer;
+    }
+
+    /* Hero: quitar HUD que se amontona */
+    .hero-image .stamp{display:none;}
+    .hero-badge{display:none;}
+    .hero-telemetry{left:20px;bottom:20px;font-size:9px;padding:10px 12px;}
+
+    /* Botón timer más compacto */
+    #btn-2084{bottom:16px;right:16px;padding:11px 15px;font-size:10px;gap:8px;}
+    #panel-2084{bottom:60px;right:16px;padding:26px 22px;width:min(420px,calc(100vw - 32px));}
+  }
+
   /* ---------- FOOTER ---------- */
   footer{
     padding:48px;
@@ -1726,7 +1777,21 @@
     <a href="#generations">Generaciones</a>
     <a href="#faq">Preguntas</a>
   </nav>
+  <button class="nav-toggle" id="navToggle" aria-label="Abrir menú" aria-expanded="false">
+    <span></span><span></span><span></span>
+  </button>
 </header>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <button class="mobile-menu-close" id="mobileMenuClose" aria-label="Cerrar menú">&times;</button>
+  <nav class="mobile-menu-inner">
+    <a href="index.html">&larr; Iris</a>
+    <a href="#manifesto">Estudio</a>
+    <a href="#gallery">Forma</a>
+    <a href="#generations">Generaciones</a>
+    <a href="#faq">Preguntas</a>
+  </nav>
+</div>
 
 <div id="site-frame">
 
@@ -2670,6 +2735,27 @@
         scrambleEl(ebScr, function(el, ft){ el.textContent = ft; el.setAttribute('data-text', ft); });
       }, 6500);
     };
+  })();
+
+  // ══ MENÚ MOBILE (hamburguesa) ══
+  (function(){
+    var t=document.getElementById('navToggle');
+    var m=document.getElementById('mobileMenu');
+    var c=document.getElementById('mobileMenuClose');
+    if(!t||!m) return;
+    function openMenu(){
+      m.classList.add('open'); t.setAttribute('aria-expanded','true');
+      m.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+    }
+    function closeMenu(){
+      m.classList.remove('open'); t.setAttribute('aria-expanded','false');
+      m.setAttribute('aria-hidden','true'); document.body.style.overflow='';
+    }
+    t.addEventListener('click', function(){ m.classList.contains('open')?closeMenu():openMenu(); });
+    if(c) c.addEventListener('click', closeMenu);
+    Array.prototype.forEach.call(m.querySelectorAll('a'), function(a){
+      a.addEventListener('click', closeMenu);
+    });
   })();
 
   // ══ COUNTDOWN 2084 ══
