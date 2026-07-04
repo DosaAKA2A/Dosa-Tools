@@ -620,9 +620,8 @@
   .bv-bg img{
     width:100%;height:100%;
     object-fit:cover;
+    object-position:center center;
     display:block;
-    /* placeholder bg hasta que haya imagen */
-    background:var(--carbon);
   }
   /* overlay oscuro base */
   .bv-bg::after{
@@ -656,7 +655,10 @@
     transform:scale(1.08);
   }
   .bv-col-img img{
-    width:100%;height:100%;object-fit:cover;display:block;
+    width:100%;height:100%;
+    object-fit:cover;
+    object-position:center 30%;
+    display:block;
   }
   .bv-col-img::after{
     content:"";position:absolute;inset:0;
@@ -1625,30 +1627,18 @@
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">POR</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">QUÉ</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">ESTA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">FORMA</span></span></h2>
     </div>
   </div>
-  <!-- Imagen compartida: reemplazar .bv-bg img src cuando tengas la foto.
-       Ratio sugerido: 16:9 apaisado, mín. 1920×1080. La foto se ve fragmentada
-       en cada columna independiente, con su propia variante al hover.
-       Cada .bv-col-img puede llevar una foto diferente (close-up, ángulo distinto)
-       o dejarlo vacío para que solo se vea la imagen base con el overlay quitado. -->
   <div class="bv-scene">
 
-    <!-- fondo compartido -->
+    <!-- fondo compartido: interior arquitectónico — se fragmenta entre columnas -->
     <div class="bv-bg">
-      <div class="gallery-placeholder" style="height:100%;border-radius:0;border:none">
-        <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.35);text-align:center">
-          IMAGEN COMPARTIDA · 16:9 · ~1920 × 1080 px<br>se fragmenta entre las 3 columnas
-        </span>
-      </div>
+      <img src="spacio-bv3.jpg" alt="Interior arquitectónico — fondo compartido">
     </div>
 
-    <!-- columna 1 -->
+    <!-- columna 1: cohete CZ-5 -->
     <div class="bv-col">
       <div class="bv-col-img">
-        <!-- foto alternativa columna 1: ratio libre, se corta por cover -->
-        <div class="gallery-placeholder" style="height:100%;border-radius:0;border:none">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center">FOTO HOVER · COL 1</span>
-        </div>
-        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.72) 0%,transparent 60%)"></div>
+        <img src="spacio-bv1.jpg" alt="Lanzador CZ-5 en ensamblaje">
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.78) 0%,transparent 55%)"></div>
       </div>
       <div class="bv-col-num">01 — RAZONES</div>
       <div class="bv-col-title">Menor<br>sección<br>expuesta</div>
@@ -1656,13 +1646,11 @@
       <div class="bv-col-arrow">↗</div>
     </div>
 
-    <!-- columna 2 -->
+    <!-- columna 2: torre observatorio B&W -->
     <div class="bv-col">
       <div class="bv-col-img">
-        <div class="gallery-placeholder" style="height:100%;border-radius:0;border:none">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center">FOTO HOVER · COL 2</span>
-        </div>
-        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.72) 0%,transparent 60%)"></div>
+        <img src="spacio-bv2.jpg" alt="Torre de telemetría orbital">
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.78) 0%,transparent 55%)"></div>
       </div>
       <div class="bv-col-num">02 — RAZONES</div>
       <div class="bv-col-title">Más carga,<br>menos<br>nave</div>
@@ -1670,13 +1658,11 @@
       <div class="bv-col-arrow">↗</div>
     </div>
 
-    <!-- columna 3 -->
+    <!-- columna 3: interior estructural -->
     <div class="bv-col">
       <div class="bv-col-img">
-        <div class="gallery-placeholder" style="height:100%;border-radius:0;border:none">
-          <span style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center">FOTO HOVER · COL 3</span>
-        </div>
-        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.72) 0%,transparent 60%)"></div>
+        <img src="spacio-bv3.jpg" alt="Interior estructural de módulo de carga">
+        <div style="position:absolute;inset:0;background:linear-gradient(0deg,rgba(10,10,11,.78) 0%,transparent 55%)"></div>
       </div>
       <div class="bv-col-num">03 — RAZONES</div>
       <div class="bv-col-title">Menos<br>energía<br>por año-luz</div>
