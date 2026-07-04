@@ -231,18 +231,30 @@
   .status-city{color:var(--steel);}
 
   .hero-eyebrow{
+    margin-bottom:22px;
+  }
+  /* caja tipo Sanjaya alrededor del label */
+  .hero-eyebrow .eb-box{
+    display:inline-flex;
+    align-items:center;
+    gap:9px;
+    border:1px solid rgba(255,42,42,.42);
+    background:rgba(255,42,42,.05);
+    padding:8px 14px;
     font-family:'Geist Mono','IBM Plex Mono',monospace;
     font-weight:500;
     font-size:12px;
-    letter-spacing:0.22em;
+    letter-spacing:0.2em;
     text-transform:uppercase;
     color:var(--red);
-    margin-bottom:20px;
-    display:flex;
-    align-items:center;
-    gap:10px;
+    line-height:1;
   }
-  .hero-eyebrow .eb-mark{opacity:.55;}
+  .hero-eyebrow .eb-caret{
+    font-size:7px;line-height:1;
+    transform:translateY(-1px);
+    animation:eb-blink 1.2s steps(1) infinite;
+  }
+  @keyframes eb-blink{0%,60%{opacity:1;}61%,100%{opacity:.15;}}
   /* target scramble/glitch del eyebrow */
   .hero-eyebrow .scr{
     position:relative;
@@ -272,8 +284,7 @@
     100%{opacity:0;transform:none;}
   }
   /* caracteres 'basura' del decode */
-  .scramble-dud{color:var(--red);opacity:.9;}
-  .hero-title .scramble-dud{color:var(--red);opacity:.85;}
+  .scramble-dud{color:var(--red);opacity:.92;}
 
   .hero-sidebar .hero-title{
     color:var(--black);
@@ -1737,8 +1748,8 @@
       </div>
     </div>
     <div class="hero-bottom">
-      <div class="hero-eyebrow"><span class="eb-mark">—</span><span class="scr" data-final="ESTUDIO DE DISEÑO AEROESPACIAL" data-text="ESTUDIO DE DISEÑO AEROESPACIAL">ESTUDIO DE DISEÑO AEROESPACIAL</span></div>
-      <h1 class="hero-title display"><span class="scr scr-line" data-final="VACÍO">VACÍO</span><br><span class="scr scr-line" data-final="Y CARGA" data-red="CARGA">Y&nbsp;<span class="red">CARGA</span></span></h1>
+      <div class="hero-eyebrow"><span class="eb-box"><span class="eb-caret">&#9632;</span><span class="scr" data-final="ESTUDIO DE DISEÑO AEROESPACIAL" data-text="ESTUDIO DE DISEÑO AEROESPACIAL">ESTUDIO DE DISEÑO AEROESPACIAL</span></span></div>
+      <h1 class="hero-title display"><span class="word-wrap"><span class="word">VACÍO</span></span><br><span class="word-wrap"><span class="word">Y&nbsp;<span class="red">CARGA</span></span></span></h1>
       <p class="hero-desc">Un estudio de SPACIO² como objeto: la geometría que resulta de transportar lo esencial a través del vacío, sin nada de más.</p>
       <a href="#manifesto" class="hero-cta">
         Ver el objeto
@@ -2603,7 +2614,7 @@
   // HERO GLITCH / TEXT SCRAMBLE (decode estilo Sanjaya)
   // ══════════════════════════════════════════
   (function(){
-    var CHARS = '!<>-_\\/[]{}=+*^?#/\\|01_0123456789ABCDEF';
+    var CHARS = '#.^>?]<:;+*!/\\|{}[]=~-_%$&@01';
     function scrambleEl(el, done){
       var finalText = el.getAttribute('data-final') || el.textContent;
       var from = el.textContent;
@@ -2643,22 +2654,21 @@
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var eyebrow = document.querySelector('.hero-eyebrow');
       var ebScr   = document.querySelector('.hero-eyebrow .scr');
-      var lines   = document.querySelectorAll('.hero-title .scr-line');
+      if(!ebScr) return;
       if(reduce){
-        if(ebScr) ebScr.textContent = ebScr.getAttribute('data-final');
-        Array.prototype.forEach.call(lines,function(l){ finishLine(l,l.getAttribute('data-final')); });
+        ebScr.textContent = ebScr.getAttribute('data-final');
         if(eyebrow) eyebrow.classList.add('glitch-live');
         return;
       }
-      if(ebScr){
-        scrambleEl(ebScr, function(el, ft){
-          el.textContent = ft; el.setAttribute('data-text', ft);
-          if(eyebrow) eyebrow.classList.add('glitch-live');
-        });
-      }
-      Array.prototype.forEach.call(lines,function(line, i){
-        setTimeout(function(){ scrambleEl(line, finishLine); }, 140 + i*190);
+      scrambleEl(ebScr, function(el, ft){
+        el.textContent = ft; el.setAttribute('data-text', ft);
+        if(eyebrow) eyebrow.classList.add('glitch-live');
       });
+      // re-glitch periódico sutil — el label se mantiene "vivo" como en Sanjaya
+      setInterval(function(){
+        if(document.hidden) return;
+        scrambleEl(ebScr, function(el, ft){ el.textContent = ft; el.setAttribute('data-text', ft); });
+      }, 6500);
     };
   })();
 
