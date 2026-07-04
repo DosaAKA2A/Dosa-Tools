@@ -1479,6 +1479,149 @@
     line-height:1.5;
     opacity:0.85;
   }
+
+  /* ── GLITCH: section-number labels ── */
+  .section-number{
+    position:relative;
+    display:inline-block;
+  }
+  .section-number::before,
+  .section-number::after{
+    content:attr(data-text);
+    position:absolute;
+    inset:0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:inherit;
+    color:inherit;
+    opacity:0;
+    pointer-events:none;
+  }
+  .section-head.visible .section-number::before{
+    color:var(--red);
+    left:2px;
+    clip-path:polygon(0 30%,100% 30%,100% 55%,0 55%);
+    animation:glitch-a .18s steps(1) 0.55s 3 alternate;
+  }
+  .section-head.visible .section-number::after{
+    color:rgba(0,180,255,.7);
+    left:-2px;
+    clip-path:polygon(0 55%,100% 55%,100% 80%,0 80%);
+    animation:glitch-b .18s steps(1) 0.58s 3 alternate;
+  }
+  @keyframes glitch-a{
+    0%{opacity:0}
+    20%{opacity:1;transform:translateX(3px)}
+    40%{opacity:0}
+    60%{opacity:1;transform:translateX(-2px)}
+    80%{opacity:0}
+    100%{opacity:0;transform:none}
+  }
+  @keyframes glitch-b{
+    0%{opacity:0}
+    20%{opacity:1;transform:translateX(-3px)}
+    40%{opacity:0}
+    60%{opacity:1;transform:translateX(2px)}
+    80%{opacity:0}
+    100%{opacity:0;transform:none}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .section-number::before,.section-number::after{display:none;}
+  }
+
+  /* ── STICKY SECTIONS: sección fija mientras el scroll pasa ── */
+  .sticky-wrap{
+    position:relative;
+    height:180vh;     /* consume scroll — ajustar por sección */
+  }
+  .sticky-wrap .sticky-inner{
+    position:sticky;
+    top:0;
+    overflow:hidden;
+  }
+  /* contenido dentro de sticky: aparece al entrar */
+  .sticky-wrap .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .75s cubic-bezier(.16,1,.3,1), transform .75s cubic-bezier(.16,1,.3,1);
+  }
+  .sticky-wrap .reveal.visible{
+    opacity:1;transform:none;
+  }
+
+  /* ── BOTÓN FLOTANTE CONTADOR ── */
+  #btn-2084{
+    position:fixed;
+    bottom:28px;right:28px;
+    z-index:200;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--carbon);background:var(--white);
+    border:1px solid rgba(23,23,23,.2);
+    padding:14px 22px;
+    cursor:pointer;
+    display:flex;align-items:center;gap:10px;
+    transition:background .3s,color .3s,border-color .3s;
+    box-shadow:0 2px 16px rgba(0,0,0,.08);
+  }
+  #btn-2084:hover{background:var(--carbon);color:var(--white);border-color:var(--carbon);}
+  #btn-2084 .dot2084{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none;}
+
+  /* panel contador */
+  #panel-2084{
+    position:fixed;
+    bottom:78px;right:28px;
+    z-index:199;
+    width:min(520px,calc(100vw - 56px));
+    background:var(--carbon);
+    border:1px solid rgba(255,255,255,.1);
+    padding:36px;
+    overflow:hidden;
+    max-height:0;opacity:0;
+    transition:max-height .55s cubic-bezier(.16,1,.3,1), opacity .4s ease;
+    pointer-events:none;
+  }
+  #panel-2084.open{
+    max-height:400px;opacity:1;pointer-events:auto;
+  }
+  .cd-eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;
+    letter-spacing:.1em;text-transform:uppercase;
+    color:var(--red);margin-bottom:20px;
+  }
+  .cd-headline{
+    font-family:'Archivo Expanded',sans-serif;font-weight:900;
+    font-size:clamp(.9rem,1.6vw,1.2rem);text-transform:uppercase;
+    color:var(--white);letter-spacing:-.02em;line-height:1.1;
+    margin-bottom:28px;max-width:34ch;
+  }
+  .cd-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;
+  }
+  .cd-unit{
+    display:flex;flex-direction:column;gap:6px;
+  }
+  .cd-val{
+    font-family:'Archivo Expanded',sans-serif;font-weight:900;
+    font-size:clamp(1.8rem,3.5vw,2.8rem);letter-spacing:-.04em;
+    color:var(--white);line-height:1;
+    position:relative;overflow:hidden;
+  }
+  .cd-val .cur,.cd-val .nxt{
+    display:block;
+    transition:transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  .cd-val .nxt{
+    position:absolute;inset:0;
+    transform:translateY(100%);
+  }
+  .cd-val.flip .cur{transform:translateY(-100%);}
+  .cd-val.flip .nxt{transform:translateY(0);}
+  .cd-label{
+    font-family:'IBM Plex Mono',monospace;font-size:9px;
+    letter-spacing:.1em;text-transform:uppercase;
+    color:rgba(255,255,255,.4);
+  }
+
 </style>
 </head>
 <body>
@@ -1605,7 +1748,7 @@
   <div class="sec-watermark">01</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">01 — ESTUDIO</div>
+      <div class="section-number mono" data-text="01 — ESTUDIO">01 — ESTUDIO</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">EL</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">OBJETO</span></span></h2>
     </div>
   </div>
@@ -1626,7 +1769,7 @@
   <div class="sec-watermark">02</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">02 — ARCHIVO</div>
+      <div class="section-number mono" data-text="02 — ARCHIVO">02 — ARCHIVO</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">EN</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">TRÁNSITO</span></span></h2>
     </div>
   </div>
@@ -1676,7 +1819,7 @@
   <div class="sec-watermark">03</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">03 — ESPECIFICACIONES</div>
+      <div class="section-number mono" data-text="03 — ESPECIFICACIONES">03 — ESPECIFICACIONES</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">CADA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">PIEZA</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TIENE</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">UN</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.1s">MOTIVO</span></span></h2>
     </div>
   </div>
@@ -1716,7 +1859,7 @@
   <div class="sec-watermark">04</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">04 — BASES DE OPERACIÓN</div>
+      <div class="section-number mono" data-text="04 — BASES DE OPERACIÓN">04 — BASES DE OPERACIÓN</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DONDE</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">OPERA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">SPACIO²</span></span></h2>
     </div>
   </div>
@@ -1762,7 +1905,7 @@
   <div class="sec-watermark">05</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">05 — VOCES TÉCNICAS</div>
+      <div class="section-number mono" data-text="05 — VOCES TÉCNICAS">05 — VOCES TÉCNICAS</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LECTURAS</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DEL</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">OBJETO</span></span></h2>
     </div>
   </div>
@@ -1795,7 +1938,7 @@
   <div class="sec-watermark">06</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">06 — CRÉDITOS</div>
+      <div class="section-number mono" data-text="06 — CRÉDITOS">06 — CRÉDITOS</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">QUIÉN</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LO</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">HIZO</span></span></h2>
     </div>
   </div>
@@ -1833,7 +1976,7 @@
   <div class="sec-watermark">07</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">07 — GENERACIONES</div>
+      <div class="section-number mono" data-text="07 — GENERACIONES">07 — GENERACIONES</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TRES</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DECISIONES</span></span></h2>
     </div>
   </div>
@@ -1896,7 +2039,7 @@
   <div class="sec-watermark">08</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">08 — PREGUNTAS TÉCNICAS</div>
+      <div class="section-number mono" data-text="08 — PREGUNTAS TÉCNICAS">08 — PREGUNTAS TÉCNICAS</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">DUDAS</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">FRECUENTES</span></span></h2>
     </div>
   </div>
@@ -1928,7 +2071,7 @@
   <div class="sec-watermark">09</div>
   <div class="section-head reveal">
     <div>
-      <div class="section-number mono">09 — CRONOLOGÍA</div>
+      <div class="section-number mono" data-text="09 — CRONOLOGÍA">09 — CRONOLOGÍA</div>
       <h2 class="section-title display"><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">LÍNEA</span></span> <span class="word-wrap"><span class="word-title" style="animation-delay:0.05s">DE</span></span><br><span class="word-wrap"><span class="word-title" style="animation-delay:0.0s">TIEMPO</span></span></h2>
     </div>
   </div>
@@ -2422,7 +2565,75 @@
       el.addEventListener('mouseenter', function(){ sndCursorMorph(); });
     });
   })();
+
+  // ══ COUNTDOWN 2084 ══
+  function toggle2084(){
+    var p=document.getElementById('panel-2084');
+    p.classList.toggle('open');
+    if(p.classList.contains('open')) startCountdown();
+  }
+  var _cdRunning=false;
+  function startCountdown(){ if(_cdRunning) return; _cdRunning=true; tickCountdown(); }
+  function flipUnit(id,newVal){
+    var el=document.getElementById('cd-'+id);
+    if(!el) return;
+    var cur=el.querySelector('.cur'),nxt=el.querySelector('.nxt');
+    var str=String(newVal).padStart(2,'0');
+    if(cur.textContent===str) return;
+    nxt.textContent=str;
+    el.classList.add('flip');
+    setTimeout(function(){ cur.textContent=str; el.classList.remove('flip'); },360);
+  }
+  function tickCountdown(){
+    var now=new Date(), target=new Date('2084-01-01T00:00:00'), diff=target-now;
+    if(diff<=0){ ['y','m','d','h'].forEach(function(id){flipUnit(id,0);}); return; }
+    var y=target.getFullYear()-now.getFullYear();
+    var tmp=new Date(now); tmp.setFullYear(tmp.getFullYear()+y);
+    if(tmp>target) y--;
+    var base=new Date(now); base.setFullYear(base.getFullYear()+y);
+    var m=0;
+    while(true){ var nxt2=new Date(base); nxt2.setMonth(nxt2.getMonth()+m+1); if(nxt2>target) break; m++; }
+    var base2=new Date(base); base2.setMonth(base2.getMonth()+m);
+    var rem=target-base2;
+    var d=Math.floor(rem/86400000), h=Math.floor((rem%86400000)/3600000);
+    flipUnit('y',y); flipUnit('m',m); flipUnit('d',d); flipUnit('h',h);
+    setTimeout(tickCountdown,60000);
+  }
+  document.addEventListener('click',function(e){
+    var p=document.getElementById('panel-2084'),b=document.getElementById('btn-2084');
+    if(p&&p.classList.contains('open')&&!p.contains(e.target)&&!b.contains(e.target)) p.classList.remove('open');
+  });
+
 </script>
+
+
+<!-- ── BOTÓN FLOTANTE COUNTDOWN 2084 ── -->
+<button id="btn-2084" onclick="toggle2084()" aria-label="Contador hasta 2084">
+  <span class="dot2084"></span>TIEMPO HASTA 2084
+</button>
+
+<div id="panel-2084" role="dialog" aria-modal="false" aria-label="Contador regresivo">
+  <div class="cd-eyebrow">PROGRAMA ARCA — VENTANA DE ADQUISICIÓN</div>
+  <div class="cd-headline">¿Cuánto tiempo tienes para reservar tu primera unidad SPACIO²?</div>
+  <div class="cd-grid">
+    <div class="cd-unit">
+      <div class="cd-val" id="cd-y"><span class="cur">--</span><span class="nxt"></span></div>
+      <div class="cd-label">Años</div>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-val" id="cd-m"><span class="cur">--</span><span class="nxt"></span></div>
+      <div class="cd-label">Meses</div>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-val" id="cd-d"><span class="cur">--</span><span class="nxt"></span></div>
+      <div class="cd-label">Días</div>
+    </div>
+    <div class="cd-unit">
+      <div class="cd-val" id="cd-h"><span class="cur">--</span><span class="nxt"></span></div>
+      <div class="cd-label">Horas</div>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
