@@ -290,6 +290,19 @@
   /* caracteres 'basura' del decode */
   .scramble-dud{color:var(--red);opacity:.92;}
 
+  /* glitch reutilizable para badge + telemetría (mismo lenguaje que el eyebrow) */
+  .scr{position:relative;display:inline-block;}
+  .scr.rgb-live::before,
+  .scr.rgb-live::after{
+    content:attr(data-text);
+    position:absolute;inset:0;
+    pointer-events:none;opacity:0;
+  }
+  .scr.rgb-live::before{color:rgba(0,180,255,.85);left:-1.4px;animation:eb-glitch .12s steps(1) infinite;}
+  .scr.rgb-live::after{color:rgba(255,42,42,.9);left:1.4px;animation:eb-glitch .12s steps(1) infinite reverse;}
+  .hero-telemetry .scr.rgb-live .scramble-dud,
+  .hero-badge .scr .scramble-dud{color:var(--red);}
+
   .hero-sidebar .hero-title{
     color:var(--black);
     font-size:clamp(40px,4.2vw,58px);
@@ -1477,9 +1490,9 @@
       color:var(--white);font-size:34px;line-height:1;cursor:pointer;
     }
 
-    /* Hero: quitar HUD que se amontona */
+    /* Hero: quitar solo el sello grande que se amontona */
     .hero-image .stamp{display:none;}
-    .hero-badge{display:none;}
+    .hero-badge{font-size:9px;padding:7px 11px;}
     .hero-telemetry{left:20px;bottom:20px;font-size:9px;padding:10px 12px;}
 
     /* Botón timer más compacto */
@@ -1845,11 +1858,11 @@
     <div class="hero-corner corner-bl"></div>
     <div class="hero-corner corner-br"></div>
     <div class="hero-telemetry mono">
-      <div class="tm-row"><span class="tm-label">VEL</span><span>0,12C</span></div>
-      <div class="tm-row"><span class="tm-label">O&#8322; CARGA</span><span>2,4M L</span></div>
-      <div class="tm-row"><span class="tm-label">RUMBO</span><span>KESS-9B</span></div>
+      <div class="tm-row"><span class="tm-label">VEL</span><span class="scr tm-val" data-final="0,12C" data-text="0,12C">0,12C</span></div>
+      <div class="tm-row"><span class="tm-label">O&#8322; CARGA</span><span class="scr tm-val" data-final="2,4M L" data-text="2,4M L">2,4M L</span></div>
+      <div class="tm-row"><span class="tm-label">RUMBO</span><span class="scr tm-val" data-final="KESS-9B" data-text="KESS-9B">KESS-9B</span></div>
     </div>
-    <div class="hero-badge badge-2">ARCA · CLASE MERIDIAN</div>
+    <div class="hero-badge badge-2"><span class="scr" data-final="ARCA &#183; CLASE MERIDIAN" data-text="ARCA &#183; CLASE MERIDIAN">ARCA &#183; CLASE MERIDIAN</span></div>
     <div class="stamp" style="top:56%;left:6%;">TRÁNSITO<br>VERIFICADO<br>ARCA-02</div>
   </div>
 </section>
@@ -2736,21 +2749,43 @@
       var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var eyebrow = document.querySelector('.hero-eyebrow');
       var ebScr   = document.querySelector('.hero-eyebrow .scr');
-      if(!ebScr) return;
+      var badge   = document.querySelector('.hero-badge .scr');
+      var telVals = Array.prototype.slice.call(document.querySelectorAll('.hero-telemetry .tm-val'));
+
+      function settle(el, ft){ el.textContent = ft; el.setAttribute('data-text', ft); }
+
       if(reduce){
-        ebScr.textContent = ebScr.getAttribute('data-final');
+        if(ebScr) settle(ebScr, ebScr.getAttribute('data-final'));
+        if(badge) settle(badge, badge.getAttribute('data-final'));
+        telVals.forEach(function(v){ settle(v, v.getAttribute('data-final')); });
         if(eyebrow) eyebrow.classList.add('glitch-live');
         return;
       }
-      scrambleEl(ebScr, function(el, ft){
-        el.textContent = ft; el.setAttribute('data-text', ft);
-        if(eyebrow) eyebrow.classList.add('glitch-live');
+
+      // ── intro: decodifica los tres bloques, escalonado ──
+      var intro = [];
+      if(ebScr) intro.push(ebScr);
+      telVals.forEach(function(v){ intro.push(v); });
+      if(badge) intro.push(badge);
+      intro.forEach(function(el, i){
+        setTimeout(function(){
+          scrambleEl(el, function(e, ft){
+            settle(e, ft);
+            if(e===ebScr){ if(eyebrow) eyebrow.classList.add('glitch-live'); }
+            else { e.classList.add('rgb-live'); }
+          });
+        }, 140 + i*150);
       });
-      // re-glitch periódico sutil — el label se mantiene "vivo" como en Sanjaya
+
+      // ── glitch recurrente (después del intro, en los tres lugares) ──
+      function reglitch(el){ if(el && !document.hidden) scrambleEl(el, settle); }
+      // telemetría: lecturas "vivas" cada 3s, escalonadas
       setInterval(function(){
-        if(document.hidden) return;
-        scrambleEl(ebScr, function(el, ft){ el.textContent = ft; el.setAttribute('data-text', ft); });
-      }, 6500);
+        telVals.forEach(function(v, i){ setTimeout(function(){ reglitch(v); }, i*160); });
+      }, 3000);
+      // badge y eyebrow alternando cada 4.5s
+      var alt = 0;
+      setInterval(function(){ reglitch(alt++ % 2 === 0 ? badge : ebScr); }, 4500);
     };
   })();
 
