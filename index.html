@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>IRIS — Estudio de Diseño & Automatización</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <link rel="icon" href="IRIS_ROJO.svg" type="image/svg+xml">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -481,7 +484,7 @@
       </div>
       <div class="browser">
         <div class="browser-bar"><span class="wm">IRIS STUDIO</span></div>
-        <div class="browser-body"><iframe id="irisFrame" src="iris-frame.html?v=20260703w" scrolling="yes" frameborder="0"></iframe></div>
+        <div class="browser-body"><iframe id="irisFrame" src="iris-frame.html?v=20260704a" scrolling="yes" frameborder="0"></iframe></div>
       </div>
     </div>
   </div>
@@ -628,7 +631,7 @@ function isUnlocked(key) {
 }
 function setUnlocked(key) { localStorage.setItem(key, JSON.stringify({ ts: Date.now() })); sessionStorage.setItem(key, '1'); }
 const PASSWORDS = { corlima: 'Corlima2026', diseno: 'Socrates99@', spacio: '455211' };
-const DESTINATIONS = { corlima: 'herramientas_corlima.html', diseno: 'herramientas_diseno.html', spacio: 'spacio2.html?v=20260703x' };
+const DESTINATIONS = { corlima: 'herramientas_corlima.html', diseno: 'herramientas_diseno.html', spacio: 'spacio2.html?v=20260704a' };
 const STORAGE_KEYS = { corlima: 'corlimaAccess', diseno: 'disenoAccess', spacio: 'spacioAccess' };
 function openModal(which) {
   if (isUnlocked(STORAGE_KEYS[which])) { setUnlocked(STORAGE_KEYS[which]); window.location.href = DESTINATIONS[which]; return; }
