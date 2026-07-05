@@ -799,69 +799,6 @@
   /* ── Efecto Pokota: fondo estirado en bordes ── */
   
 
-  /* ── Nav del hero ── */
-  .hero-nav {
-    position: absolute;
-    top: 58px; left: 58px; right: 58px;
-    z-index: 10;
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    padding: clamp(18px,2.4vw,32px) clamp(24px,3.6vw,52px);
-  }
-  .hero-nav-logo {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-  }
-  .hero-nav-wordmark {
-    font-family: "Clash Display", 'Inter', sans-serif;
-    font-size: clamp(52px, 7vw, 96px);
-    font-weight: 700;
-    line-height: .88;
-    letter-spacing: -.03em;
-    color: #fff;
-  }
-  .hero-nav-wordmark .s { color: #fff; }
-  .hero-nav-tagline {
-    font-size: 12px;
-    color: rgba(255,255,255,0.9);
-    letter-spacing: .03em;
-    font-family: 'Inter', sans-serif;
-  }
-  .hero-nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 6px 32px;
-    padding-top: 8px;
-  }
-  .hero-nav-links a {
-    font-family: 'Inter', sans-serif;
-    font-size: 11px;
-    font-weight: 500;
-    letter-spacing: .18em;
-    text-transform: uppercase;
-    color: rgba(255,255,255,0.72);
-    position: relative;
-    padding: 3px 0;
-    transition: color .3s ease;
-  }
-  .hero-nav-links a::before { display: none; }
-  .hero-nav-links a:hover { color: #fff; }
-  .hero-nav-links a::after { display: none; }
-  @media (max-width: 620px) {
-    /* Nav apilado: wordmark arriba, links limpios en una fila debajo */
-    .hero-nav { top: 40px; left: 20px; right: 20px; padding: 0; flex-direction: column; align-items: flex-start; gap: 12px; }
-    .hero-nav-wordmark { font-size: 44px; }
-    .hero-nav-tagline { display: none; }
-    .hero-nav-links { padding-top: 0; gap: 8px 18px; }
-    .hero-nav-links a { font-size: 11px; padding: 2px 0; letter-spacing: .08em; }
-    /* Ojo de la modelo centrado horizontalmente (por defecto queda pegado al borde derecho) */
-    .hero-banner-img { object-position: 70% 50%; }
-  }
-
-
   /* ══ Hero nav: logo grande libre + botón menú compacto ══ */
   .hero-nav {
     position: absolute;
