@@ -862,146 +862,136 @@
   }
 
 
-  /* ══ NAV estilo Precept (caja flotante + panel desplegable) ══ */
-  .iris-nav {
+  /* ══ Hero nav: logo grande libre + botón menú compacto ══ */
+  .hero-nav {
     position: absolute;
-    top: 34px; left: 34px;
+    top: 58px; left: 58px; right: 58px;
     z-index: 40;
-    width: min(370px, calc(100vw - 68px));
-    border-radius: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    pointer-events: none;
+  }
+  .hero-nav-logo { pointer-events: auto; display: flex; flex-direction: column; gap: 5px; }
+  .hero-nav-wordmark {
+    font-family: "Clash Display", 'Inter', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 700; line-height: .88; letter-spacing: -.03em; color: #fff;
+  }
+  .hero-nav-wordmark .s { color: #fff; }
+  .hero-nav-tagline {
+    font-size: 12px; color: rgba(255,255,255,0.9); letter-spacing: .03em;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Caja compacta del menú (arriba derecha) */
+  .iris-menu {
+    pointer-events: auto;
+    width: 300px; max-width: calc(100vw - 116px);
+    border-radius: 14px;
     background: rgba(14,14,16,0.34);
     backdrop-filter: blur(20px) saturate(1.2);
     -webkit-backdrop-filter: blur(20px) saturate(1.2);
     border: 1px solid rgba(255,255,255,0.12);
-    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 20px 50px -20px rgba(0,0,0,0.55);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 20px 50px -22px rgba(0,0,0,0.55);
     transition: background .6s cubic-bezier(0.16,1,0.3,1), border-color .6s cubic-bezier(0.16,1,0.3,1);
     --ink: #fff;
-    pointer-events: none;
   }
-  .iris-nav .in-head { pointer-events: auto; }
-  .iris-nav.open { pointer-events: auto; background: rgba(244,244,240,0.92); border-color: rgba(0,0,0,0.08); --ink: #111; }
-  .iris-nav * { box-sizing: border-box; }
+  .iris-menu.open { background: rgba(244,244,240,0.94); border-color: rgba(0,0,0,0.08); --ink: #111; }
+  .iris-menu * { box-sizing: border-box; }
 
-  .iris-nav .in-head {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0 16px;
-    padding: 16px 18px 14px;
-    align-items: center;
+  .iris-menu .im-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 14px;
   }
-  .iris-nav .in-logo {
-    font-family: "Clash Display", 'Inter', sans-serif;
-    font-size: 26px; font-weight: 700; letter-spacing: -.03em;
-    line-height: 1; color: var(--ink);
-    transition: color .6s cubic-bezier(0.16,1,0.3,1);
-  }
-  .iris-nav.open .in-logo .s { color: #c0392b; }
-  .iris-nav .in-logo .s { color: var(--ink); transition: color .6s; }
-  .iris-nav .in-crumb {
-    font-family: 'Inter', monospace;
-    font-size: 10px; letter-spacing: .14em; text-transform: uppercase;
-    color: var(--ink); opacity: .5;
-    justify-self: start; padding-left: 2px;
-    transition: color .6s cubic-bezier(0.16,1,0.3,1);
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .iris-nav .in-btn {
+  .iris-menu .im-btn {
     display: flex; align-items: center; gap: 10px;
-    justify-self: end;
     background: none; border: none; cursor: pointer;
-    color: var(--ink); padding: 0;
-    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: -.02em;
+    color: var(--ink); padding: 0; width: 100%; justify-content: space-between;
+    font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: -.01em;
     transition: color .6s cubic-bezier(0.16,1,0.3,1);
   }
-  .iris-nav .in-chev {
+  .iris-menu .im-chev {
     width: 32px; height: 32px; border-radius: 9px;
     background: color-mix(in srgb, var(--ink) 10%, transparent);
-    display: grid; place-items: center;
+    display: grid; place-items: center; flex-shrink: 0;
     transition: background .6s cubic-bezier(0.16,1,0.3,1);
   }
-  .iris-nav .in-chev svg {
-    width: 15px; height: 15px; fill: currentColor;
-    transition: transform .55s cubic-bezier(0.16,1,0.3,1);
-  }
-  .iris-nav .in-chev svg circle {
+  .iris-menu .im-chev svg { width: 15px; height: 15px; fill: currentColor; transition: transform .55s cubic-bezier(0.16,1,0.3,1); }
+  .iris-menu .im-chev svg circle {
     transform-box: fill-box; transform-origin: center;
     transition: opacity .5s cubic-bezier(0.16,1,0.3,1), transform .5s cubic-bezier(0.16,1,0.3,1);
   }
-  .iris-nav.open .in-chev .in-dot-edge { opacity: 0; transform: scale(0); }
-  .iris-nav.open .in-chev svg { transform: rotate(90deg); }
+  .iris-menu.open .im-chev .im-dot-edge { opacity: 0; transform: scale(0); }
+  .iris-menu.open .im-chev svg { transform: rotate(90deg); }
 
-  .iris-nav .in-panel {
-    display: grid; grid-template-rows: 0fr;
-    transition: grid-template-rows .9s cubic-bezier(0.16,1,0.3,1);
-  }
-  .iris-nav.open .in-panel { grid-template-rows: 1fr; }
-  .iris-nav .in-panel-inner { overflow: hidden; min-height: 0; }
-  .iris-nav .in-pad { padding: 6px 18px 20px; }
-  .iris-nav ul { list-style: none; margin: 0; padding: 0; }
-  .iris-nav .in-links li, .iris-nav .in-subs li { position: relative; }
-  .iris-nav .in-links li { padding-bottom: 9px; }
-  .iris-nav .in-subs li { padding-bottom: 6px; }
-  .iris-nav .in-links li::after, .iris-nav .in-subs li::after {
+  .iris-menu .im-panel { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .9s cubic-bezier(0.16,1,0.3,1); }
+  .iris-menu.open .im-panel { grid-template-rows: 1fr; }
+  .iris-menu .im-panel-inner { overflow: hidden; min-height: 0; }
+  .iris-menu .im-pad { padding: 2px 14px 16px; }
+  .iris-menu ul { list-style: none; margin: 0; padding: 0; }
+  .iris-menu .im-links li, .iris-menu .im-subs li { position: relative; }
+  .iris-menu .im-links li { padding-bottom: 8px; }
+  .iris-menu .im-subs li { padding-bottom: 5px; }
+  .iris-menu .im-links li::after, .iris-menu .im-subs li::after {
     content: ""; position: absolute; left: 4px; right: 4px; bottom: 0; height: 1px;
     background: color-mix(in srgb, var(--ink) 16%, transparent);
     transform: scaleX(0); transform-origin: left center;
     transition: transform .6s cubic-bezier(0.16,1,0.3,1); transition-delay: var(--d,0s);
   }
-  .iris-nav.open .in-links li::after, .iris-nav.open .in-subs li::after { transform: scaleX(1); }
-  .iris-nav .in-subs li:last-child::after { display: none; }
+  .iris-menu.open .im-links li::after, .iris-menu.open .im-subs li::after { transform: scaleX(1); }
+  .iris-menu .im-subs li:last-child::after { display: none; }
 
-  .iris-nav .in-link {
+  .iris-menu .im-link {
     display: block; position: relative;
-    padding: 11px 4px 2px 26px; text-decoration: none; color: var(--ink); cursor: pointer;
+    padding: 10px 4px 2px 24px; text-decoration: none; color: var(--ink); cursor: pointer;
     transition: color .6s cubic-bezier(0.16,1,0.3,1);
   }
-  .iris-nav .in-links .in-link {
+  .iris-menu .im-links .im-link {
     font-family: "Clash Display", 'Inter', sans-serif;
-    font-size: 23px; font-weight: 600; letter-spacing: -.03em; line-height: 1.2;
+    font-size: 20px; font-weight: 600; letter-spacing: -.03em; line-height: 1.2;
   }
-  .iris-nav .in-links .in-link::before {
+  .iris-menu .im-links .im-link::before {
     content: ""; position: absolute; left: 4px; top: 50%;
     width: 6px; height: 6px; margin-top: -3px; background: currentColor;
     transform: rotate(45deg) scale(0); opacity: 0;
     transition: transform .5s cubic-bezier(0.16,1,0.3,1), opacity .4s cubic-bezier(0.16,1,0.3,1);
   }
-  .iris-nav .in-links li:hover .in-link::before,
-  .iris-nav .in-links .in-link.current::before { transform: rotate(45deg) scale(1); opacity: 1; }
+  .iris-menu .im-links li:hover .im-link::before,
+  .iris-menu .im-links .im-link.current::before { transform: rotate(45deg) scale(1); opacity: 1; }
 
-  .iris-nav .in-roll {
-    position: relative; display: inline-block; overflow: hidden; vertical-align: top;
-    line-height: 1.14; padding-bottom: .14em;
-  }
-  .iris-nav .in-roll span { display: block; transition: transform .55s cubic-bezier(0.16,1,0.3,1); }
-  .iris-nav .in-roll .in-roll-in { position: absolute; left: 0; top: 0; transform: translateY(100%); }
-  .iris-nav .in-link:hover .in-roll .in-roll-out { transform: translateY(-100%); }
-  .iris-nav .in-link:hover .in-roll .in-roll-in { transform: translateY(0); }
+  .iris-menu .im-roll { position: relative; display: inline-block; overflow: hidden; vertical-align: top; line-height: 1.14; padding-bottom: .14em; }
+  .iris-menu .im-roll span { display: block; transition: transform .55s cubic-bezier(0.16,1,0.3,1); }
+  .iris-menu .im-roll .im-roll-in { position: absolute; left: 0; top: 0; transform: translateY(100%); }
+  .iris-menu .im-link:hover .im-roll .im-roll-out { transform: translateY(-100%); }
+  .iris-menu .im-link:hover .im-roll .im-roll-in { transform: translateY(0); }
   @media (hover: hover) {
-    .iris-nav .in-links:hover li:not(:hover) .in-link,
-    .iris-nav .in-subs:hover li:not(:hover) .in-link { opacity: .32; }
-    .iris-nav .in-link { transition: opacity .45s cubic-bezier(0.16,1,0.3,1), color .6s; }
+    .iris-menu .im-links:hover li:not(:hover) .im-link,
+    .iris-menu .im-subs:hover li:not(:hover) .im-link { opacity: .32; }
+    .iris-menu .im-link { transition: opacity .45s cubic-bezier(0.16,1,0.3,1), color .6s; }
   }
 
-  .iris-nav .in-sub-head {
-    margin: 26px 4px 8px 26px;
+  .iris-menu .im-sub-head {
+    margin: 22px 4px 8px 24px;
     font-family: 'Inter', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase;
     color: var(--ink); opacity: .5;
   }
-  .iris-nav .in-subs .in-link {
+  .iris-menu .im-subs .im-link {
     font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500; letter-spacing: -.01em;
-    padding: 9px 4px 2px 26px;
+    padding: 8px 4px 2px 24px;
   }
 
-  .iris-nav .in-reveal { display: block; }
-  .iris-nav .in-rise { display: block; overflow: hidden; }
-  .iris-nav .in-rise-i {
-    display: block; transform: translateY(110%);
-    transition: transform .7s cubic-bezier(0.16,1,0.3,1); transition-delay: var(--d,0s);
-  }
-  .iris-nav.open .in-rise-i { transform: translateY(0); }
+  .iris-menu .im-reveal { display: block; }
+  .iris-menu .im-rise { display: block; overflow: hidden; }
+  .iris-menu .im-rise-i { display: block; transform: translateY(110%); transition: transform .7s cubic-bezier(0.16,1,0.3,1); transition-delay: var(--d,0s); }
+  .iris-menu.open .im-rise-i { transform: translateY(0); }
 
   @media (max-width: 620px) {
-    .iris-nav { top: 20px; left: 20px; width: calc(100vw - 40px); }
+    .hero-nav { top: 24px; left: 20px; right: 20px; }
+    .hero-nav-wordmark { font-size: 44px; }
+    .hero-nav-tagline { display: none; }
+    .iris-menu { width: 210px; }
+    .iris-menu .im-links .im-link { font-size: 18px; }
   }
 
 </style>
@@ -1011,31 +1001,35 @@
 <!-- ════════════════════ HERO ════════════════════ -->
 <section class="hero" id="heroSection">
   <!-- NAV -->
-  <nav class="iris-nav" id="irisNav">
-    <div class="in-head">
-      <span class="in-logo">IRI<span class="s">S</span></span>
-      <span class="in-crumb">/ Inicio</span>
-      <button class="in-btn" onclick="toggleIrisNav()" aria-expanded="false" aria-label="Menú">
-        Menu<span class="in-chev"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle class="in-dot-edge" cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle class="in-dot-edge" cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle class="in-dot-edge" cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><circle class="in-dot-edge" cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
-      </button>
+  <nav class="hero-nav">
+    <div class="hero-nav-logo">
+      <span class="hero-nav-wordmark">IRI<span class="s">S</span></span>
+      <span class="hero-nav-tagline">Estudio · Diseño &amp; Automatización</span>
     </div>
-    <div class="in-panel">
-      <div class="in-panel-inner">
-        <div class="in-pad">
-          <ul class="in-links">
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link current" href="#heroSection"><span class="in-roll"><span class="in-roll-out">Home</span><span class="in-roll-in" aria-hidden="true">Home</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#projects"><span class="in-roll"><span class="in-roll-out">Proyectos</span><span class="in-roll-in" aria-hidden="true">Proyectos</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#capacidades"><span class="in-roll"><span class="in-roll-out">Capacidades</span><span class="in-roll-in" aria-hidden="true">Capacidades</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#servicios"><span class="in-roll"><span class="in-roll-out">Servicios</span><span class="in-roll-in" aria-hidden="true">Servicios</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#contacto"><span class="in-roll"><span class="in-roll-out">Contacto</span><span class="in-roll-in" aria-hidden="true">Contacto</span></span></a></span></span></li>
-          </ul>
-          <div class="in-sub-head in-reveal"><span class="in-rise"><span class="in-rise-i">Síguenos</span></span></div>
-          <ul class="in-subs">
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#"><span class="in-roll"><span class="in-roll-out">Instagram</span><span class="in-roll-in" aria-hidden="true">Instagram</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#"><span class="in-roll"><span class="in-roll-out">Behance</span><span class="in-roll-in" aria-hidden="true">Behance</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#"><span class="in-roll"><span class="in-roll-out">LinkedIn</span><span class="in-roll-in" aria-hidden="true">LinkedIn</span></span></a></span></span></li>
-            <li class="in-reveal"><span class="in-rise"><span class="in-rise-i"><a class="in-link" href="#"><span class="in-roll"><span class="in-roll-out">X / Twitter</span><span class="in-roll-in" aria-hidden="true">X / Twitter</span></span></a></span></span></li>
-          </ul>
+    <div class="iris-menu" id="irisMenu">
+      <div class="im-head">
+        <button class="im-btn" onclick="toggleIrisMenu()" aria-expanded="false" aria-label="Menú">
+          Menu<span class="im-chev"><svg viewBox="0 0 24 24"><circle cx="6" cy="6" r="2"/><circle class="im-dot-edge" cx="12" cy="6" r="2"/><circle cx="18" cy="6" r="2"/><circle class="im-dot-edge" cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle class="im-dot-edge" cx="18" cy="12" r="2"/><circle cx="6" cy="18" r="2"/><circle class="im-dot-edge" cx="12" cy="18" r="2"/><circle cx="18" cy="18" r="2"/></svg></span>
+        </button>
+      </div>
+      <div class="im-panel">
+        <div class="im-panel-inner">
+          <div class="im-pad">
+            <ul class="im-links">
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link current" href="#heroSection"><span class="im-roll"><span class="im-roll-out">Home</span><span class="im-roll-in" aria-hidden="true">Home</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#projects"><span class="im-roll"><span class="im-roll-out">Proyectos</span><span class="im-roll-in" aria-hidden="true">Proyectos</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#capacidades"><span class="im-roll"><span class="im-roll-out">Capacidades</span><span class="im-roll-in" aria-hidden="true">Capacidades</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#servicios"><span class="im-roll"><span class="im-roll-out">Servicios</span><span class="im-roll-in" aria-hidden="true">Servicios</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#contacto"><span class="im-roll"><span class="im-roll-out">Contacto</span><span class="im-roll-in" aria-hidden="true">Contacto</span></span></a></span></span></li>
+            </ul>
+            <div class="im-sub-head im-reveal"><span class="im-rise"><span class="im-rise-i">Síguenos</span></span></div>
+            <ul class="im-subs">
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#"><span class="im-roll"><span class="im-roll-out">Instagram</span><span class="im-roll-in" aria-hidden="true">Instagram</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#"><span class="im-roll"><span class="im-roll-out">Behance</span><span class="im-roll-in" aria-hidden="true">Behance</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#"><span class="im-roll"><span class="im-roll-out">LinkedIn</span><span class="im-roll-in" aria-hidden="true">LinkedIn</span></span></a></span></span></li>
+              <li class="im-reveal"><span class="im-rise"><span class="im-rise-i"><a class="im-link" href="#"><span class="im-roll"><span class="im-roll-out">X / Twitter</span><span class="im-roll-in" aria-hidden="true">X / Twitter</span></span></a></span></span></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -1380,27 +1374,24 @@ async function checkPwd(which) {
 document.querySelectorAll('.modal-overlay').forEach(el => { el.addEventListener('click', e => { if (e.target === el) closeModal(el.id.replace('modal','').toLowerCase()); }); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.show').forEach(el => closeModal(el.id.replace('modal','').toLowerCase())); });
 
-  // ── Nav desplegable estilo Precept ──
+  // ── Menú desplegable estilo Precept ──
   (function(){
-    const nav = document.getElementById('irisNav');
-    const reveals = nav.querySelectorAll('.in-reveal');
-    // stagger: cada fila entra un poco después
+    const menu = document.getElementById('irisMenu');
+    const reveals = menu.querySelectorAll('.im-reveal');
     reveals.forEach((el, i) => { el.style.setProperty('--d', (0.05 + i * 0.045) + 's'); });
-    // divisores con el mismo escalonado
-    nav.querySelectorAll('.in-links li, .in-subs li').forEach((el, i) => {
+    menu.querySelectorAll('.im-links li, .im-subs li').forEach((el, i) => {
       el.style.setProperty('--d', (0.08 + i * 0.045) + 's');
     });
-    const btn = nav.querySelector('.in-btn');
-    window.toggleIrisNav = function(){
-      const open = nav.classList.toggle('open');
+    const btn = menu.querySelector('.im-btn');
+    window.toggleIrisMenu = function(){
+      const open = menu.classList.toggle('open');
       btn.setAttribute('aria-expanded', open ? 'true' : 'false');
     };
     document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') { nav.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
+      if (e.key === 'Escape') { menu.classList.remove('open'); btn.setAttribute('aria-expanded','false'); }
     });
-    // cerrar al hacer clic en un enlace
-    nav.querySelectorAll('.in-link').forEach(a => a.addEventListener('click', () => {
-      nav.classList.remove('open'); btn.setAttribute('aria-expanded','false');
+    menu.querySelectorAll('.im-link').forEach(a => a.addEventListener('click', () => {
+      menu.classList.remove('open'); btn.setAttribute('aria-expanded','false');
     }));
   })();
 </script>
