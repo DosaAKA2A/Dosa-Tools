@@ -850,16 +850,14 @@
   }
   .hero-nav-links a::after { display: none; }
   @media (max-width: 620px) {
-    /* Nav apilado: wordmark arriba, links limpios debajo (evita amontonamiento) */
-    .hero-nav { top: 40px; left: 20px; right: 20px; padding: 0; flex-direction: column; align-items: flex-start; gap: 14px; }
+    /* Nav apilado: wordmark arriba, links limpios en una fila debajo */
+    .hero-nav { top: 40px; left: 20px; right: 20px; padding: 0; flex-direction: column; align-items: flex-start; gap: 12px; }
     .hero-nav-wordmark { font-size: 44px; }
     .hero-nav-tagline { display: none; }
-    .hero-nav-links { padding-top: 0; gap: 8px 20px; }
-    .hero-nav-links a { font-size: 11px; padding: 2px 0; letter-spacing: .09em; }
-    /* Título que encaja sin recortarse en pantallas estrechas */
-    .hero-title { font-size: clamp(42px, 12vw, 60px); line-height: .94; }
-    .hero-content { max-width: calc(100% - 40px); bottom: 40px; left: 20px; }
-    .hero-tags .tag { font-size: 11px; }
+    .hero-nav-links { padding-top: 0; gap: 8px 18px; }
+    .hero-nav-links a { font-size: 11px; padding: 2px 0; letter-spacing: .08em; }
+    /* Ojo de la modelo centrado horizontalmente (por defecto queda pegado al borde derecho) */
+    .hero-banner-img { object-position: 70% 50%; }
   }
 
 </style>
