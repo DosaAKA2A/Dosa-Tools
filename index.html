@@ -359,7 +359,7 @@
   [data-reveal].in { opacity: 1; transform: none; }
   [data-reveal-stagger] > * { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); }
   [data-reveal-stagger].in > * { opacity: 1; transform: none; }
-  @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } 
+  @keyframes heroUp { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
   .h-anim { animation: heroUp .8s var(--ease) both; }
   @media (prefers-reduced-motion: reduce) {
     * { animation-duration: .001ms !important; transition-duration: .001ms !important; }
@@ -533,57 +533,28 @@
 
   
   /* ── Backdrop: misma imagen, blur+saturate, sobresale por los bordes ── */
-  .hero-backdrop {
-    position: absolute;
-    inset: -6%;          /* sobresale 6% por cada lado */
-    z-index: 0;
-    
-    filter: blur(32px) saturate(1.6) brightness(0.85);
-    /* sin overflow:hidden para que se vea el sangrado */
-  }
+  .hero-backdrop { display: none; }
 
-  
-  
-  
-  
-    to   { transform: scale(1.0);  }
-  }
-
-  /* Borde blur visible: 4 franjas con blur real usando pseudo-elementos */
-  
-
-
-  /* ══════ HERO IMAGE — imagen completa + bordes blurred ══════ */
-  /* Fondo: misma imagen ampliada y blurred, cubre TODO (cover) */
-  .hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: url("assets/hero_bg.jpg") center/cover no-repeat;
-    filter: blur(30px) brightness(0.65) saturate(1.15);
-    transform: scale(1.12);   /* evita halo blanco en el borde del blur */
-  }
-  /* Imagen principal: completa (contain), centrada, encima del fondo */
+  /* ══ HERO IMAGE — cover 100% + zoom-out (estilo Pokota) ══ */
   .hero-banner {
     position: absolute;
     inset: 0;
     z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
   }
   .hero-banner-img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
     will-change: transform;
-    transform-origin: center;
-    animation: heroZoomOut 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    transform-origin: center center;
+    animation: heroZoomOut 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   @keyframes heroZoomOut {
-    from { transform: scale(1.08); }
+    from { transform: scale(1.12); }
     to   { transform: scale(1.0);  }
   }
 
@@ -883,9 +854,6 @@
       <a href="#contacto">CONTACTO</a>
     </div>
   </nav>
-  <!-- Fondo blurred (bordes) -->
-  <div class="hero-bg"></div>
-
   <!-- BANNER: imagen fullscreen con parallax -->
   <div class="hero-banner" id="heroBanner">
     <img class="hero-banner-img" id="heroBannerImg" src="assets/hero_bg.jpg" alt="" aria-hidden="true">
