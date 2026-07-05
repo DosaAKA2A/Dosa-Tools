@@ -850,9 +850,16 @@
   }
   .hero-nav-links a::after { display: none; }
   @media (max-width: 620px) {
-    .hero-nav { top: 48px; left: 12px; right: 12px; }
+    /* Nav apilado: wordmark arriba, links limpios debajo (evita amontonamiento) */
+    .hero-nav { top: 40px; left: 20px; right: 20px; padding: 0; flex-direction: column; align-items: flex-start; gap: 14px; }
+    .hero-nav-wordmark { font-size: 44px; }
     .hero-nav-tagline { display: none; }
-    .hero-nav-links a { font-size: 11px; }
+    .hero-nav-links { padding-top: 0; gap: 8px 20px; }
+    .hero-nav-links a { font-size: 11px; padding: 2px 0; letter-spacing: .09em; }
+    /* Título que encaja sin recortarse en pantallas estrechas */
+    .hero-title { font-size: clamp(42px, 12vw, 60px); line-height: .94; }
+    .hero-content { max-width: calc(100% - 40px); bottom: 40px; left: 20px; }
+    .hero-tags .tag { font-size: 11px; }
   }
 
 </style>
@@ -1038,7 +1045,7 @@
       </div>
       <div class="browser">
         <div class="browser-bar"><span class="wm">IRIS STUDIO</span></div>
-        <div class="browser-body"><iframe id="irisFrame" src="iris-studio/iris-frame.html?v=20260705d" scrolling="yes" frameborder="0"></iframe></div>
+        <div class="browser-body"><iframe id="irisFrame" src="iris-studio/iris-frame.html?v=20260705e" scrolling="yes" frameborder="0"></iframe></div>
       </div>
     </div>
   </div>
