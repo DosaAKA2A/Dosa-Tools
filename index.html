@@ -533,33 +533,15 @@
 
   
   /* ── Backdrop: misma imagen, blur+saturate, sobresale por los bordes ── */
-  
+  .hero-backdrop { display: none; }
 
-  
-
-
-  /* ══ HERO — zoom-out con borde blur uniforme (Pokota) ══ */
-
-  /* Fondo: misma imagen blurred, cubre todo el hero */
-  .hero::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: url("assets/hero_bg.jpg") center/cover no-repeat;
-    filter: blur(20px) brightness(0.75) saturate(1.15);
-    transform: scale(1.06);
-  }
-
-  /* Banner: tiene un inset de 12px → borde uniforme visible en los 4 lados */
+  /* ══ HERO IMAGE — cover 100% + zoom-out (estilo Pokota) ══ */
   .hero-banner {
     position: absolute;
-    top: 12px; left: 12px; right: 12px; bottom: 12px;
+    inset: 0;
     z-index: 1;
     overflow: hidden;
   }
-
-  /* Imagen: cover, zoom-out de 1.08 a 1.0 */
   .hero-banner-img {
     position: absolute;
     inset: 0;
@@ -572,7 +554,7 @@
     animation: heroZoomOut 1.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   @keyframes heroZoomOut {
-    from { transform: scale(1.08); }
+    from { transform: scale(1.12); }
     to   { transform: scale(1.0);  }
   }
 
