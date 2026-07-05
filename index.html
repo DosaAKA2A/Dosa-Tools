@@ -542,30 +542,28 @@
     /* sin overflow:hidden para que se vea el sangrado */
   }
 
-  /* ══ HERO IMAGE — full-bleed con blur en bordes (Pokota style) ══ */
-
-  /* La imagen ocupa TODO el hero con object-fit:cover — siempre llena */
   
   
   
-    
+  
+    to   { transform: scale(1.0);  }
+  }
 
-  /* Blur en los 4 bordes — pseudo-elemento encima con sombra interior */
+  /* Borde blur visible: 4 franjas con blur real usando pseudo-elementos */
   
 
 
-  /* ══ HERO — técnica blur en bordes ══
-     Capa 1 (z=0): hero-bg → misma imagen como background, escalada y blurred
-     Capa 2 (z=1): hero-banner → imagen con object-fit:contain, centrada
-     El bg blurred sobresale por donde la imagen no llega → bordes borrosos
-  */
+  /* ══════ HERO IMAGE — imagen completa + bordes blurred ══════ */
+  /* Fondo: misma imagen ampliada y blurred, cubre TODO (cover) */
   .hero-bg {
     position: absolute;
-    inset: -4%;                  /* sobresale para que el blur no deje halo */
+    inset: 0;
     z-index: 0;
     background: url("assets/hero_bg.jpg") center/cover no-repeat;
-    filter: blur(28px) brightness(0.7) saturate(1.2);
+    filter: blur(30px) brightness(0.65) saturate(1.15);
+    transform: scale(1.12);   /* evita halo blanco en el borde del blur */
   }
+  /* Imagen principal: completa (contain), centrada, encima del fondo */
   .hero-banner {
     position: absolute;
     inset: 0;
@@ -573,37 +571,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
   }
   .hero-banner-img {
-    /* contain: imagen completa visible, sin recortar */
-    /* El fondo blurred rellena donde la imagen no llega */
-    width: 100%;
-    height: 100%;
-    object-fit: cover;           /* cubre siempre — en ultrawide no sobran bordes */
-    object-position: center;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
     will-change: transform;
     transform-origin: center;
     animation: heroZoomOut 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   }
   @keyframes heroZoomOut {
-    from { transform: scale(1.10); }
+    from { transform: scale(1.08); }
     to   { transform: scale(1.0);  }
-  }
-
-  /* Borde blur visible: 4 franjas con blur real usando pseudo-elementos */
-  .hero-banner::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    /* Sombra inset que difumina los bordes de la imagen real */
-    box-shadow:
-      inset  60px  0    60px -20px rgba(0,0,0,0.6),   /* izquierda */
-      inset -60px  0    60px -20px rgba(0,0,0,0.6),   /* derecha   */
-      inset  0    80px  60px -20px rgba(0,0,0,0.5),   /* arriba    */
-      inset  0   -80px  60px -20px rgba(0,0,0,0.5);   /* abajo     */
   }
 
   /* Contenido del hero */
@@ -881,8 +862,6 @@
     .hero-nav-tagline { display: none; }
     .hero-nav-links a { font-size: 11px; }
   }
-
-}
 
 </style>
 </head>
