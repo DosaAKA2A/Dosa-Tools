@@ -99,9 +99,8 @@
   
   /* ════════════════════ HERO — full-bleed 100vh ════════════════════ */
   .hero {
-    position: fixed;           /* fijo durante el primer scroll */
-    top: 0; left: 0;
-    width: 100vw;
+    position: relative;
+    width: 100%;
     height: 100svh;
     min-height: 640px;
     overflow: hidden;
@@ -109,7 +108,6 @@
     background: #080808;
   }
   /* Empuja el contenido siguiente para que el hero no tape las secciones */
-  .hero + * { margin-top: 100svh; }
 
   /* Banner imagen con parallax */
   .hero-banner {
