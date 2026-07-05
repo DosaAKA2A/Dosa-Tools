@@ -536,9 +536,20 @@
   .hero-backdrop { display: none; }
 
   /* ══ HERO IMAGE — cover 100% + zoom-out (estilo Pokota) ══ */
-  .hero-banner {
+
+  .hero::before {
+    content: '';
     position: absolute;
     inset: 0;
+    z-index: 0;
+    background: url("assets/hero_bg.jpg") center/cover no-repeat;
+    filter: blur(20px) brightness(0.75) saturate(1.15);
+    transform: scale(1.06);
+  }
+
+  .hero-banner {
+    position: absolute;
+    top: 60px; left: 60px; right: 60px; bottom: 60px;
     z-index: 1;
     overflow: hidden;
   }
