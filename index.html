@@ -454,6 +454,31 @@
   .bc-grid-lines::after  { height: 100%; width: 1px; right: 40px; }
   .bc-brand .bc-text h4 { color: #fff; }
   .bc-brand .bc-text p  { color: rgba(255,255,255,.45); }
+  /* Botón descarga bento card */
+  .bc-dl-btn {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.18);
+    background: rgba(255,255,255,0.07);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: background .25s, border-color .25s, transform .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .bc-dl-btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    border-radius: 50%;
+    background: var(--red);
+    opacity: 0;
+    transition: opacity .3s;
+  }
+  .bc-dl-btn:hover { border-color: var(--red); transform: scale(1.06); }
+  .bc-dl-btn:hover::before { opacity: 1; }
+  .bc-dl-btn svg { position: relative; z-index: 1; }
+  .bc-dl-btn:active { transform: scale(0.97); }
   /* ── Phone card estilo Lyniq: el móvil LLENA la card de borde a borde ── */
   .bc-phone-card {
     background: #0c0c0c;
@@ -1131,7 +1156,7 @@
 
 
 </style>
-<!-- cache: 20260706P -->
+<!-- cache: 20260706Q -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1266,7 +1291,7 @@
         <div style="padding:28px 30px 0;position:relative;">
           <div style="position:absolute;top:22px;right:22px;width:9px;height:9px;border-right:2px solid var(--red);border-top:2px solid var(--red);"></div>
           <h4 style="font-size:18px;font-weight:700;letter-spacing:-.02em;color:var(--ink);margin-bottom:4px;">Ajustes a medida</h4>
-          <p style="font-size:13px;color:rgba(12,12,12,.5);line-height:1.5;margin-bottom:0;">Hasta 5 revisiones post-lanzamiento cuando quieras.</p>
+          <p style="font-size:13px;color:rgba(12,12,12,.5);line-height:1.5;margin-bottom:0;">Hasta 3 revisiones post-lanzamiento cuando quieras.</p>
           <div class="bc-avatars">
             <div class="bc-avatar"><div class="bc-avatar-placeholder" style="background:linear-gradient(135deg,#e8c4a0,#c49060);"></div></div>
             <div class="bc-avatar"><div class="bc-avatar-placeholder" style="background:linear-gradient(135deg,#a0b8e8,#607ab0);"></div></div>
@@ -1287,29 +1312,22 @@
         </div>
       </div>
 
-      <!-- Card 3: Brand kit (oscura con orbe rojo) -->
-      <div class="bento-card bc-brand">
+      <!-- Card 3: Descarga de herramientas -->
+      <div class="bento-card bc-brand" style="background:#1a1a1a; justify-content:space-between; padding:36px 30px 30px;">
         <div class="bc-grid-lines"></div>
-        <div class="bc-brand-visual">
-          <div style="position:absolute;top:20px;left:0;right:0;text-align:center;">
-            <p class="bc-brand-label">Descargar brand kit</p>
-            <div style="display:flex;justify-content:center;gap:16px;margin-top:8px;opacity:.3;">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h10M4 18h6"/></svg>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 4v5"/></svg>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M4 7h3m0 0V4m0 3L4 7m3 0h10M7 17h3m0 0v3m0-3L7 17m3 0h7"/></svg>
-            </div>
-          </div>
-          <div class="bc-brand-orb">
-            <svg viewBox="0 0 24 24"><path d="M4 16v-4a4 4 0 018 0v4M4 16h8M2 20h12"/></svg>
-            <div class="bc-brand-badge">6</div>
-          </div>
+        <!-- Botón de descarga centrado -->
+        <div style="flex:1; display:flex; align-items:center; justify-content:center;">
+          <button class="bc-dl-btn" onclick="return false;" aria-label="Descargar herramientas de diseño">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+              <path d="M12 3v13M5 13l7 7 7-7"/>
+              <path d="M3 21h18"/>
+            </svg>
+          </button>
         </div>
-        <div class="bc-inner-pad">
-          <div class="bc-text" style="padding:0 0 2px;">
-            <h4>Brand kit completo</h4>
-            <p>Logo, paleta, tipografía y activos listos para descargar o compartir con tu equipo.</p>
-          </div>
+        <!-- Texto abajo -->
+        <div style="position:relative;z-index:2;">
+          <h4 style="font-size:17px;font-weight:700;letter-spacing:-.02em;color:#fff;margin-bottom:8px;line-height:1.25;">Descargar Herramientas<br>de Diseño</h4>
+          <p style="font-size:13px;color:rgba(255,255,255,.5);line-height:1.55;">Descarga con un solo click todos los recursos para despegar tu proyecto.</p>
         </div>
       </div>
 
