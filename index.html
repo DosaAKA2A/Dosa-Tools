@@ -1172,7 +1172,7 @@
 
 
 </style>
-<!-- cache: 20260706S -->
+<!-- cache: 20260706T -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1727,11 +1727,12 @@ function switchTheme(btn) {
       return;
     }
     setTimeout(function(){ intro.classList.add('active'); }, 80);
-    setTimeout(function(){ intro.classList.add('reveal'); go(); }, 1900);
+    setTimeout(function(){ intro.classList.add('reveal'); }, 1900);
+    setTimeout(go, 2900);
     setTimeout(function(){
       sessionStorage.setItem('iris-intro-done', '1');
       intro.remove();
-    }, 3000);
+    }, 3600);
   })();
   </script>
 
