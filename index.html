@@ -1154,9 +1154,25 @@
   }
   #iris-intro.active .intro-bar-fill { width: 100%; }
 
+  /* ── Hero: las animaciones esperan a que la intro termine ── */
+  .hero-eyebrow, .hero-title, .hero-sub, .hero-tags, .scroll-hint {
+    animation: none !important;
+    opacity: 0;
+  }
+  body.hero-go .hero-eyebrow { animation: fadeUp 0.5s cubic-bezier(0.44,0,0.34,0.98) 0s    both !important; }
+  body.hero-go .hero-title   { animation: fadeUp 0.5s cubic-bezier(0.44,0,0.34,0.98) 0.12s both !important; }
+  body.hero-go .hero-sub     { animation: fadeUp 0.5s cubic-bezier(0.44,0,0.34,0.98) 0.20s both !important; }
+  body.hero-go .hero-tags    { animation: fadeUp 0.5s cubic-bezier(0.44,0,0.34,0.98) 0.28s both !important; }
+  body.hero-go .scroll-hint  { animation: slideUp 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.40s both !important; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero-eyebrow, .hero-title, .hero-sub, .hero-tags, .scroll-hint {
+      animation: none !important; opacity: 1 !important;
+    }
+  }
+
 
 </style>
-<!-- cache: 20260706R -->
+<!-- cache: 20260706S -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1703,13 +1719,15 @@ function switchTheme(btn) {
   // ── IRIS Intro sequence ──
   (function(){
     var intro = document.getElementById('iris-intro');
-    if (!intro) return;
+    var go = function(){ document.body.classList.add('hero-go'); };
+    if (!intro) { go(); return; }
     if (sessionStorage.getItem('iris-intro-done')) {
       intro.style.display = 'none';
+      go();
       return;
     }
     setTimeout(function(){ intro.classList.add('active'); }, 80);
-    setTimeout(function(){ intro.classList.add('reveal'); }, 1900);
+    setTimeout(function(){ intro.classList.add('reveal'); go(); }, 1900);
     setTimeout(function(){
       sessionStorage.setItem('iris-intro-done', '1');
       intro.remove();
