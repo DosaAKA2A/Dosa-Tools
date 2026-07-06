@@ -964,44 +964,66 @@
   #iris-intro.reveal .intro-half.top { transform: translateY(-100%); }
   #iris-intro.reveal .intro-half.bot { transform: translateY(100%); }
 
-  /* centre content */
+  /* logo wrap: centrado inicialmente, luego vuela a esquina sup-izq */
   .intro-logo-wrap {
-    position: relative; z-index: 3;
+    position: fixed;
+    z-index: 10;
+    /* posición inicial: centrado en pantalla */
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
     display: flex; flex-direction: column; align-items: center; gap: 24px;
+    transition:
+      top    0.9s cubic-bezier(0.77,0,0.18,1),
+      left   0.9s cubic-bezier(0.77,0,0.18,1),
+      transform 0.9s cubic-bezier(0.77,0,0.18,1);
+  }
+  /* al hacer reveal: vuela a la posición del hero-nav-wordmark */
+  #iris-intro.reveal .intro-logo-wrap {
+    top: 58px; left: 58px;
+    transform: translate(0, 0);
   }
 
-  /* logo: start invisible + scaled up, animate in */
+  /* logo SVG */
   .intro-logo-svg {
     width: clamp(56px, 9vw, 100px);
     opacity: 0; transform: scale(1.18);
-    transition: opacity 0.65s ease 0.08s, transform 0.85s cubic-bezier(0.16,1,0.3,1) 0.08s;
+    transition: opacity 0.65s ease 0.08s,
+                transform 0.85s cubic-bezier(0.16,1,0.3,1) 0.08s,
+                width 0.9s cubic-bezier(0.77,0,0.18,1);
   }
   #iris-intro.active .intro-logo-svg { opacity: 1; transform: scale(1); }
+  /* al volar al nav: el logo encoge al tamaño del nav logo (~48px) */
+  #iris-intro.reveal .intro-logo-svg { width: 48px; opacity: 0; }
 
-  /* wordmark rise */
+  /* wordmark */
   .intro-wordmark {
     font-family: "Clash Display",'Inter',sans-serif;
     font-size: clamp(34px,5.5vw,68px); font-weight: 700;
     letter-spacing: -.03em; color: #fff; line-height: 1;
     overflow: hidden; height: 1.12em;
+    transition: opacity 0.4s ease, transform 0.5s ease;
   }
   .intro-wordmark span {
     display: block; transform: translateY(110%);
     transition: transform 0.8s cubic-bezier(0.16,1,0.3,1) 0.25s;
   }
   #iris-intro.active .intro-wordmark span { transform: translateY(0); }
+  /* wordmark desaparece al volar */
+  #iris-intro.reveal .intro-wordmark { opacity: 0; transform: translateY(-8px); }
 
-  /* tagline rise */
+  /* tagline */
   .intro-tagline {
     font-family: 'Inter',sans-serif; font-size: clamp(10px,1vw,13px);
     letter-spacing: .18em; text-transform: uppercase;
     color: rgba(255,255,255,0.4); overflow: hidden; height: 1.4em;
+    transition: opacity 0.3s ease;
   }
   .intro-tagline span {
     display: block; transform: translateY(110%);
     transition: transform 0.75s cubic-bezier(0.16,1,0.3,1) 0.38s;
   }
   #iris-intro.active .intro-tagline span { transform: translateY(0); }
+  #iris-intro.reveal .intro-tagline { opacity: 0; }
 
   /* progress bar */
   .intro-bar {
@@ -1017,7 +1039,7 @@
 
 
 </style>
-<!-- cache: 20260706K -->
+<!-- cache: 20260706L -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1487,12 +1509,26 @@ function switchTheme(btn) {
       intro.style.display = 'none';
       return;
     }
+    // hide the real hero wordmark until the logo lands
+    var heroLogo = document.querySelector('.hero-nav-logo');
+    if (heroLogo) heroLogo.style.opacity = '0';
+
     setTimeout(function(){ intro.classList.add('active'); }, 80);
-    setTimeout(function(){ intro.classList.add('reveal'); }, 1900);
+
+    // t=1900: curtain opens + logo flies to nav corner simultaneously
     setTimeout(function(){
+      intro.classList.add('reveal');
+    }, 1900);
+
+    // t=2700: logo has arrived → show real hero wordmark, remove intro
+    setTimeout(function(){
+      if (heroLogo) {
+        heroLogo.style.transition = 'opacity 0.35s ease';
+        heroLogo.style.opacity = '1';
+      }
       sessionStorage.setItem('iris-intro-done', '1');
       intro.remove();
-    }, 3100);
+    }, 2850);
   })();
 </script>
 
