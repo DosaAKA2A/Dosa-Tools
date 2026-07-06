@@ -216,6 +216,26 @@
 
   /* ════════════════════ SECCIONES base ════════════════════ */
   .section { padding: clamp(72px, 10vw, 140px) 0; }
+
+  /* ── Sticky hero wrap ── */
+  .hero-sticky-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 0;
+    height: 100svh;
+  }
+  /* ── Sweep effect: las secciones suben encima del hero ── */
+  .hero-sticky-wrap + .section {
+    position: relative;
+    z-index: 2;
+    border-radius: 24px 24px 0 0;
+    margin-top: -24px;
+    overflow: hidden;
+  }
+  .hero-sticky-wrap ~ .section {
+    position: relative;
+    z-index: 2;
+  }
   .sec-dark  { background: var(--bg); color: var(--text); }
   .sec-light { background: var(--light); color: var(--ink); }
 
@@ -930,7 +950,7 @@
 <body>
 
 <!-- ════════════════════ HERO ════════════════════ -->
-<section class="hero" id="heroSection">
+<div class="hero-sticky-wrap"><section class="hero" id="heroSection">
   <!-- NAV -->
   <nav class="hero-nav">
     <div class="hero-nav-logo">
@@ -986,7 +1006,7 @@
     <span>Proyectos</span>
   </div>
 
-</section>
+</section></div>
 
 <!-- ════════════════════ SERVICIOS (claro) ════════════════════ -->
 <section class="section sec-dark" id="servicios">
