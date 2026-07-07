@@ -834,13 +834,13 @@ button:disabled { opacity: .3; cursor: default; }
     <div style="font-size:11px;font-weight:600;letter-spacing:.05em;color:var(--muted);margin-bottom:8px">RESOLUCIONES DE SALIDA</div>
     <div style="display:flex;gap:12px;flex-wrap:wrap">
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer">
-        <input type="checkbox" id="res1080" value="1080" checked> 1080p
+        <input type="radio" name="vidRes" id="res1080" value="1080" checked> 1080p
       </label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer">
-        <input type="checkbox" id="res720" value="720" checked> 720p
+        <input type="radio" name="vidRes" id="res720" value="720"> 720p
       </label>
       <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text);cursor:pointer">
-        <input type="checkbox" id="res480" value="480"> 480p
+        <input type="radio" name="vidRes" id="res480" value="480"> 480p
       </label>
     </div>
 
@@ -3533,16 +3533,16 @@ async function loadFFmpeg() {
   const { toBlobURL } = await import('https://unpkg.com/@ffmpeg/util@0.12.1/dist/esm/index.js');
   ffmpegInstance = new FFmpeg();
   ffmpegInstance.on('progress', ({ progress }) => {
-    const pct = Math.round(progress * 100);
+    const pct = Math.round(Math.min(progress, 1) * 100);
     const bar = document.getElementById('vidProgressBar');
     const label = document.getElementById('vidProgressPct');
     if (bar) bar.style.width = pct + '%';
     if (label) label.textContent = pct + '%';
   });
-  await ffmpegInstance.load({
-    coreURL: await toBlobURL(FFMPEG_CORE_URL + '/ffmpeg-core.js', 'text/javascript'),
-    wasmURL: await toBlobURL(FFMPEG_CORE_URL + '/ffmpeg-core.wasm', 'application/wasm'),
-  });
+  const coreURL = await toBlobURL(FFMPEG_CORE_URL + '/ffmpeg-core.js', 'text/javascript');
+  const wasmURL = await toBlobURL(FFMPEG_CORE_URL + '/ffmpeg-core.wasm', 'application/wasm');
+  const workerURL = await toBlobURL(FFMPEG_CORE_URL + '/ffmpeg-core.worker.js', 'text/javascript');
+  await ffmpegInstance.load({ coreURL, wasmURL, workerURL });
   ffmpegLoaded = true;
 }
 
@@ -3576,18 +3576,19 @@ function handleVideoFile(file) {
     document.getElementById('vidDuration').textContent = formatDuration(video.duration);
     URL.revokeObjectURL(video.src);
 
-    // Auto-check only resolutions <= source
+    // Auto-select best resolution <= source
     const h = video.videoHeight;
     document.getElementById('res1080').disabled = h < 1080;
     document.getElementById('res720').disabled = h < 720;
-    document.getElementById('res1080').checked = h >= 1080;
-    document.getElementById('res720').checked = h >= 720;
-    document.getElementById('res480').checked = h < 720;
     if (h < 1080) document.getElementById('res1080').parentElement.style.opacity = '0.4';
     else document.getElementById('res1080').parentElement.style.opacity = '1';
     if (h < 720) document.getElementById('res720').parentElement.style.opacity = '0.4';
     else document.getElementById('res720').parentElement.style.opacity = '1';
     document.getElementById('res480').parentElement.style.opacity = '1';
+    // Select highest available
+    if (h >= 1080) document.getElementById('res1080').checked = true;
+    else if (h >= 720) document.getElementById('res720').checked = true;
+    else document.getElementById('res480').checked = true;
   };
   video.src = URL.createObjectURL(file);
 }
@@ -3609,11 +3610,9 @@ function getCRF() {
 
 async function startVideoCompress() {
   if (!videoFile) return;
-  const resolutions = [];
-  if (document.getElementById('res1080').checked && !document.getElementById('res1080').disabled) resolutions.push(1080);
-  if (document.getElementById('res720').checked && !document.getElementById('res720').disabled) resolutions.push(720);
-  if (document.getElementById('res480').checked) resolutions.push(480);
-  if (resolutions.length === 0) { alert('Selecciona al menos una resolución.'); return; }
+  const selected = document.querySelector('input[name="vidRes"]:checked');
+  if (!selected) { alert('Selecciona una resolución.'); return; }
+  const resolutions = [parseInt(selected.value)];
 
   const btn = document.getElementById('btnCompress');
   btn.disabled = true;
