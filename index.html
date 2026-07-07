@@ -237,6 +237,7 @@
     z-index: 2;
   }
   .sec-dark  { background: var(--bg); color: var(--text); }
+  #servicios { background: #000; }
   .sec-light { background: var(--light); color: var(--ink); }
 
   /* ════════════════════ SERVICIOS (claro) ════════════════════ */
@@ -425,7 +426,7 @@
   .bento-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.1); }
   .bc-hands { background: #f2efe8; justify-content: flex-end; }
   .bc-hands .bc-img-wrap { flex: 1; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
-  .bc-hands .bc-hands-img { width: 100%; height: 100%; object-fit: cover; object-position: center 34%; display: block; transition: transform .6s cubic-bezier(.22,1,.36,1); }
+  .bc-hands .bc-hands-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 34%; display: block; transition: transform .6s cubic-bezier(.22,1,.36,1); }
   .bc-hands:hover .bc-hands-img { transform: scale(1.05); }
   .bc-text { padding: 28px 30px 30px; flex-shrink: 0; }
   .bc-text h4 { font-size: 18px; font-weight: 700; letter-spacing: -.02em; color: var(--ink); margin-bottom: 8px; }
@@ -1312,7 +1313,7 @@
 
 
 </style>
-<!-- cache: 20260706AA -->
+<!-- cache: 20260706AB -->
 </head>
 <body>
 <div id="iris-intro">
