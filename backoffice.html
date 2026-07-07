@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>IRIS — Backoffice</title>
+<link rel="icon" type="image/svg+xml" href="assets/IRIS_BLANCO.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://api.fontshare.com/v2/css?f[]=clash-display@600&display=swap" rel="stylesheet">
+<!-- cache: 20260707a -->
+<style>
+:root{
+  --bg:#0B0B0D; --surface:#141417; --surface2:#1A1A1E; --border:#232329;
+  --text:#ECECEF; --muted:#85858F; --faint:#5A5A63;
+  --red:#E8362E; --red-dim:rgba(232,54,46,.14);
+  --ok:#3FB960; --warn:#E8A13C;
+  --mono:'Geist Mono',ui-monospace,monospace;
+  --sans:'Inter',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit;color:var(--text)}
+a{color:inherit}
+::selection{background:var(--red);color:#fff}
+
+/* ---------- GATE ---------- */
+#gate{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;align-items:center;justify-content:center}
+#gate.hidden{display:none}
+.gate-box{width:min(340px,90vw);text-align:center}
+.gate-mark{font-family:'Clash Display',var(--sans);font-weight:600;font-size:28px;letter-spacing:.02em;margin-bottom:6px}
+.gate-sub{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase;margin-bottom:34px}
+.gate-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:13px 16px;font-family:var(--mono);font-size:18px;letter-spacing:.5em;text-align:center;outline:none;transition:border-color .2s}
+.gate-input:focus{border-color:var(--red)}
+.gate-input.err{border-color:var(--red);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.gate-hint{font-family:var(--mono);font-size:10px;color:var(--faint);margin-top:16px;letter-spacing:.08em}
+
+/* ---------- LAYOUT ---------- */
+#app{display:none;height:100%}
+#app.on{display:flex}
+aside{width:216px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;padding:22px 0}
+.brand{padding:0 22px 26px;display:flex;align-items:baseline;gap:8px}
+.brand b{font-family:'Clash Display',var(--sans);font-weight:600;font-size:19px;letter-spacing:.02em}
+.brand span{font-family:var(--mono);font-size:9px;letter-spacing:.2em;color:var(--muted)}
+nav{display:flex;flex-direction:column;gap:2px;padding:0 12px}
+.nav-btn{display:flex;align-items:center;gap:11px;width:100%;background:none;border:0;color:var(--muted);padding:10px 12px;border-radius:6px;font-size:13.5px;font-weight:500;text-align:left;transition:color .15s,background .15s}
+.nav-btn svg{width:16px;height:16px;flex-shrink:0}
+.nav-btn:hover{color:var(--text)}
+.nav-btn.active{color:var(--text);background:var(--surface2)}
+.nav-btn .dot{margin-left:auto;width:6px;height:6px;border-radius:50%;background:var(--red);opacity:0;transition:opacity .2s}
+.nav-btn .dot.on{opacity:1}
+.side-foot{margin-top:auto;padding:0 22px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;color:var(--faint);text-transform:uppercase;line-height:1.9}
+.side-foot .st{color:var(--ok)}
+main{flex:1;overflow-y:auto;padding:34px 40px 60px}
+.view{display:none;max-width:1060px}
+.view.on{display:block}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:26px;flex-wrap:wrap}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--red);text-transform:uppercase;margin-bottom:8px}
+h1{font-size:24px;font-weight:600;letter-spacing:-.01em}
+
+/* ---------- COMPONENTS ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--text);color:#0B0B0D;border:0;border-radius:6px;padding:9px 16px;font-size:13px;font-weight:600;transition:opacity .15s}
+.btn:hover{opacity:.85}
+.btn.ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn.ghost:hover{border-color:var(--muted);opacity:1}
+.btn.danger{background:transparent;color:var(--red);border:1px solid var(--red-dim)}
+.btn.sm{padding:6px 12px;font-size:12px}
+.btn:disabled{opacity:.4;cursor:default}
+.field{margin-bottom:16px}
+.field label{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+.field input,.field textarea,.field select{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:10px 13px;font-size:13.5px;outline:none;transition:border-color .15s}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--muted)}
+.field textarea{resize:vertical;min-height:120px;line-height:1.6}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2385858F' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.empty{border:1px dashed var(--border);border-radius:8px;padding:44px 24px;text-align:center;color:var(--muted);font-size:13px}
+.empty .eyebrow{color:var(--faint);margin-bottom:10px}
+.tag{font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:3px 8px;border-radius:4px;text-transform:uppercase;white-space:nowrap}
+.tag.ok{color:var(--ok);background:rgba(63,185,96,.1)}
+.tag.warn{color:var(--warn);background:rgba(232,161,60,.1)}
+.tag.red{color:var(--red);background:var(--red-dim)}
+.tag.mut{color:var(--muted);background:var(--surface2)}
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,16px);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:11px 18px;font-size:13px;opacity:0;pointer-events:none;transition:all .25s;z-index:200;max-width:80vw}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast.err{border-color:var(--red)}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid var(--faint);border-top-color:var(--text);border-radius:50%;animation:sp .7s linear infinite;vertical-align:-2px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* ---------- INBOX ---------- */
+.inbox-wrap{display:grid;grid-template-columns:minmax(280px,380px) 1fr;gap:22px;align-items:start}
+.msg-list{border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.msg-item{padding:13px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;position:relative}
+.msg-item:last-child{border-bottom:0}
+.msg-item:hover{background:var(--surface)}
+.msg-item.sel{background:var(--surface2)}
+.msg-item .from{font-weight:600;font-size:13px;display:flex;align-items:center;gap:8px}
+.msg-item .from .unread{width:7px;height:7px;border-radius:50%;background:var(--red);flex-shrink:0}
+.msg-item.read .from{font-weight:400;color:var(--muted)}
+.msg-item .subj{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.msg-item .when{font-family:var(--mono);font-size:9.5px;color:var(--faint);margin-top:5px;letter-spacing:.06em}
+.msg-detail{border:1px solid var(--border);border-radius:8px;padding:24px;min-height:300px}
+.msg-detail .subj{font-size:17px;font-weight:600;margin-bottom:6px}
+.msg-detail .meta{font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:20px;letter-spacing:.04em;line-height:1.9}
+.msg-detail .body{white-space:pre-wrap;line-height:1.7;color:var(--text);font-size:14px;border-top:1px solid var(--border);padding-top:18px;margin-bottom:24px}
+.msg-actions{display:flex;gap:10px}
+
+/* ---------- PURCHASES ---------- */
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-align:left;padding:0 14px 11px;border-bottom:1px solid var(--border);font-weight:500}
+tbody td{padding:13px 14px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover{background:var(--surface)}
+td.amount{font-family:var(--mono);font-weight:600}
+td.mono{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+
+/* ---------- CALENDAR ---------- */
+.cal-top{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.cal-month{font-size:17px;font-weight:600;min-width:180px;text-transform:capitalize}
+.cal-nav{display:flex;gap:6px}
+.cal-nav button{background:var(--surface);border:1px solid var(--border);color:var(--text);width:32px;height:32px;border-radius:6px;font-size:15px;transition:border-color .15s}
+.cal-nav button:hover{border-color:var(--muted)}
+.cal-legend{margin-left:auto;display:flex;gap:18px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;align-items:center}
+.leg{display:flex;align-items:center;gap:7px}
+.leg .sq{width:10px;height:10px;border-radius:2px}
+.sq.dl{background:var(--red)}
+.sq.rv{background:repeating-linear-gradient(-45deg,var(--red-dim),var(--red-dim) 3px,transparent 3px,transparent 6px);border:1px solid var(--red-dim)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.cal-dow{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);padding:9px 10px;border-bottom:1px solid var(--border);background:var(--surface)}
+.cal-cell{min-height:92px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);padding:7px 8px;position:relative;font-size:12px}
+.cal-cell:nth-child(7n){border-right:0}
+.cal-cell.out{color:var(--faint);background:rgba(255,255,255,.012)}
+.cal-cell.today .dnum{background:var(--text);color:var(--bg);border-radius:4px}
+.cal-cell.review{background:repeating-linear-gradient(-45deg,var(--red-dim),var(--red-dim) 3px,transparent 3px,transparent 7px)}
+.dnum{font-family:var(--mono);font-size:11px;display:inline-block;padding:1px 5px}
+.cal-ev{display:block;margin-top:4px;font-size:10.5px;font-weight:600;background:var(--red);color:#fff;border-radius:4px;padding:2px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.cal-ev.soft{background:var(--surface2);color:var(--muted);font-weight:500}
+.proj-list{margin-top:30px}
+.proj-row{display:grid;grid-template-columns:1fr auto auto auto auto;gap:16px;align-items:center;padding:14px 16px;border:1px solid var(--border);border-radius:8px;margin-bottom:8px;transition:border-color .15s}
+.proj-row:hover{border-color:var(--muted)}
+.proj-row .nm{font-weight:600}
+.proj-row .cl{font-size:12px;color:var(--muted);margin-top:1px}
+.proj-row .dt{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.04em;text-align:right;line-height:1.7}
+.proj-row .dt b{color:var(--text);font-weight:500}
+
+/* ---------- MODAL ---------- */
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:150;display:none;align-items:flex-start;justify-content:center;padding:8vh 20px;overflow-y:auto}
+#modal.on{display:flex}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:28px;width:min(520px,100%)}
+.modal-box h2{font-size:17px;font-weight:600;margin-bottom:22px}
+.modal-foot{display:flex;justify-content:space-between;gap:10px;margin-top:8px}
+
+/* ---------- SETTINGS ---------- */
+.set-card{border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:18px;max-width:560px}
+.set-card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.set-card p{font-size:12.5px;color:var(--muted);margin-bottom:18px;line-height:1.6}
+
+/* ---------- RESPONSIVE ---------- */
+@media(max-width:860px){
+  #app.on{flex-direction:column}
+  aside{width:100%;flex-direction:row;align-items:center;padding:12px 16px;border-right:0;border-bottom:1px solid var(--border);overflow-x:auto}
+  .brand{padding:0 14px 0 0}
+  .brand span,.side-foot{display:none}
+  nav{flex-direction:row;padding:0}
+  .nav-btn{padding:8px 11px;white-space:nowrap}
+  .nav-btn svg{display:none}
+  main{padding:24px 18px 50px}
+  .inbox-wrap{grid-template-columns:1fr}
+  .cal-cell{min-height:64px}
+  .cal-ev{font-size:9px}
+  .proj-row{grid-template-columns:1fr auto;row-gap:8px}
+  .proj-row .dt{text-align:left}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ============ GATE ============ -->
+<div id="gate">
+  <div class="gate-box">
+    <div class="gate-mark">IRIS<span style="color:var(--red)">.</span></div>
+    <div class="gate-sub">Backoffice · Acceso restringido</div>
+    <input type="password" class="gate-input" id="pinInput" maxlength="6" inputmode="numeric" autocomplete="off" placeholder="······">
+    <div class="gate-hint">PIN de 6 dígitos</div>
+  </div>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="app">
+  <aside>
+    <div class="brand"><b>IRIS<span style="color:var(--red)">.</span></b><span>BACKOFFICE</span></div>
+    <nav>
+      <button class="nav-btn active" data-view="inbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3.5 7v7H2v-7z"/></svg>
+        Bandeja<span class="dot" id="inboxDot"></span>
+      </button>
+      <button class="nav-btn" data-view="sales">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/></svg>
+        Compras
+      </button>
+      <button class="nav-btn" data-view="compose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+        Redactar
+      </button>
+      <button class="nav-btn" data-view="calendar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+        Calendario
+      </button>
+      <button class="nav-btn" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.9 2.9l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.9-2.9l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.9-2.9l.1.1a1.7 1.7 0 0 0 1.9.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.9 2.9l-.1.1a1.7 1.7 0 0 0-.3 1.9v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Ajustes
+      </button>
+    </nav>
+    <div class="side-foot">
+      IRIS.IT.COM<br>
+      Worker <span class="st" id="workerStatus">—</span><br>
+      GitHub <span class="st" id="ghStatus">—</span>
+    </div>
+  </aside>
+
+  <main>
+    <!-- ============ BANDEJA ============ -->
+    <section class="view on" id="view-inbox">
+      <div class="view-head">
+        <div><div class="eyebrow">Correos entrantes</div><h1>Bandeja</h1></div>
+        <button class="btn ghost sm" onclick="loadInbox()" id="inboxRefresh">Actualizar</button>
+      </div>
+      <div id="inboxContent"><div class="empty"><div class="eyebrow">Sin conexión</div>Configura la URL del Worker y el token en Ajustes para ver los mensajes.</div></div>
+    </section>
+
+    <!-- ============ COMPRAS ============ -->
+    <section class="view" id="view-sales">
+      <div class="view-head">
+        <div><div class="eyebrow">Stripe · Pagos completados</div><h1>Compras</h1></div>
+        <button class="btn ghost sm" onclick="loadSales()">Actualizar</button>
+      </div>
+      <div id="salesContent"><div class="empty"><div class="eyebrow">Sin conexión</div>Configura el Worker en Ajustes para ver las compras.</div></div>
+    </section>
+
+    <!-- ============ REDACTAR ============ -->
+    <section class="view" id="view-compose">
+      <div class="view-head">
+        <div><div class="eyebrow">Enviar desde hola@iris.it.com</div><h1>Redactar</h1></div>
+      </div>
+      <div style="max-width:620px">
+        <div class="field"><label>Para</label><input type="email" id="cTo" placeholder="cliente@dominio.com"></div>
+        <div class="field"><label>Asunto</label><input type="text" id="cSubject" placeholder="Asunto del correo"></div>
+        <div class="field"><label>Mensaje</label><textarea id="cBody" rows="9" placeholder="Escribe el mensaje. Se enviará con la firma de IRIS Studio."></textarea></div>
+        <button class="btn" id="cSend" onclick="sendMail()">Enviar correo</button>
+      </div>
+    </section>
+
+    <!-- ============ CALENDARIO ============ -->
+    <section class="view" id="view-calendar">
+      <div class="view-head">
+        <div><div class="eyebrow">Proyectos · Deadlines y revisión</div><h1>Calendario</h1></div>
+        <button class="btn sm" onclick="openProjectModal()">+ Nuevo proyecto</button>
+      </div>
+      <div class="cal-top">
+        <div class="cal-nav">
+          <button onclick="moveMonth(-1)" aria-label="Mes anterior">‹</button>
+          <button onclick="moveMonth(1)" aria-label="Mes siguiente">›</button>
+        </div>
+        <div class="cal-month" id="calMonth"></div>
+        <div class="cal-legend">
+          <span class="leg"><span class="sq dl"></span>Deadline</span>
+          <span class="leg"><span class="sq rv"></span>Revisión</span>
+        </div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+      <div class="proj-list" id="projList"></div>
+    </section>
+
+    <!-- ============ AJUSTES ============ -->
+    <section class="view" id="view-settings">
+      <div class="view-head">
+        <div><div class="eyebrow">Conexiones</div><h1>Ajustes</h1></div>
+      </div>
+      <div class="set-card">
+        <h3>Worker (correos y compras)</h3>
+        <p>URL del Cloudflare Worker y token de administrador. Se guardan solo en este navegador.</p>
+        <div class="field"><label>URL del Worker</label><input type="url" id="setWorker" placeholder="https://iris-backoffice.TU-CUENTA.workers.dev"></div>
+        <div class="field"><label>Token de administrador</label><input type="password" id="setToken" placeholder="El mismo ADMIN_TOKEN configurado en el Worker"></div>
+      </div>
+      <div class="set-card">
+        <h3>GitHub (calendario)</h3>
+        <p>El calendario se guarda en <span style="font-family:var(--mono);font-size:11px">data/projects.json</span> del repo. Necesita un token con permiso de contenido.</p>
+        <div class="field"><label>Personal Access Token</label><input type="password" id="setPat" placeholder="github_pat_… o ghp_…"></div>
+      </div>
+      <button class="btn" onclick="saveSettings()">Guardar y probar conexiones</button>
+    </section>
+  </main>
+</div>
+
+<!-- ============ MODAL PROYECTO ============ -->
+<div id="modal">
+  <div class="modal-box">
+    <h2 id="modalTitle">Nuevo proyecto</h2>
+    <div class="field"><label>Nombre del proyecto</label><input type="text" id="pName" placeholder="Rediseño web Corlima"></div>
+    <div class="field"><label>Cliente</label><input type="text" id="pClient" placeholder="Nombre del cliente"></div>
+    <div class="grid2">
+      <div class="field"><label>Inicio</label><input type="date" id="pStart"></div>
+      <div class="field"><label>Deadline</label><input type="date" id="pDeadline"></div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Días de revisión</label><input type="number" id="pReview" min="0" max="60" value="5"></div>
+      <div class="field"><label>Estado</label>
+        <select id="pStatus">
+          <option value="curso">En curso</option>
+          <option value="revision">En revisión</option>
+          <option value="entregado">Entregado</option>
+          <option value="pausado">Pausado</option>
+        </select>
+      </div>
+    </div>
+    <div class="field"><label>Notas</label><textarea id="pNotes" rows="3" placeholder="Alcance, entregables, acuerdos…"></textarea></div>
+    <div class="modal-foot">
+      <button class="btn danger sm" id="pDelete" onclick="deleteProject()" style="display:none">Eliminar</button>
+      <div style="display:flex;gap:10px;margin-left:auto">
+        <button class="btn ghost sm" onclick="closeModal()">Cancelar</button>
+        <button class="btn sm" id="pSave" onclick="saveProject()">Guardar proyecto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+/* ================= CONFIG ================= */
+const PIN = '455211';
+const GH_REPO = 'DosaAKA2A/Dosa-Tools';
+const GH_PATH = 'data/projects.json';
+const GH_BRANCH = 'main';
+const LS_KEY = 'iris-bo-config';
+
+let cfg = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+let messages = [], selectedMsg = null;
+let projects = [], projectsSha = null, editingId = null;
+let calCursor = new Date(); calCursor.setDate(1);
+
+/* ================= UTILS ================= */
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(msg, err){ const t=$('toast'); t.textContent=msg; t.className='on'+(err?' err':''); clearTimeout(t._h); t._h=setTimeout(()=>t.className='',3200); }
+function fmtDate(iso){ if(!iso) return '—'; const d=new Date(iso+'T00:00:00'); return d.toLocaleDateString('es-ES',{day:'2-digit',month:'short',year:'numeric'}); }
+function fmtWhen(ts){ return new Date(ts).toLocaleString('es-ES',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}); }
+function b64encodeUtf8(str){ return btoa(String.fromCharCode(...new TextEncoder().encode(str))); }
+function b64decodeUtf8(b64){ return new TextDecoder().decode(Uint8Array.from(atob(b64.replace(/\n/g,'')), c=>c.charCodeAt(0))); }
+async function workerFetch(path, opts={}){
+  if(!cfg.worker || !cfg.token) throw new Error('Worker sin configurar');
+  const r = await fetch(cfg.worker.replace(/\/$/,'') + path, {
+    ...opts,
+    headers:{ 'Authorization':'Bearer '+cfg.token, 'Content-Type':'application/json', ...(opts.headers||{}) }
+  });
+  if(!r.ok){ const t = await r.text().catch(()=>' '); throw new Error('HTTP '+r.status+' '+t.slice(0,120)); }
+  return r.json();
+}
+
+/* ================= GATE ================= */
+const pinInput = $('pinInput');
+if(sessionStorage.getItem('irisBO')==='1') unlock();
+else pinInput.focus();
+pinInput.addEventListener('input', ()=>{
+  if(pinInput.value.length===6){
+    if(pinInput.value===PIN){ sessionStorage.setItem('irisBO','1'); unlock(); }
+    else{ pinInput.classList.add('err'); setTimeout(()=>{pinInput.classList.remove('err');pinInput.value='';},400); }
+  }
+});
+function unlock(){
+  $('gate').classList.add('hidden');
+  $('app').classList.add('on');
+  $('setWorker').value = cfg.worker||'';
+  $('setToken').value  = cfg.token||'';
+  $('setPat').value    = cfg.pat||'';
+  refreshStatus();
+  if(cfg.worker && cfg.token) loadInbox(true);
+  if(cfg.pat) loadProjects();
+  renderCalendar();
+}
+
+/* ================= NAV ================= */
+document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.nav-btn').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  b.classList.add('active');
+  $('view-'+b.dataset.view).classList.add('on');
+  if(b.dataset.view==='sales' && !$('salesContent').dataset.loaded && cfg.worker) loadSales();
+}));
+
+/* ================= AJUSTES ================= */
+async function saveSettings(){
+  cfg = { worker:$('setWorker').value.trim(), token:$('setToken').value.trim(), pat:$('setPat').value.trim() };
+  localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+  toast('Configuración guardada. Probando conexiones…');
+  refreshStatus();
+  if(cfg.worker && cfg.token) loadInbox(true);
+  if(cfg.pat) loadProjects();
+}
+async function refreshStatus(){
+  const ws=$('workerStatus'), gs=$('ghStatus');
+  ws.textContent='—'; gs.textContent='—';
+  if(cfg.worker && cfg.token){
+    try{ await workerFetch('/ping'); ws.textContent='OK'; ws.style.color='var(--ok)'; }
+    catch(e){ ws.textContent='ERROR'; ws.style.color='var(--red)'; }
+  }
+  if(cfg.pat){
+    try{
+      const r = await fetch(`https://api.github.com/repos/${GH_REPO}`,{headers:{Authorization:'Bearer '+cfg.pat}});
+      gs.textContent = r.ok?'OK':'ERROR'; gs.style.color = r.ok?'var(--ok)':'var(--red)';
+    }catch(e){ gs.textContent='ERROR'; gs.style.color='var(--red)'; }
+  }
+}
+
+/* ================= BANDEJA ================= */
+async function loadInbox(silent){
+  const box=$('inboxContent'), btn=$('inboxRefresh');
+  if(!cfg.worker||!cfg.token) return;
+  btn.disabled=true;
+  if(!silent) box.innerHTML='<div class="empty"><span class="spin"></span></div>';
+  try{
+    const data = await workerFetch('/inbox');
+    messages = data.messages||[];
+    renderInbox();
+    $('inboxDot').classList.toggle('on', messages.some(m=>!m.read));
+  }catch(e){
+    box.innerHTML=`<div class="empty"><div class="eyebrow">Error de conexión</div>${esc(e.message)}<br><br>Revisa la URL del Worker y el token en Ajustes.</div>`;
+  }
+  btn.disabled=false;
+}
+function renderInbox(){
+  const box=$('inboxContent');
+  if(!messages.length){ box.innerHTML='<div class="empty"><div class="eyebrow">Bandeja vacía</div>Cuando un cliente escriba desde el formulario de iris.it.com, aparecerá aquí.</div>'; return; }
+  const list = messages.map(m=>`
+    <div class="msg-item ${m.read?'read':''} ${selectedMsg===m.key?'sel':''}" onclick="openMsg('${esc(m.key)}')">
+      <div class="from">${m.read?'':'<span class="unread"></span>'}${esc(m.nombre||m.email)}</div>
+      <div class="subj">${esc(m.asunto||'(sin asunto)')}</div>
+      <div class="when">${fmtWhen(m.ts)}</div>
+    </div>`).join('');
+  const m = messages.find(x=>x.key===selectedMsg);
+  const detail = m ? `
+    <div class="subj">${esc(m.asunto||'(sin asunto)')}</div>
+    <div class="meta">DE&nbsp;&nbsp;${esc(m.nombre||'—')} &lt;${esc(m.email)}&gt;<br>FECHA&nbsp;&nbsp;${fmtWhen(m.ts)}</div>
+    <div class="body">${esc(m.mensaje)}</div>
+    <div class="msg-actions">
+      <button class="btn sm" onclick="replyMsg('${esc(m.key)}')">Responder</button>
+      <button class="btn danger sm" onclick="deleteMsg('${esc(m.key)}')">Eliminar</button>
+    </div>`
+    : '<div class="empty" style="border:0"><div class="eyebrow">Ningún mensaje seleccionado</div>Selecciona un mensaje de la lista.</div>';
+  box.innerHTML = `<div class="inbox-wrap"><div class="msg-list">${list}</div><div class="msg-detail">${detail}</div></div>`;
+}
+async function openMsg(key){
+  selectedMsg=key;
+  const m=messages.find(x=>x.key===key);
+  if(m && !m.read){ m.read=true; renderInbox(); workerFetch('/inbox/read',{method:'POST',body:JSON.stringify({key})}).catch(()=>{}); $('inboxDot').classList.toggle('on', messages.some(x=>!x.read)); }
+  else renderInbox();
+}
+async function deleteMsg(key){
+  if(!confirm('¿Eliminar este mensaje de forma permanente?')) return;
+  try{
+    await workerFetch('/inbox/delete',{method:'POST',body:JSON.stringify({key})});
+    messages=messages.filter(m=>m.key!==key); selectedMsg=null; renderInbox(); toast('Mensaje eliminado');
+  }catch(e){ toast('No se pudo eliminar: '+e.message, true); }
+}
+function replyMsg(key){
+  const m=messages.find(x=>x.key===key); if(!m) return;
+  $('cTo').value=m.email;
+  $('cSubject').value=(m.asunto?'Re: '+m.asunto:'');
+  $('cBody').value='';
+  document.querySelector('[data-view="compose"]').click();
+  $('cBody').focus();
+}
+
+/* ================= COMPRAS ================= */
+async function loadSales(){
+  const box=$('salesContent');
+  if(!cfg.worker||!cfg.token){ toast('Configura el Worker en Ajustes', true); return; }
+  box.innerHTML='<div class="empty"><span class="spin"></span></div>';
+  try{
+    const data = await workerFetch('/purchases');
+    const rows = data.purchases||[];
+    box.dataset.loaded='1';
+    if(!rows.length){ box.innerHTML='<div class="empty"><div class="eyebrow">Sin compras</div>Todavía no hay pagos completados en Stripe.</div>'; return; }
+    box.innerHTML=`<table><thead><tr><th>Fecha</th><th>Cliente</th><th>Concepto</th><th>Importe</th><th>Estado</th></tr></thead><tbody>${
+      rows.map(p=>`<tr>
+        <td class="mono">${fmtWhen(p.created*1000)}</td>
+        <td>${esc(p.name||'—')}<div class="mono" style="font-size:10.5px">${esc(p.email||'')}</div></td>
+        <td>${esc(p.items||'—')}</td>
+        <td class="amount">${(p.amount/100).toLocaleString('es-ES',{style:'currency',currency:(p.currency||'eur').toUpperCase()})}</td>
+        <td><span class="tag ${p.status==='paid'?'ok':'warn'}">${p.status==='paid'?'Pagado':esc(p.status)}</span></td>
+      </tr>`).join('')
+    }</tbody></table>`;
+  }catch(e){
+    box.innerHTML=`<div class="empty"><div class="eyebrow">Error</div>${esc(e.message)}</div>`;
+  }
+}
+
+/* ================= REDACTAR ================= */
+async function sendMail(){
+  const to=$('cTo').value.trim(), subject=$('cSubject').value.trim(), body=$('cBody').value.trim();
+  if(!to||!subject||!body){ toast('Completa destinatario, asunto y mensaje', true); return; }
+  if(!cfg.worker||!cfg.token){ toast('Configura el Worker en Ajustes', true); return; }
+  const btn=$('cSend'); btn.disabled=true; btn.innerHTML='<span class="spin"></span> Enviando…';
+  try{
+    await workerFetch('/send',{method:'POST',body:JSON.stringify({to,subject,text:body})});
+    toast('Correo enviado a '+to);
+    $('cTo').value=$('cSubject').value=$('cBody').value='';
+  }catch(e){ toast('Error al enviar: '+e.message, true); }
+  btn.disabled=false; btn.textContent='Enviar correo';
+}
+
+/* ================= PROYECTOS (GitHub) ================= */
+async function loadProjects(){
+  if(!cfg.pat) return;
+  try{
+    const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_PATH}?ref=${GH_BRANCH}`,{
+      headers:{Authorization:'Bearer '+cfg.pat, Accept:'application/vnd.github+json'}
+    });
+    if(r.status===404){ projects=[]; projectsSha=null; }
+    else if(!r.ok) throw new Error('GitHub HTTP '+r.status);
+    else{
+      const j = await r.json();
+      projectsSha = j.sha;
+      projects = JSON.parse(b64decodeUtf8(j.content)||'[]');
+    }
+    renderCalendar();
+  }catch(e){ toast('No se pudo cargar el calendario: '+e.message, true); }
+}
+async function persistProjects(){
+  const body = { message:'backoffice: actualizar calendario de proyectos', content:b64encodeUtf8(JSON.stringify(projects,null,2)), branch:GH_BRANCH };
+  if(projectsSha) body.sha = projectsSha;
+  const r = await fetch(`https://api.github.com/repos/${GH_REPO}/contents/${GH_PATH}`,{
+    method:'PUT',
+    headers:{Authorization:'Bearer '+cfg.pat, Accept:'application/vnd.github+json'},
+    body:JSON.stringify(body)
+  });
+  if(!r.ok) throw new Error('GitHub HTTP '+r.status);
+  const j = await r.json();
+  projectsSha = j.content.sha;
+}
+
+/* ================= CALENDARIO ================= */
+function moveMonth(d){ calCursor.setMonth(calCursor.getMonth()+d); renderCalendar(); }
+function isoOf(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function renderCalendar(){
+  $('calMonth').textContent = calCursor.toLocaleDateString('es-ES',{month:'long',year:'numeric'});
+  const y=calCursor.getFullYear(), m=calCursor.getMonth();
+  const first=new Date(y,m,1);
+  const startOffset=(first.getDay()+6)%7; // lunes = 0
+  const gridStart=new Date(y,m,1-startOffset);
+  const todayIso=isoOf(new Date());
+  const dows=['LUN','MAR','MIÉ','JUE','VIE','SÁB','DOM'];
+  let html = dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  // precompute review windows
+  const reviews = projects.filter(p=>p.deadline&&p.review>0).map(p=>{
+    const s=new Date(p.deadline+'T00:00:00'); const e=new Date(s); e.setDate(e.getDate()+Number(p.review));
+    return {start:s, end:e, name:p.nombre};
+  });
+  for(let i=0;i<42;i++){
+    const d=new Date(gridStart); d.setDate(gridStart.getDate()+i);
+    const iso=isoOf(d);
+    const out=d.getMonth()!==m;
+    const inReview = reviews.some(r=> d> r.start && d<=r.end);
+    const dls = projects.filter(p=>p.deadline===iso);
+    const starts = projects.filter(p=>p.inicio===iso && p.inicio!==p.deadline);
+    html += `<div class="cal-cell ${out?'out':''} ${iso===todayIso?'today':''} ${inReview&&!out?'review':''}">
+      <span class="dnum">${d.getDate()}</span>
+      ${dls.map(p=>`<span class="cal-ev" title="Deadline: ${esc(p.nombre)}" onclick="openProjectModal('${esc(p.id)}')">${esc(p.nombre)}</span>`).join('')}
+      ${starts.map(p=>`<span class="cal-ev soft" title="Inicio: ${esc(p.nombre)}" onclick="openProjectModal('${esc(p.id)}')">▸ ${esc(p.nombre)}</span>`).join('')}
+    </div>`;
+  }
+  $('calGrid').innerHTML=html;
+  renderProjList();
+}
+const STATUS_TAG = {curso:['tag mut','En curso'],revision:['tag warn','En revisión'],entregado:['tag ok','Entregado'],pausado:['tag red','Pausado']};
+function renderProjList(){
+  const box=$('projList');
+  if(!projects.length){
+    box.innerHTML = cfg.pat
+      ? '<div class="empty"><div class="eyebrow">Sin proyectos</div>Crea el primero con «Nuevo proyecto». Se guardará en el repositorio.</div>'
+      : '<div class="empty"><div class="eyebrow">GitHub sin conectar</div>Añade tu token en Ajustes para guardar y sincronizar el calendario.</div>';
+    return;
+  }
+  const sorted=[...projects].sort((a,b)=>(a.deadline||'9999').localeCompare(b.deadline||'9999'));
+  box.innerHTML = sorted.map(p=>{
+    const [cls,label]=STATUS_TAG[p.estado]||STATUS_TAG.curso;
+    const revEnd = p.deadline&&p.review>0 ? (()=>{const d=new Date(p.deadline+'T00:00:00');d.setDate(d.getDate()+Number(p.review));return isoOf(d);})() : null;
+    return `<div class="proj-row">
+      <div><div class="nm">${esc(p.nombre)}</div><div class="cl">${esc(p.cliente||'—')}</div></div>
+      <span class="${cls}">${label}</span>
+      <div class="dt">DEADLINE<br><b>${fmtDate(p.deadline)}</b></div>
+      <div class="dt">REVISIÓN<br><b>${revEnd?fmtDate(revEnd):'—'}</b></div>
+      <button class="btn ghost sm" onclick="openProjectModal('${esc(p.id)}')">Editar</button>
+    </div>`;
+  }).join('');
+}
+
+/* ================= MODAL ================= */
+function openProjectModal(id){
+  editingId = id||null;
+  const p = projects.find(x=>x.id===id) || {};
+  $('modalTitle').textContent = id?'Editar proyecto':'Nuevo proyecto';
+  $('pName').value=p.nombre||''; $('pClient').value=p.cliente||'';
+  $('pStart').value=p.inicio||''; $('pDeadline').value=p.deadline||'';
+  $('pReview').value=p.review??5; $('pStatus').value=p.estado||'curso';
+  $('pNotes').value=p.notas||'';
+  $('pDelete').style.display=id?'inline-flex':'none';
+  $('modal').classList.add('on');
+}
+function closeModal(){ $('modal').classList.remove('on'); }
+$('modal').addEventListener('click',e=>{ if(e.target.id==='modal') closeModal(); });
+async function saveProject(){
+  const nombre=$('pName').value.trim(), deadline=$('pDeadline').value;
+  if(!nombre||!deadline){ toast('El proyecto necesita nombre y deadline', true); return; }
+  if(!cfg.pat){ toast('Añade tu token de GitHub en Ajustes primero', true); return; }
+  const data={ id:editingId||('p'+Date.now()), nombre, cliente:$('pClient').value.trim(),
+    inicio:$('pStart').value||null, deadline, review:Number($('pReview').value)||0,
+    estado:$('pStatus').value, notas:$('pNotes').value.trim() };
+  const btn=$('pSave'); btn.disabled=true; btn.innerHTML='<span class="spin"></span>';
+  const prev=[...projects];
+  if(editingId) projects=projects.map(p=>p.id===editingId?data:p); else projects.push(data);
+  try{ await persistProjects(); renderCalendar(); closeModal(); toast('Proyecto guardado'); }
+  catch(e){ projects=prev; toast('Error al guardar: '+e.message, true); }
+  btn.disabled=false; btn.textContent='Guardar proyecto';
+}
+async function deleteProject(){
+  if(!editingId || !confirm('¿Eliminar este proyecto del calendario?')) return;
+  const prev=[...projects];
+  projects=projects.filter(p=>p.id!==editingId);
+  try{ await persistProjects(); renderCalendar(); closeModal(); toast('Proyecto eliminado'); }
+  catch(e){ projects=prev; toast('Error al eliminar: '+e.message, true); }
+}
+</script>
+</body>
+</html>
