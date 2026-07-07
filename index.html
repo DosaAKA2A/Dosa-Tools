@@ -1313,7 +1313,7 @@
 
 
 </style>
-<!-- cache: 20260707b -->
+<!-- cache: 20260707c -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1826,14 +1826,33 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') document.que
   }, { threshold: 0.10 });
   cards.forEach(function(c){ obs.observe(c); });
 })();
-/* ════════ Contacto → mailto ════════ */
-function sendContact() {
+/* ════════ Contacto → Worker ════════ */
+async function sendContact() {
   const n = (document.getElementById('cName').value || '').trim();
   const m = (document.getElementById('cMail').value || '').trim();
   const msg = (document.getElementById('cMsg').value || '').trim();
-  const subject = 'Nuevo mensaje desde iris.it.com';
-  const body = 'Nombre: ' + n + '\nEmail: ' + m + '\n\n' + msg;
-  window.location.href = 'mailto:contacto@iris.it.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+  if (!m || !msg) { alert('Por favor, completa el email y el mensaje.'); return; }
+  const btn = document.querySelector('.send-btn');
+  btn.textContent = 'Enviando…';
+  btn.disabled = true;
+  try {
+    const r = await fetch('https://iris-backoffice.studio-iris2026.workers.dev/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nombre: n, email: m, asunto: 'Nuevo mensaje desde iris.it.com', mensaje: msg })
+    });
+    if (r.ok) {
+      btn.innerHTML = 'Mensaje enviado ✓';
+      document.getElementById('cName').value = '';
+      document.getElementById('cMail').value = '';
+      document.getElementById('cMsg').value = '';
+      setTimeout(() => { btn.innerHTML = 'Enviar mensaje <span class="arr">&#8599;</span>'; btn.disabled = false; }, 3000);
+    } else { throw new Error(); }
+  } catch(e) {
+    alert('Error al enviar. Inténtalo de nuevo.');
+    btn.innerHTML = 'Enviar mensaje <span class="arr">&#8599;</span>';
+    btn.disabled = false;
+  }
 }
 </script>
 
