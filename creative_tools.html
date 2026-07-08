@@ -145,6 +145,7 @@
     <div class="spacer"></div>
     <button class="top-btn ghost" id="btn-animate">Animate</button>
     <button class="top-btn" id="btn-random">Randomize</button>
+    <button class="top-btn" id="btn-reset-all">Reset</button>
     <button class="top-btn" id="btn-upload">Open image</button>
     <button class="top-btn primary" id="btn-export">Export PNG</button>
     <input type="file" id="file" accept="image/*" hidden>
@@ -210,6 +211,16 @@ const GRAD_PRESETS={
   'Aurora':[['#00ffa3',0],['#00c2ff',.45],['#7a5cff',1]],
   'Ember':[['#ff5c38',0],['#ffb03a',.5],['#2b0a12',1]],
   'Mono ink':[['#0a0a0c',0],['#6b6b74',.5],['#f4f2ea',1]],
+  'Velvet':[['#1a0533',0],['#6b21a8',.35],['#e879f9',.7],['#fde68a',1]],
+  'Ocean':[['#0f172a',0],['#0369a1',.4],['#06b6d4',.75],['#e0f2fe',1]],
+  'Neon Tokyo':[['#0d0221',0],['#ff0080',.3],['#7928ca',.6],['#00d4ff',1]],
+  'Matcha':[['#052e16',0],['#16a34a',.45],['#86efac',.8],['#fef9c3',1]],
+  'Mars':[['#1c0000',0],['#9f1239',.4],['#fb923c',.75],['#fef3c7',1]],
+  'Hologram':[['#e0e7ff',0],['#a5f3fc',.25],['#fbcfe8',.5],['#fef9c3',.75],['#c7d2fe',1]],
+  'Darkroom':[['#0a0a0c',0],['#ff5c38',.4],['#1a0a06',1]],
+  'Cobalt':[['#03045e',0],['#0077b6',.4],['#00b4d8',.7],['#caf0f8',1]],
+  'Lava':[['#000000',0],['#3d0000',.3],['#ff4500',.7],['#ffd700',1]],
+  'Soft blush':[['#fff1f2',0],['#fda4af',.4],['#c084fc',.75],['#e0e7ff',1]],
 };
 
 /* ─────────────── WebGL ─────────────── */
@@ -608,7 +619,7 @@ document.getElementById('btn-export').addEventListener('click',()=>{
     a.download=`iris-${MODE}-${Date.now()}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Exported <b>PNG</b>');},'image/png');});
 
 document.getElementById('btn-random').addEventListener('click',()=>{
-  const palette=Object.values(GRAD_PRESETS)[Math.floor(Math.random()*6)];
+  const palette=Object.values(GRAD_PRESETS)[Math.floor(Math.random()*Object.keys(GRAD_PRESETS).length)];
   G.stops=palette.map(([c,p])=>({c,p}));G.sel=0;
   G.shape=Math.floor(Math.random()*3);G.angle=Math.round(Math.random()*360);
   G.warp=+(Math.random()*0.8).toFixed(2);G.scale=+(0.6+Math.random()*2.5).toFixed(2);
@@ -618,6 +629,44 @@ document.getElementById('btn-random').addEventListener('click',()=>{
 document.getElementById('btn-animate').addEventListener('click',()=>{
   G.animate=!G.animate;document.getElementById('btn-animate').classList.toggle('on',G.animate);
   if(G.animate&&!animRAF)animRAF=requestAnimationFrame(animLoop);});
+
+/* ═══════════════ Reset all ═══════════════ */
+const G_DEFAULTS={shape:0,angle:19,scale:1.66,warp:0.43,detail:2,contrast:1.14,opacity:0.85,blend:3,aberration:0.38,softness:0,grain:0.06,blur:0,glass:0,glassAmt:0.5,animate:false,time:0};
+const S_DEFAULTS={style:'dither',ditherAlgo:'floyd',colorMode:'mono',levels:4,cell:5,contrast:100,brightness:100,saturation:100,hue:0,invert:false,ink:'#14141a',paper:'#f4f2ea',charset:' .:-=+*#%@',studs:false,angle:false};
+document.getElementById('btn-reset-all').addEventListener('click',()=>{
+  if(MODE==='compose'){
+    Object.assign(G,G_DEFAULTS);
+    G.stops=[{c:'#6c5ce7',p:0},{c:'#a29bfe',p:0.28},{c:'#fd79a8',p:0.55},{c:'#ffb8a2',p:0.78},{c:'#ffe08a',p:1}];
+    G.sel=0;G.animate=false;
+    document.getElementById('btn-animate').classList.remove('on');
+    if(animRAF){cancelAnimationFrame(animRAF);animRAF=null;}
+    buildComposePanel();glRender();
+  }else{
+    Object.assign(S,S_DEFAULTS);
+    buildReducePanel();render();
+  }
+  toast('Settings reset');
+});
+// mostrar/ocultar reset según modo
+const _origSetMode=setMode;
+
+/* ═══════════════ Scroll zoom (parallax) ═══════════════ */
+let _zoom=1.0;
+stage.addEventListener('wheel',e=>{
+  e.preventDefault();
+  _zoom=Math.min(3,Math.max(0.4,_zoom-e.deltaY*0.0012));
+  const wrap=document.querySelector('.canvas-wrap');
+  wrap.style.transform=`scale(${_zoom})`;
+  wrap.style.transformOrigin='center center';
+  wrap.style.transition='transform .12s cubic-bezier(.25,.46,.45,.94)';
+},{passive:false});
+// doble click para reset zoom
+stage.addEventListener('dblclick',()=>{
+  _zoom=1;
+  const wrap=document.querySelector('.canvas-wrap');
+  wrap.style.transform='scale(1)';
+  toast('Zoom reset');
+});
 
 /* ═══════════════ Init ═══════════════ */
 try{glInit();}catch(e){console.error('GL init:',e);glOK=false;toast('WebGL error — Compose disabled');}
