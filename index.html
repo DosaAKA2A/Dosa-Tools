@@ -1073,6 +1073,49 @@
   .scroll-hint { right: 24px; }
   }
 
+  /* ══════════ Mobile hero — limpio, sin marco ══════════ */
+  @media (max-width: 560px) {
+    /* Banner a pantalla completa, sin inset ni bordes redondeados */
+    .hero-banner {
+      top: 0; left: 0; right: 0; bottom: 0;
+      border-radius: 0;
+    }
+    /* Quitar el fondo borroso exterior (ya no se ve marco) */
+    .hero::before { display: none; }
+
+    /* Imagen centrada en el rostro */
+    .hero-banner-img { object-position: center 30%; }
+
+    /* Contenido más aireado, alineado abajo-izquierda */
+    .hero-content {
+      padding: 0 24px 72px;
+      max-width: 100%;
+    }
+    .hero-title {
+      font-size: clamp(30px, 8vw, 40px);
+      line-height: 1.12;
+      margin-bottom: 20px;
+      max-width: 100%;
+    }
+    /* Tags: apilar en dos filas legibles, sin saturar */
+    .hero-tags { gap: 8px 12px; }
+    .hero-tags .tag { font-size: 11px; letter-spacing: .1em; }
+
+    /* Ocultar elementos verticales que estorban en móvil */
+    .scroll-hint { display: none; }
+    .hero-cv-btn { display: none; }
+
+    /* Gradiente inferior para legibilidad del texto sobre la imagen */
+    .hero-banner::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.25) 40%, transparent 65%);
+      pointer-events: none;
+      z-index: 1;
+    }
+  }
+
   /* CARDS */
 
 @keyframes fadeUp {
@@ -1313,7 +1356,7 @@
 
 
 </style>
-<!-- cache: 20260707c -->
+<!-- cache: 20260708a -->
 </head>
 <body>
 <div id="iris-intro">
