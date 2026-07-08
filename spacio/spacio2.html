@@ -1761,21 +1761,7 @@
 </div>
 
 <script>
-(function() {
-  var key = 'spacioAccess';
-  var ok = false;
-  if (sessionStorage.getItem(key)) { ok = true; }
-  if (!ok) {
-    try {
-      var item = localStorage.getItem(key);
-      if (item) {
-        var data = JSON.parse(item);
-        if ((Date.now() - data.ts) < 86400000) { sessionStorage.setItem(key, '1'); ok = true; }
-      }
-    } catch(e) {}
-  }
-  if (!ok) window.location.href = '../index.html';
-})();
+/* Acceso público — gate retirado 2026-07-08 */
 // Desbloquear AudioContext en el primer gesto del usuario (click/key/touch)
 // para que el sonido de loading funcione incluso en primera visita tras recarga
 (function(){
