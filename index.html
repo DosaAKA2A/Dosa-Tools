@@ -224,17 +224,22 @@
     z-index: 0;
     height: 100svh;
   }
-  /* ── Sweep effect: las secciones suben encima del hero ── */
+  /* ── Card-stack: cada sección sube encima de la anterior ── */
   .hero-sticky-wrap + .section {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 2;
     border-radius: 24px 24px 0 0;
-    margin-top: 0;
     overflow: hidden;
   }
+  .hero-sticky-wrap ~ .section:nth-of-type(2) { z-index: 3; }
+  .hero-sticky-wrap ~ .section:nth-of-type(3) { z-index: 4; }
+  .hero-sticky-wrap ~ .section:nth-of-type(4) { z-index: 5; }
   .hero-sticky-wrap ~ .section {
-    position: relative;
+    position: sticky;
+    top: 0;
     z-index: 2;
+    border-radius: 24px 24px 0 0;
   }
   .sec-dark  { background: var(--bg); color: var(--text); }
   #servicios { background: #000; }
@@ -305,9 +310,9 @@
   }
   .success-left { display: flex; flex-direction: column; justify-content: center; }
   .success-title {
-    font-family: 'Clash Display','Inter',sans-serif;
+    font-family: 'Inter',system-ui,sans-serif;
     font-size: clamp(44px,6vw,88px);
-    font-weight: 700;
+    font-weight: 900;
     line-height: .96;
     letter-spacing: -.02em;
     color: #fff;
@@ -358,12 +363,12 @@
   .success-sec.in .chat-bubble {
     animation: bubblePop .5s cubic-bezier(0.34,1.56,0.64,1) forwards;
   }
-  .success-sec.in .chat-bubble:nth-of-type(1) { animation-delay: .3s; }
-  .success-sec.in .chat-bubble:nth-of-type(2) { animation-delay: .5s; }
-  .success-sec.in .chat-bubble:nth-of-type(3) { animation-delay: .7s; }
-  .success-sec.in .chat-bubble:nth-of-type(4) { animation-delay: 1.0s; }
-  .success-sec.in .chat-bubble:nth-of-type(5) { animation-delay: 1.2s; }
-  .success-sec.in .chat-bubble:nth-of-type(6) { animation-delay: 1.45s; }
+  .success-sec.in .chat-bubble:nth-child(2) { animation-delay: .3s; }
+  .success-sec.in .chat-bubble:nth-child(3) { animation-delay: .55s; }
+  .success-sec.in .chat-bubble:nth-child(4) { animation-delay: .8s; }
+  .success-sec.in .chat-bubble:nth-child(6) { animation-delay: 1.2s; }
+  .success-sec.in .chat-bubble:nth-child(7) { animation-delay: 1.45s; }
+  .success-sec.in .chat-bubble:nth-child(8) { animation-delay: 1.9s; }
   @keyframes bubblePop {
     0%   { opacity: 0; transform: translateY(12px) scale(0.92); }
     100% { opacity: 1; transform: translateY(0) scale(1); }
@@ -1456,7 +1461,7 @@
 
 
 </style>
-<!-- cache: 20260708b -->
+<!-- cache: 20260708c -->
 </head>
 <body>
 <div id="iris-intro">
