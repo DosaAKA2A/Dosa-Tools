@@ -46,7 +46,7 @@
 
   .body{display:grid;grid-template-columns:64px 1fr 292px;min-height:0}
   .rail{border-right:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 0;overflow-y:auto}
-  .rail-btn{width:44px;height:44px;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-faint);border:1px solid transparent;transition:.14s;position:relative}
+  .rail-btn{width:44px;height:44px;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--ink-dim);border:1px solid transparent;transition:.14s;position:relative}
   .rail-btn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.6}
   .rail-btn .rl{font-family:var(--mono);font-size:7.5px;letter-spacing:.04em;text-transform:uppercase}
   .rail-btn:hover{color:var(--ink-dim);background:var(--panel-2)}
@@ -54,11 +54,11 @@
   .rail-btn.active::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:2px;background:var(--safe);border-radius:2px}
   .rail-swatch{width:44px;height:34px;border-radius:8px;border:1px solid var(--line);cursor:pointer;transition:.13s}
   .rail-swatch:hover{border-color:var(--safe);transform:scale(1.04)}
-  .rail-lbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin:6px 0 2px}
+  .rail-lbl{font-family:var(--mono);font-size:7.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-dim);margin:6px 0 2px}
 
   .stage{background:var(--stage);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.03) 1px,transparent 0);background-size:22px 22px}
-  .canvas-wrap{position:relative;max-width:calc(100% - 56px);max-height:calc(100% - 56px);box-shadow:0 24px 60px rgba(0,0,0,.5)}
-  canvas{display:block;max-width:100%;max-height:calc(100vh - 130px);background:#000}
+  .canvas-wrap{position:relative;max-width:calc(100% - 16px);max-height:calc(100% - 16px);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+  canvas{display:block;max-width:100%;max-height:calc(100vh - 52px);background:#000}
   #view{image-rendering:pixelated}
   .stage-hud{position:absolute;left:16px;bottom:14px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:var(--ink-faint);pointer-events:none;display:flex;gap:14px}
   .stage-hud b{color:var(--ink-dim);font-weight:500}
