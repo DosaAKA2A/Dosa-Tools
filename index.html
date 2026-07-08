@@ -1666,8 +1666,8 @@
           <img class="bc-hands-img" src="assets/bento-atencion.jpg?v=20260706" alt="Persona trabajando en portátil" loading="lazy">
         </div>
         <div class="bc-text">
-          <h4>Atención 24/7</h4>
-          <p>Respuesta prioritaria en menos de 24h. Tu proyecto siempre tiene a alguien pendiente.</p>
+          <h4>Atención directa</h4>
+          <p>Respuesta en menos de 24h laborables. Tu proyecto siempre tiene a alguien pendiente.</p>
         </div>
       </div>
 
@@ -1812,18 +1812,18 @@
         </div>
       </article>
 
-      <!-- 03 SPACIO² -->
-      <article class="pcard" onclick="openModal('spacio')">
+      <!-- 03 SPACIO² (público — showcase) -->
+      <article class="pcard" onclick="window.location.href='spacio2.html'">
         <div class="pcard-bg-img"><img src="assets/cards/card-spacio.jpg?v=20260705" alt="SPACIO²"></div>
         <div class="pcard-veil-hover"></div>
         <div class="pcard-top">
-          <span class="pcard-lock"><svg width="9" height="11" viewBox="0 0 9 11" fill="none"><rect x="1" y="4.5" width="7" height="6" rx="1" stroke="currentColor" stroke-width="1"/><path d="M2.5 4.5V3a2 2 0 014 0v1.5" stroke="currentColor" stroke-width="1" stroke-linecap="round"/></svg> Acceso privado</span>
+          <span class="pcard-lock" style="background:rgba(220,64,42,0.55);border-color:rgba(220,64,42,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-5"/></svg> Público</span>
           <span class="pcard-num">03</span>
         </div>
         <div class="pcard-bottom">
           <div class="pcard-tags"><span class="pcard-tag">Object Study</span><span class="pcard-tag">Aeroespacial</span><span class="pcard-tag">Editorial</span></div>
           <h3 class="pcard-title">SPACIO²</h3>
-          <span class="pcard-go">Acceder <span class="arr">↗</span></span>
+          <span class="pcard-go">Ver proyecto <span class="arr">↗</span></span>
         </div>
       </article>
     </div>
@@ -1853,13 +1853,24 @@
         <div class="chat-bubble gray">¡Perfecto!</div>
       </div>
 
-      <!-- Right: image placeholder -->
-      <div class="success-img">
-        <div class="success-img-ph">
-          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-          Imagen
+      <!-- Right: trust signals -->
+      <div class="success-img" style="display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:clamp(28px,3vw,40px);gap:28px;background:#0e0e0e;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span style="font-size:13px;color:rgba(245,245,245,.82);line-height:1.4;">Pago seguro con <b style="color:#fff;">Stripe</b></span>
         </div>
-        <!-- Reemplaza el placeholder por: <img src="assets/success.jpg" alt="IRIS"> -->
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          <span style="font-size:13px;color:rgba(245,245,245,.82);line-height:1.4;">Factura incluida en cada proyecto</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="font-size:13px;color:rgba(245,245,245,.82);line-height:1.4;">Entrega en <b style="color:#fff;">1&ndash;2 semanas</b> (plan Esencial)</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+          <span style="font-size:13px;color:rgba(245,245,245,.82);line-height:1.4;">Sin plantillas &mdash; dise&ntilde;o 100% a medida</span>
+        </div>
       </div>
 
     </div>
@@ -1958,8 +1969,8 @@
 
     <p class="tarifas-fine" data-reveal>
       <strong>Nota:</strong> precios sin IVA. Hosting y dominio se facturan aparte (aprox. 100&ndash;300&nbsp;&euro;/a&ntilde;o).
-      El plazo de entrega depende de la rapidez con la que recibamos contenidos y feedback. El pago inicia el proyecto;
-      el resto se abona a la entrega.
+      El plazo de entrega depende de la rapidez con la que recibamos contenidos y feedback.
+      Esencial se abona íntegro al inicio. Estudio y Sistema arrancan con un depósito del 50%; el resto se factura a la entrega.
     </p>
   </div>
 </section>
@@ -1972,7 +1983,6 @@
         <div class="marker on-dark"><span class="paren">(&nbsp;04&nbsp;)</span> &bull; <span>Contacto</span></div>
         <h2 class="contact-lead on-dark">Hablemos de lo que estás construyendo <span class="g">y de cómo puedo ayudarte.</span></h2>
         <div class="contact-info">
-          <div class="cinfo"><b>¿Prefieres llamar?</b><span>+34 600 000 000</span></div>
           <div class="cinfo"><b>¿A la vieja usanza?</b><span>contacto@iris.it.com</span></div>
         </div>
       </div>
@@ -2017,6 +2027,11 @@
     </div>
     <div class="foot-bottom">
       <span>IRIS © 2026 — Todos los derechos reservados</span>
+      <span style="display:flex;gap:20px;font-size:12px;">
+        <a href="aviso-legal.html" style="color:var(--dim);text-decoration:none;">Aviso legal</a>
+        <a href="privacidad.html" style="color:var(--dim);text-decoration:none;">Privacidad</a>
+        <a href="cookies.html" style="color:var(--dim);text-decoration:none;">Cookies</a>
+      </span>
       <a href="#top">Volver arriba ↑</a>
     </div>
   </div>
