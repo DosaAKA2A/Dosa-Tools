@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- cache: 20260708e -->
+<!-- cache: 20260709a -->
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -143,6 +143,7 @@
     <div class="modesw">
       <button data-mode="compose" class="active">Compose</button>
       <button data-mode="reduce">Reduce</button>
+      <button data-mode="banner">Banner</button>
     </div>
     <div class="spacer"></div>
     <button class="top-btn ghost" id="btn-animate">Animate</button>
@@ -158,6 +159,7 @@
       <div class="canvas-wrap">
         <canvas id="glview"></canvas>
         <canvas id="view" style="display:none"></canvas>
+        <canvas id="bannerview" style="display:none"></canvas>
       </div>
       <div class="drop-hint" id="drop-hint"><span class="cta" id="drop-cta">Drop · click · paste</span> an image to blend the gradient over it</div>
       <div class="stage-hud" id="hud"><span><b id="hud-a">GRADIENT</b></span><span id="hud-b">—</span></div>
@@ -183,6 +185,8 @@ const MAX_DIM=1100;
 const glview=document.getElementById('glview');
 const view=document.getElementById('view');
 const vctx=view.getContext('2d');
+const bannerview=document.getElementById('bannerview');
+const bctx=bannerview.getContext('2d');
 const panel=document.getElementById('panel');
 const rail=document.getElementById('rail');
 const stage=document.getElementById('stage');
@@ -598,6 +602,13 @@ function buildRail(){
       G.shape=p.shape;G.angle=p.angle;G.warp=p.warp;G.scale=p.scale;G.detail=p.detail;G.contrast=p.contrast;
       rail.querySelectorAll('[data-sh]').forEach(x=>x.classList.toggle('active',+x.dataset.sh===G.shape));
       buildComposePanel();glRender();toast(b.dataset.gp);}));
+  }else if(MODE==='banner'){
+    rail.innerHTML=`<div class="rail-lbl">Theme</div>`+Object.entries(B_TEMPLATES).map(([name,t])=>{
+      const css=`linear-gradient(135deg,${t.bg} 0%,${t.bg} 55%,${t.accent} 55%,${t.accent} 100%)`;
+      return `<button class="rail-swatch" title="${name}" data-bt="${name}" style="background:${css}"></button>`;
+    }).join('');
+    rail.querySelectorAll('[data-bt]').forEach(b=>b.addEventListener('click',()=>{
+      Object.assign(B,B_TEMPLATES[b.dataset.bt]);buildBannerPanel();bRender();toast(b.dataset.bt);}));
   }else{
     rail.innerHTML=REDUCE_STYLES.map(([v,t])=>`<button class="rail-btn ${S.style===v?'active':''}" data-style="${v}">
       <span class="rl">${t}</span></button>`).join('');
@@ -611,14 +622,17 @@ function buildRail(){
 function setMode(m){
   MODE=m;
   document.querySelectorAll('.modesw button').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
-  const compose=m==='compose';
+  const compose=m==='compose', banner=m==='banner';
   glview.style.display=compose?'block':'none';
-  view.style.display=compose?'none':'block';
+  view.style.display=(!compose&&!banner)?'block':'none';
+  bannerview.style.display=banner?'block':'none';
   document.getElementById('btn-animate').style.display=compose?'':'none';
-  document.getElementById('btn-random').style.display=compose?'':'none';
-  document.getElementById('drop-hint').style.display=PHOTO?'none':'';
+  document.getElementById('btn-random').style.display=(compose||banner)?'':'none';
+  document.getElementById('drop-hint').style.display=(banner||PHOTO)?'none':'';
   buildRail();
-  if(compose){buildComposePanel();glRender();}else{buildReducePanel();render();}
+  if(compose){buildComposePanel();glRender();}
+  else if(banner){buildBannerPanel();bRender();}
+  else{buildReducePanel();render();}
 }
 document.querySelectorAll('.modesw button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
 
@@ -641,12 +655,19 @@ function sendToReduce(){if(!glOK)return;glRender();
   glview.toBlob(blob=>{const img=new Image();img.onload=()=>{PHOTO=img;S.img=img;setMode('reduce');toast('Sent composite to <b>Reduce</b>');};img.src=URL.createObjectURL(blob);},'image/png');}
 
 document.getElementById('btn-export').addEventListener('click',()=>{
-  const canvas=MODE==='compose'?glview:view;
-  if(MODE==='compose')glRender();
+  let canvas;
+  if(MODE==='compose'){glRender();canvas=glview;}
+  else if(MODE==='banner'){bRender();canvas=bannerview;}
+  else canvas=view;
   canvas.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);
     a.download=`iris-${MODE}-${Date.now()}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Exported <b>PNG</b>');},'image/png');});
 
 document.getElementById('btn-random').addEventListener('click',()=>{
+  if(MODE==='banner'){
+    const keys=Object.keys(B_TEMPLATES);Object.assign(B,B_TEMPLATES[keys[Math.floor(Math.random()*keys.length)]]);
+    const lays=['split-left','split-right','centered','overlay'];B.layout=lays[Math.floor(Math.random()*lays.length)];
+    buildBannerPanel();bRender();toast('Randomized');return;
+  }
   const keys=Object.keys(GRAD_PRESETS);
   const p=GRAD_PRESETS[keys[Math.floor(Math.random()*keys.length)]];
   G.stops=p.stops.map(([c,pos])=>({c,p:pos}));G.sel=0;
@@ -696,6 +717,198 @@ stage.addEventListener('dblclick',()=>{
   wrap.style.transform='scale(1)';
   toast('Zoom reset');
 });
+
+/* ═══════════════ BANNER mode (Canvas 2D layout tool) ═══════════════ */
+const B={
+  format:'hero',            // hero 1920x600 | square 1080 | story 1080x1920 | wide 1200x628
+  layout:'split-left',      // split-left | split-right | centered | overlay
+  brand:'Luminarc',
+  tagline:'Líder Mundial en Vajilla · Hecho en Francia',
+  badge:'20%',
+  badgeLabel:'Hasta',
+  badgeSub:'dcto.',
+  headline:'Hasta 20% de descuento',
+  sub:'En selección de productos.\nSolo hasta agotar stock',
+  features:'Despachos a todo el Perú · Vidrio de Alta Calidad · Hecho en Francia',
+  cta:'¡Lo quiero!',
+  disclaimer:'Promociones sujetas a cambios y stock.',
+  bg:'#123a8f', accent:'#ffd400', text:'#ffffff', ctaBg:'#0a2a6b',
+  img:null,
+  showBadge:true, showFeatures:true, showCta:true,
+};
+const B_FORMATS={hero:[1920,600],wide:[1200,628],square:[1080,1080],story:[1080,1920]};
+const B_TEMPLATES={
+  'Vajilla':   {bg:'#123a8f',accent:'#ffd400',text:'#ffffff',ctaBg:'#0a2a6b',layout:'split-left'},
+  'Esmeralda': {bg:'#0b3d2e',accent:'#f5c451',text:'#ffffff',ctaBg:'#06281e',layout:'split-left'},
+  'Coral':     {bg:'#b8324a',accent:'#ffe08a',text:'#ffffff',ctaBg:'#7d1f31',layout:'split-right'},
+  'Grafito':   {bg:'#16161a',accent:'#ff5c38',text:'#f4f2ea',ctaBg:'#000000',layout:'split-left'},
+  'Marfil':    {bg:'#f4f0e6',accent:'#123a8f',text:'#16161a',ctaBg:'#123a8f',layout:'split-right'},
+  'Uva':       {bg:'#3d1a5b',accent:'#f5a3ff',text:'#ffffff',ctaBg:'#25103a',layout:'centered'},
+  'Océano':    {bg:'#0369a1',accent:'#caf0f8',text:'#ffffff',ctaBg:'#023047',layout:'split-left'},
+  'Cobre':     {bg:'#7c2d12',accent:'#fbbf24',text:'#fff7ed',ctaBg:'#451a03',layout:'split-right'},
+};
+function roundRect(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);
+  c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function wrapText(c,text,x,y,maxW,lh){
+  const paras=text.split('\n');let yy=y;
+  for(const para of paras){
+    const words=para.split(' ');let line='';
+    for(const w of words){const test=line?line+' '+w:w;
+      if(c.measureText(test).width>maxW&&line){c.fillText(line,x,yy);line=w;yy+=lh;}else line=test;}
+    if(line){c.fillText(line,x,yy);yy+=lh;}
+  }
+  return yy;
+}
+function bRender(){
+  if(MODE!=='banner')return;
+  const [W,H]=B_FORMATS[B.format];
+  bannerview.width=W;bannerview.height=H;
+  const c=bctx;
+  c.clearRect(0,0,W,H);
+  c.fillStyle=B.bg;c.fillRect(0,0,W,H);
+  const isVert=H>W;
+  // zona texto / imagen según layout
+  let textX, textW, imgX, imgW;
+  const pad=W*0.045;
+  if(B.layout==='centered'||B.layout==='overlay'){textX=pad;textW=W-pad*2;imgX=0;imgW=W;}
+  else if(B.layout==='split-right'){textX=W*0.52+pad;textW=W*0.48-pad*1.5;imgX=0;imgW=W*0.52;}
+  else {textX=pad;textW=W*0.48-pad*0.5;imgX=W*0.5;imgW=W*0.5;} // split-left
+  const splitVert=isVert&&(B.layout==='split-left'||B.layout==='split-right');
+  if(splitVert){imgX=0;imgW=W;textX=pad;textW=W-pad*2;}
+  // imagen
+  if(B.img){
+    let ix=imgX,iy=0,iw=imgW,ih=H;
+    if(B.layout==='overlay'){ix=0;iw=W;}
+    if(splitVert){iy=H*0.42;ih=H*0.58;}
+    c.save();roundRect(c,ix,iy,iw,ih,0);c.clip();
+    const ar=B.img.naturalWidth/B.img.naturalHeight, tar=iw/ih;
+    let dw,dh,dx,dy;
+    if(ar>tar){dh=ih;dw=ih*ar;dx=ix-(dw-iw)/2;dy=iy;}else{dw=iw;dh=iw/ar;dx=ix;dy=iy-(dh-ih)/2;}
+    c.drawImage(B.img,dx,dy,dw,dh);
+    if(B.layout==='overlay'){c.fillStyle='rgba(0,0,0,.45)';c.fillRect(0,0,W,H);}
+    c.restore();
+  }else{
+    // placeholder de imagen
+    let ix=imgX,iy=0,iw=imgW,ih=H;
+    if(splitVert){iy=H*0.42;ih=H*0.58;}
+    if(B.layout!=='overlay'&&B.layout!=='centered'){
+      c.fillStyle='rgba(255,255,255,.06)';c.fillRect(ix,iy,iw,ih);
+      c.fillStyle='rgba(255,255,255,.35)';c.font=`${W*0.014}px 'Geist Mono',monospace`;c.textAlign='center';
+      c.fillText('Drop product image here',ix+iw/2,iy+ih/2);c.textAlign='left';
+    }
+  }
+  const cx=B.layout==='centered'?W/2:textX;
+  c.textAlign=B.layout==='centered'?'center':'left';
+  const S1=W/1920; // escala relativa al hero
+  // brand
+  c.fillStyle=B.text;c.font=`700 ${W*0.075}px 'Clash Display','Inter',sans-serif`;
+  let yy=H*0.16;
+  c.fillText(B.brand,cx,yy);
+  // tagline
+  yy+=W*0.032;
+  c.fillStyle=B.text;c.font=`500 ${W*0.017}px 'Inter',sans-serif`;c.globalAlpha=.92;
+  c.fillText(B.tagline,cx,yy);c.globalAlpha=1;
+  // badge + headline
+  yy+=H*0.13;
+  let hlX=cx;
+  if(B.showBadge&&B.layout!=='centered'){
+    const bw=W*0.11,bh=bw*0.62,bx=cx,by=yy-bh*0.72;
+    c.fillStyle=B.accent;roundRect(c,bx,by,bw,bh,W*0.008);c.fill();
+    c.fillStyle=B.bg;c.textAlign='center';
+    c.font=`600 ${bw*0.14}px 'Inter',sans-serif`;c.fillText(B.badgeLabel,bx+bw*0.5,by+bh*0.24);
+    c.font=`700 ${bw*0.34}px 'Clash Display','Inter',sans-serif`;c.fillText(B.badge,bx+bw*0.5,by+bh*0.64);
+    c.font=`600 ${bw*0.12}px 'Inter',sans-serif`;c.fillText(B.badgeSub,bx+bw*0.5,by+bh*0.9);
+    c.textAlign='left';
+    hlX=bx+bw+W*0.02;
+  }
+  c.fillStyle=B.text;c.font=`700 ${W*0.026}px 'Inter',sans-serif`;
+  c.textAlign=B.layout==='centered'?'center':'left';
+  let hy=B.layout==='centered'?yy+H*0.02:yy-H*0.03;
+  hy=wrapText(c,B.headline,hlX,hy,textW-(hlX-cx),W*0.03);
+  c.font=`400 ${W*0.016}px 'Inter',sans-serif`;c.globalAlpha=.85;
+  wrapText(c,B.sub,hlX,hy+W*0.006,textW-(hlX-cx),W*0.022);c.globalAlpha=1;
+  // features pills
+  if(B.showFeatures){
+    const feats=B.features.split('·').map(s=>s.trim()).filter(Boolean);
+    let fx=cx,fy=H*0.68;c.font=`500 ${W*0.013}px 'Inter',sans-serif`;
+    const startX=B.layout==='centered'?W/2 - (feats.reduce((a,f)=>a+c.measureText(f).width+W*0.05,0))/2 : cx;
+    fx=startX;
+    c.textAlign='left';
+    for(const f of feats){
+      const tw=c.measureText(f).width, pw=tw+W*0.028, ph=W*0.026;
+      c.strokeStyle='rgba(255,255,255,.3)';c.lineWidth=1.5;
+      c.fillStyle='rgba(255,255,255,.08)';roundRect(c,fx,fy,pw,ph,ph/2);c.fill();c.stroke();
+      c.fillStyle=B.text;c.fillText(f,fx+W*0.014,fy+ph*0.66);
+      fx+=pw+W*0.012;
+      if(fx>textX+textW-W*0.1&&!isVert){fx=startX;fy+=ph+W*0.008;}
+    }
+  }
+  // CTA
+  if(B.showCta){
+    c.font=`600 ${W*0.02}px 'Inter',sans-serif`;
+    const tw=c.measureText(B.cta).width, bw=tw+W*0.06, bh=W*0.045;
+    const bx=B.layout==='centered'?W/2-bw/2:(B.layout==='split-right'?textX:(isVert?cx:W*0.5+W*0.045));
+    const by=isVert?H*0.9:H*0.78;
+    c.fillStyle=B.ctaBg;roundRect(c,bx,by,bw,bh,bh/2);c.fill();
+    c.fillStyle=B.text;c.textAlign='center';c.fillText('▸ '+B.cta,bx+bw/2,by+bh*0.64);c.textAlign='left';
+  }
+  // disclaimer
+  if(B.disclaimer){c.fillStyle=B.text;c.globalAlpha=.7;c.font=`400 ${W*0.012}px 'Inter',sans-serif`;
+    c.textAlign=B.layout==='centered'?'center':'left';
+    c.fillText(B.disclaimer,cx,H*0.9);c.globalAlpha=1;}
+  c.textAlign='left';
+  document.getElementById('hud-a').textContent='BANNER · '+B.format.toUpperCase();
+  document.getElementById('hud-b').textContent=W+'×'+H;
+}
+
+function bField(label,key,ph=''){return `<div class="ctl"><div class="ctl-head"><span class="ctl-label">${label}</span></div>
+  <input class="charset-input" data-bk="${key}" value="${(B[key]||'').replace(/"/g,'&quot;').replace(/\n/g,' ⏎ ')}" placeholder="${ph}" spellcheck="false"></div>`;}
+function bArea(label,key){return `<div class="ctl"><div class="ctl-head"><span class="ctl-label">${label}</span></div>
+  <textarea class="charset-input" data-bk="${key}" rows="2" spellcheck="false" style="resize:vertical;line-height:1.4">${(B[key]||'')}</textarea></div>`;}
+function bColor(label,key){return `<div class="swatch"><label>${label}</label><div class="swatch-btn"><span class="chip" style="background:${B[key]}"></span>${B[key]}<input type="color" value="${B[key]}" data-bc="${key}"></div></div>`;}
+function bToggle(label,key){return `<div class="ctl"><div class="toggle-row"><span class="ctl-label">${label}</span><button class="switch ${B[key]?'on':''}" data-btk="${key}"></button></div></div>`;}
+
+function buildBannerPanel(){
+  let h='';
+  h+=`<div class="grp"><div class="grp-title">Format</div>
+    <div class="pills">${Object.keys(B_FORMATS).map(f=>`<button class="pill ${B.format===f?'active':''}" data-bfmt="${f}">${f}</button>`).join('')}</div>
+    <div class="ctl-head" style="margin-top:12px"><span class="ctl-label">Layout</span></div>
+    <div class="pills">${['split-left','split-right','centered','overlay'].map(l=>`<button class="pill ${B.layout===l?'active':''}" data-blay="${l}">${l.replace('-',' ')}</button>`).join('')}</div></div>`;
+  h+=`<div class="grp"><div class="grp-title">Content</div>
+    ${bField('Brand','brand')}${bField('Tagline','tagline')}
+    ${bArea('Headline','headline')}${bArea('Subtext','sub')}
+    ${bToggle('Discount badge','showBadge')}
+    ${B.showBadge?bField('Badge — top','badgeLabel')+bField('Badge — big','badge')+bField('Badge — bottom','badgeSub'):''}
+    ${bToggle('Feature pills','showFeatures')}
+    ${B.showFeatures?bField('Features (· separated)','features'):''}
+    ${bToggle('CTA button','showCta')}
+    ${B.showCta?bField('CTA label','cta'):''}
+    ${bField('Disclaimer','disclaimer')}</div>`;
+  h+=`<div class="grp"><div class="grp-title">Colors</div>
+    <div class="swatches">${bColor('Background','bg')}${bColor('Accent','accent')}</div>
+    <div class="swatches" style="margin-top:10px">${bColor('Text','text')}${bColor('CTA fill','ctaBg')}</div></div>`;
+  h+=`<div class="grp"><button class="top-btn" style="width:100%" id="b-img-btn">${B.img?'Replace':'Add'} product image</button>
+    ${B.img?'<button class="top-btn" style="width:100%;margin-top:8px" id="b-img-rm">Remove image</button>':''}
+    <div class="hint" style="margin-top:10px">Maquetador de banners original · sube tus propios logos e imágenes.</div></div>`;
+  panel.innerHTML=h;
+  wireBanner();
+}
+function wireBanner(){
+  panel.querySelectorAll('[data-bfmt]').forEach(b=>b.addEventListener('click',()=>{B.format=b.dataset.bfmt;buildBannerPanel();bRender();}));
+  panel.querySelectorAll('[data-blay]').forEach(b=>b.addEventListener('click',()=>{B.layout=b.dataset.blay;buildBannerPanel();bRender();}));
+  panel.querySelectorAll('[data-bk]').forEach(inp=>inp.addEventListener('input',()=>{
+    B[inp.dataset.bk]=inp.value.replace(/ ⏎ /g,'\n');bRender();}));
+  panel.querySelectorAll('[data-bc]').forEach(inp=>inp.addEventListener('input',()=>{
+    B[inp.dataset.bc]=inp.value;const chip=inp.parentElement.querySelector('.chip');if(chip)chip.style.background=inp.value;
+    inp.parentElement.childNodes[2].textContent=inp.value;bRender();}));
+  panel.querySelectorAll('[data-btk]').forEach(b=>b.addEventListener('click',()=>{B[b.dataset.btk]=!B[b.dataset.btk];buildBannerPanel();bRender();}));
+  const ib=document.getElementById('b-img-btn');
+  if(ib)ib.addEventListener('click',()=>{const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+    inp.onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();
+      img.onload=()=>{B.img=img;buildBannerPanel();bRender();toast('Image added');};img.src=URL.createObjectURL(f);};inp.click();});
+  const rm=document.getElementById('b-img-rm');
+  if(rm)rm.addEventListener('click',()=>{B.img=null;buildBannerPanel();bRender();});
+}
 
 /* ═══════════════ Init ═══════════════ */
 try{glInit();}catch(e){console.error('GL init:',e);glOK=false;toast('WebGL error — Compose disabled');}
