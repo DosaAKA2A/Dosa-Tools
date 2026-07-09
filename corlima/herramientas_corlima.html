@@ -2341,7 +2341,7 @@ function ebUID(){ return EB.nextId++; }
 
 function ebDefaults(type){
   var o={id:ebUID(),type:type,x:48,y:48,shadow:false};
-  if(type==='panel')    Object.assign(o,{x:0,y:0,w:624,h:600,c1:'#0b2577',c2:'#0f319e',angle:135,radius:0,z:1});
+  if(type==='panel')    Object.assign(o,{x:0,y:0,w:624,h:600,c1:'#071954',c2:'#2b67f3',angle:90,radius:0,z:1});
   if(type==='text')     Object.assign(o,{x:48,y:96,text:'Escribe aquí',size:64,weight:700,color:'#ffffff',align:'left',w:480,z:20});
   if(type==='discount') Object.assign(o,{x:48,y:288,top:'Hasta',big:'20%',sub:'dcto.',bg:'#ffd400',fg:'#0b2577',style:'tag',scale:1,z:22});
   if(type==='dates')    Object.assign(o,{x:240,y:288,label:'Válido',dates:'01/07 — 31/07',bg:'#0b2577',fg:'#ffffff',scale:1,z:22});
@@ -2366,27 +2366,66 @@ function ebPickLogo(cb){var inp=document.createElement('input');inp.type='file';
 
 function ebLoadDefault(){
   EB.objects=[]; EB.nextId=1;
-  // panel a sangre (1/3)
-  var panel=ebDefaults('panel'); panel.w=Math.round(EB.W/3); panel.shadow=false; EB.objects.push(panel);
-  // zona de imagen (a sangre, 2/3)
-  var image=ebDefaults('image'); image.x=Math.round(EB.W/3); image.w=EB.W-Math.round(EB.W/3); image.shadow=false; EB.objects.push(image);
-  // logo: alto 144, ancho proporcional (ratio Luminarc 5.17:1)
-  var logo=ebDefaults('logo'); logo.text='MARCA'; logo.x=50; logo.y=50; logo.h=144; logo.w=Math.round(144*3.5); logo.shadow=false; EB.objects.push(logo);
-  // eslogan: tamaño 21, peso 700, centrado, ancho 320
-  var slogan=ebDefaults('text'); slogan.text='Solo durante fiestas | CORLIMA'; slogan.x=50; slogan.y=200; slogan.size=21; slogan.weight=700; slogan.align='center'; slogan.w=320; slogan.shadow=false; EB.objects.push(slogan);
-  // badge flat tamaño 1
-  var disc=ebDefaults('discount'); disc.x=50; disc.y=260; disc.style='flat'; disc.scale=1; disc.shadow=false; EB.objects.push(disc);
-  // Precios imperdibles: tamaño 26, ancho 300, peso 800, left
-  var head=ebDefaults('text'); head.text='Precios imperdibles'; head.x=280; head.y=260; head.size=26; head.weight=800; head.align='left'; head.w=300; head.shadow=false; EB.objects.push(head);
-  // subtexto: tamaño 14, peso 400
-  var sub=ebDefaults('text'); sub.text='En selección de productos.\nSolo hasta agotar stock'; sub.x=280; sub.y=310; sub.size=14; sub.weight=400; sub.align='left'; sub.w=300; sub.shadow=false; EB.objects.push(sub);
-  // estampillas: escala 0.65
-  var s1=ebDefaults('stamp'); s1.text='Despachos a todo el Perú'; s1.icon='truck'; s1.x=50; s1.y=400; s1.scale=0.65; s1.shadow=false; EB.objects.push(s1);
-  var s2=ebDefaults('stamp'); s2.text='Todos los metodos de pago'; s2.icon='card'; s2.x=280; s2.y=400; s2.scale=0.65; s2.shadow=false; EB.objects.push(s2);
-  // disclaimer: tamaño 14, peso 400
-  var disc2=ebDefaults('text'); disc2.text='Promociones sujetas a cambios y stock.'; disc2.x=50; disc2.y=490; disc2.size=14; disc2.weight=400; disc2.align='left'; disc2.w=450; disc2.shadow=false; EB.objects.push(disc2);
-  // CTA
-  var cta=ebDefaults('cta'); cta.x=1530; cta.y=450; cta.shadow=true; EB.objects.push(cta);
+  var PW=Math.round(EB.W/3); // 640px ancho del panel
+
+  // Panel a sangre — gradiente diagonal oscuro arriba, azul brillante abajo (medido del banner objetivo)
+  var panel=ebDefaults('panel'); panel.w=PW; panel.h=EB.H;
+  panel.c1='#071954'; panel.c2='#2b67f3'; panel.angle=90; panel.shadow=false;
+  EB.objects.push(panel);
+
+  // Imagen a sangre (2/3 derecho)
+  var image=ebDefaults('image'); image.x=PW; image.w=EB.W-PW; image.h=EB.H; image.shadow=false;
+  EB.objects.push(image);
+
+  // Logo CENTRADO en el panel: anchor x = PW/2 (texto con align center)
+  // Renderizamos como texto con align center, x = centro del panel
+  var logo=ebDefaults('logo'); logo.text='MARCA'; logo.h=144; logo.w=Math.round(144*3.5);
+  logo.x=Math.round(PW/2 - logo.w/2); logo.y=50; logo.shadow=false;
+  EB.objects.push(logo);
+
+  // Eslogan: align=center, x = PW/2 (el anchor de canvas textAlign=center ES el punto x)
+  var slogan=ebDefaults('text'); slogan.text='Solo durante fiestas | CORLIMA';
+  slogan.size=21; slogan.weight=700; slogan.align='center'; slogan.w=530; slogan.color='#ffffff';
+  slogan.x=Math.round(PW/2); slogan.y=206; slogan.shadow=false;
+  EB.objects.push(slogan);
+
+  // Badge flat — x=50, y=260
+  var disc=ebDefaults('discount'); disc.x=50; disc.y=258;
+  disc.style='flat'; disc.scale=1; disc.bg='#ffd400'; disc.fg='#0b2577'; disc.shadow=false;
+  EB.objects.push(disc);
+
+  // "Precios imperdibles" — a la derecha del badge (badge flat ancho≈190px → x=260)
+  var head=ebDefaults('text'); head.text='Precios imperdibles';
+  head.size=26; head.weight=800; head.align='left'; head.w=340; head.color='#ffffff';
+  head.x=260; head.y=260; head.shadow=false;
+  EB.objects.push(head);
+
+  // Subtexto: tamaño 14, debajo de "Precios imperdibles"
+  var sub=ebDefaults('text'); sub.text='En selección de productos.\nSolo hasta agotar stock';
+  sub.size=14; sub.weight=400; sub.align='left'; sub.w=340; sub.color='#ffffff';
+  sub.x=260; sub.y=298; sub.shadow=false;
+  EB.objects.push(sub);
+
+  // Estampillas: escala 0.65, fila horizontal x=50, y≈390
+  var s1=ebDefaults('stamp'); s1.text='Despachos a todo el Perú'; s1.icon='truck';
+  s1.x=50; s1.y=390; s1.scale=0.65; s1.shadow=false;
+  EB.objects.push(s1);
+
+  // Segunda estampilla: a la derecha de la primera (ancho stamp 0.65 ≈ 200px → x=270)
+  var s2=ebDefaults('stamp'); s2.text='Todos los metodos de pago'; s2.icon='card';
+  s2.x=270; s2.y=390; s2.scale=0.65; s2.shadow=false;
+  EB.objects.push(s2);
+
+  // Disclaimer: tamaño 14, y≈490
+  var disc2=ebDefaults('text'); disc2.text='Promociones sujetas a cambios y stock.';
+  disc2.size=14; disc2.weight=400; disc2.align='left'; disc2.w=530; disc2.color='#ffffff';
+  disc2.x=50; disc2.y=490; disc2.shadow=false;
+  EB.objects.push(disc2);
+
+  // CTA — esquina inferior derecha de la zona de imagen
+  var cta=ebDefaults('cta'); cta.x=1560; cta.y=450; cta.bg='#0b2577'; cta.shadow=true;
+  EB.objects.push(cta);
+
   EB.sel=head.id;
 }
 
