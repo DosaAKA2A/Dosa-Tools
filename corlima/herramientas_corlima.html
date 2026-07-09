@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- cache: 20260709a -->
+<!-- cache: 20260710a -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Herramientas Corlima — IRIS</title>
@@ -549,9 +549,16 @@ input[name="scaleAutoBg"]:checked + .sabg-swatch {
   <button type="button" class="tab" id="tabFirma" onclick="switchTab('firma')">Firma Corlima</button>
   <button type="button" class="tab" id="tabAuto" onclick="switchTab('auto')">Carga Masiva</button>
   <button type="button" class="tab" id="tabBanner" onclick="switchTab('banner')">Banners</button>
+  <button type="button" class="tab" id="tabCatalogos" onclick="switchTab('catalogos')">Catálogos</button>
 </div>
 
 <div class="content">
+
+<!-- CATÁLOGOS (app embebida, aislada en iframe) -->
+<div id="panelCatalogos" style="display:none;width:96vw;position:relative;left:50%;transform:translateX(-50%);">
+  <iframe src="catalogos.html?v=20260710" title="Constructor de catálogos"
+    style="width:100%;height:82vh;min-height:660px;border:1px solid var(--border);border-radius:12px;background:#fff;display:block;"></iframe>
+</div>
 
 <!-- SCALE CORLIMA (nuevo panel autónomo) -->
 <div id="panelCorlima">
@@ -1446,16 +1453,19 @@ function switchTab(tab) {
   var isFirma   = tab === 'firma';
   var isAuto    = tab === 'auto';
   var isBanner  = tab === 'banner';
+  var isCatalogos = tab === 'catalogos';
 
   document.getElementById('panelCorlima').style.display = isCorlima ? 'block' : 'none';
   document.getElementById('panelFirma').style.display   = isFirma   ? 'block' : 'none';
   document.getElementById('panelAuto').style.display    = isAuto    ? 'block' : 'none';
   document.getElementById('panelBanner').style.display  = isBanner  ? 'block' : 'none';
+  document.getElementById('panelCatalogos').style.display = isCatalogos ? 'block' : 'none';
 
   document.getElementById('tabCorlima').classList.toggle('active', isCorlima);
   document.getElementById('tabFirma').classList.toggle('active', isFirma);
   document.getElementById('tabAuto').classList.toggle('active', isAuto);
   document.getElementById('tabBanner').classList.toggle('active', isBanner);
+  document.getElementById('tabCatalogos').classList.toggle('active', isCatalogos);
 
   var gea = document.getElementById('globalExportArea');
   var br  = document.getElementById('btnRow');
