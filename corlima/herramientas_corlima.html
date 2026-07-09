@@ -546,6 +546,7 @@ input[name="scaleAutoBg"]:checked + .sabg-swatch {
   <button type="button" class="tab active" id="tabCorlima" onclick="switchTab('corlima')">Scale Corlima</button>
   <button type="button" class="tab" id="tabFirma" onclick="switchTab('firma')">Firma Corlima</button>
   <button type="button" class="tab" id="tabAuto" onclick="switchTab('auto')">Carga Masiva</button>
+  <button type="button" class="tab" id="tabBanner" onclick="switchTab('banner')">Banners</button>
 </div>
 
 <div class="content">
@@ -880,6 +881,38 @@ input[name="scaleAutoBg"]:checked + .sabg-swatch {
       </button>
     </div>
     <div id="buscarResult" style="display:none;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;"></div>
+  </div>
+</div>
+
+<!-- ═══════════ PANEL BANNERS ═══════════ -->
+<div id="panelBanner" style="display:none;">
+  <div class="sec" style="margin-bottom:1rem;">Maquetador de Banners</div>
+  <div style="display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start;">
+    <!-- lienzo -->
+    <div>
+      <div style="border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:#0a0a0c;padding:12px;display:flex;align-items:center;justify-content:center;min-height:340px;">
+        <canvas id="bnrCanvas" style="max-width:100%;max-height:60vh;display:block;box-shadow:0 12px 40px rgba(0,0,0,.5);"></canvas>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;">
+        <button type="button" class="tab active" id="bnrFmtHero" onclick="bnrSetFmt('hero')">Hero 1920×600</button>
+        <button type="button" class="tab" id="bnrFmtWide" onclick="bnrSetFmt('wide')">Wide 1200×628</button>
+        <button type="button" class="tab" id="bnrFmtSquare" onclick="bnrSetFmt('square')">Cuadrado 1080</button>
+        <button type="button" class="tab" id="bnrFmtStory" onclick="bnrSetFmt('story')">Story 1080×1920</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button type="button" class="tab active" id="bnrLaySplitleft" onclick="bnrSetLay('split-left')">Split izq.</button>
+        <button type="button" class="tab" id="bnrLaySplitright" onclick="bnrSetLay('split-right')">Split der.</button>
+        <button type="button" class="tab" id="bnrLayCentered" onclick="bnrSetLay('centered')">Centrado</button>
+        <button type="button" class="tab" id="bnrLayOverlay" onclick="bnrSetLay('overlay')">Overlay</button>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+        <button type="button" class="btn" onclick="bnrImgBtn()" style="flex:1;">Añadir imagen</button>
+        <button type="button" class="btn" onclick="bnrRandom()" style="flex:1;">Aleatorio</button>
+        <button type="button" class="btn btn-primary" onclick="bnrExport()" style="flex:1;">Exportar PNG</button>
+      </div>
+    </div>
+    <!-- controles -->
+    <div id="bnrControls" style="display:flex;flex-direction:column;gap:12px;"></div>
   </div>
 </div>
 
@@ -1372,14 +1405,17 @@ function switchTab(tab) {
   var isCorlima = tab === 'corlima';
   var isFirma   = tab === 'firma';
   var isAuto    = tab === 'auto';
+  var isBanner  = tab === 'banner';
 
   document.getElementById('panelCorlima').style.display = isCorlima ? 'block' : 'none';
   document.getElementById('panelFirma').style.display   = isFirma   ? 'block' : 'none';
   document.getElementById('panelAuto').style.display    = isAuto    ? 'block' : 'none';
+  document.getElementById('panelBanner').style.display  = isBanner  ? 'block' : 'none';
 
   document.getElementById('tabCorlima').classList.toggle('active', isCorlima);
   document.getElementById('tabFirma').classList.toggle('active', isFirma);
   document.getElementById('tabAuto').classList.toggle('active', isAuto);
+  document.getElementById('tabBanner').classList.toggle('active', isBanner);
 
   var gea = document.getElementById('globalExportArea');
   var br  = document.getElementById('btnRow');
@@ -1389,6 +1425,7 @@ function switchTab(tab) {
   if (brc) brc.style.display = 'none';
 
   if (isFirma) firmaActualizar();
+  if (isBanner) bnrInit();
 }
 
 // ═══════════════════════════════
@@ -2255,6 +2292,137 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   switchTab('corlima');
 });
+
+/* ═══════════════ MAQUETADOR DE BANNERS (autocontenido) ═══════════════ */
+var bnrReady=false, bnrCanvas=null, bnrCtx=null;
+var BNR={
+  format:'hero', layout:'split-left',
+  brand:'Corlima', tagline:'Menaje y vajilla · Calidad garantizada',
+  badge:'20%', badgeLabel:'Hasta', badgeSub:'dcto.',
+  headline:'Hasta 20% de descuento',
+  sub:'En selección de productos.\nSolo hasta agotar stock',
+  features:'Despacho a todo el Perú · Vidrio de alta calidad · Garantía',
+  cta:'¡Lo quiero!',
+  disclaimer:'Promociones sujetas a cambios y stock.',
+  bg:'#123a8f', accent:'#ffd400', text:'#ffffff', ctaBg:'#0a2a6b',
+  img:null, showBadge:true, showFeatures:true, showCta:true
+};
+var BNR_FMT={hero:[1920,600],wide:[1200,628],square:[1080,1080],story:[1080,1920]};
+var BNR_THEMES={
+  'Vajilla':{bg:'#123a8f',accent:'#ffd400',text:'#ffffff',ctaBg:'#0a2a6b',layout:'split-left'},
+  'Esmeralda':{bg:'#0b3d2e',accent:'#f5c451',text:'#ffffff',ctaBg:'#06281e',layout:'split-left'},
+  'Coral':{bg:'#b8324a',accent:'#ffe08a',text:'#ffffff',ctaBg:'#7d1f31',layout:'split-right'},
+  'Grafito':{bg:'#16161a',accent:'#ff5c38',text:'#f4f2ea',ctaBg:'#000000',layout:'split-left'},
+  'Marfil':{bg:'#f4f0e6',accent:'#123a8f',text:'#16161a',ctaBg:'#123a8f',layout:'split-right'},
+  'Uva':{bg:'#3d1a5b',accent:'#f5a3ff',text:'#ffffff',ctaBg:'#25103a',layout:'centered'},
+  'Océano':{bg:'#0369a1',accent:'#caf0f8',text:'#ffffff',ctaBg:'#023047',layout:'split-left'},
+  'Cobre':{bg:'#7c2d12',accent:'#fbbf24',text:'#fff7ed',ctaBg:'#451a03',layout:'split-right'}
+};
+function bnrRR(c,x,y,w,h,r){r=Math.min(r,w/2,h/2);c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function bnrWrap(c,text,x,y,maxW,lh){var out=y;(text||'').split('\n').forEach(function(para){var words=para.split(' '),line='';words.forEach(function(w){var t=line?line+' '+w:w;if(c.measureText(t).width>maxW&&line){c.fillText(line,x,out);line=w;out+=lh;}else line=t;});if(line){c.fillText(line,x,out);out+=lh;}});return out;}
+function bnrInit(){
+  if(!bnrReady){bnrCanvas=document.getElementById('bnrCanvas');bnrCtx=bnrCanvas.getContext('2d');bnrReady=true;bnrBuildControls();}
+  bnrRender();
+}
+function bnrSetFmt(f){BNR.format=f;['hero','wide','square','story'].forEach(function(x){document.getElementById('bnrFmt'+x.charAt(0).toUpperCase()+x.slice(1)).classList.toggle('active',x===f);});bnrRender();}
+function bnrSetLay(l){BNR.layout=l;var map={'split-left':'Splitleft','split-right':'Splitright','centered':'Centered','overlay':'Overlay'};['split-left','split-right','centered','overlay'].forEach(function(x){document.getElementById('bnrLay'+map[x]).classList.toggle('active',x===l);});bnrRender();}
+function bnrImgBtn(){var inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.onchange=function(e){var f=e.target.files[0];if(!f)return;var img=new Image();img.onload=function(){BNR.img=img;bnrRender();};img.src=URL.createObjectURL(f);};inp.click();}
+function bnrRandom(){var k=Object.keys(BNR_THEMES);var t=BNR_THEMES[k[Math.floor(Math.random()*k.length)]];for(var p in t)BNR[p]=t[p];var lays=['split-left','split-right','centered','overlay'];bnrSetLay(lays[Math.floor(Math.random()*lays.length)]);bnrBuildControls();bnrRender();}
+function bnrExport(){bnrRender();bnrCanvas.toBlob(function(blob){var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='corlima-banner-'+Date.now()+'.png';a.click();setTimeout(function(){URL.revokeObjectURL(a.href);},1000);});}
+function bnrRender(){
+  if(!bnrReady)return;
+  var F=BNR_FMT[BNR.format],W=F[0],H=F[1];
+  bnrCanvas.width=W;bnrCanvas.height=H;
+  var c=bnrCtx;c.clearRect(0,0,W,H);c.fillStyle=BNR.bg;c.fillRect(0,0,W,H);
+  var isVert=H>W,pad=W*0.045,textX,textW,imgX,imgW;
+  if(BNR.layout==='centered'||BNR.layout==='overlay'){textX=pad;textW=W-pad*2;imgX=0;imgW=W;}
+  else if(BNR.layout==='split-right'){textX=W*0.52+pad;textW=W*0.48-pad*1.5;imgX=0;imgW=W*0.52;}
+  else{textX=pad;textW=W*0.48-pad*0.5;imgX=W*0.5;imgW=W*0.5;}
+  var splitVert=isVert&&(BNR.layout==='split-left'||BNR.layout==='split-right');
+  if(splitVert){imgX=0;imgW=W;textX=pad;textW=W-pad*2;}
+  if(BNR.img){
+    var ix=imgX,iy=0,iw=imgW,ih=H;if(BNR.layout==='overlay'){ix=0;iw=W;}if(splitVert){iy=H*0.42;ih=H*0.58;}
+    c.save();bnrRR(c,ix,iy,iw,ih,0);c.clip();
+    var ar=BNR.img.naturalWidth/BNR.img.naturalHeight,tar=iw/ih,dw,dh,dx,dy;
+    if(ar>tar){dh=ih;dw=ih*ar;dx=ix-(dw-iw)/2;dy=iy;}else{dw=iw;dh=iw/ar;dx=ix;dy=iy-(dh-ih)/2;}
+    c.drawImage(BNR.img,dx,dy,dw,dh);
+    if(BNR.layout==='overlay'){c.fillStyle='rgba(0,0,0,.45)';c.fillRect(0,0,W,H);}c.restore();
+  }else{
+    var jx=imgX,jy=0,jw=imgW,jh=H;if(splitVert){jy=H*0.42;jh=H*0.58;}
+    if(BNR.layout!=='overlay'&&BNR.layout!=='centered'){
+      c.fillStyle='rgba(255,255,255,.06)';c.fillRect(jx,jy,jw,jh);
+      c.fillStyle='rgba(255,255,255,.35)';c.font=(W*0.014)+"px monospace";c.textAlign='center';
+      c.fillText('Añade tu imagen de producto',jx+jw/2,jy+jh/2);c.textAlign='left';
+    }
+  }
+  var cx=BNR.layout==='centered'?W/2:textX;
+  c.textAlign=BNR.layout==='centered'?'center':'left';
+  c.fillStyle=BNR.text;c.font="700 "+(W*0.075)+"px 'Clash Display',Arial,sans-serif";
+  var yy=H*0.16;c.fillText(BNR.brand,cx,yy);
+  yy+=W*0.032;c.font="500 "+(W*0.017)+"px Inter,Arial,sans-serif";c.globalAlpha=.92;c.fillText(BNR.tagline,cx,yy);c.globalAlpha=1;
+  yy+=H*0.13;var hlX=cx;
+  if(BNR.showBadge&&BNR.layout!=='centered'){
+    var bw=W*0.11,bh=bw*0.62,bx=cx,by=yy-bh*0.72;
+    c.fillStyle=BNR.accent;bnrRR(c,bx,by,bw,bh,W*0.008);c.fill();
+    c.fillStyle=BNR.bg;c.textAlign='center';
+    c.font="600 "+(bw*0.14)+"px Inter,Arial,sans-serif";c.fillText(BNR.badgeLabel,bx+bw*0.5,by+bh*0.24);
+    c.font="700 "+(bw*0.34)+"px 'Clash Display',Arial,sans-serif";c.fillText(BNR.badge,bx+bw*0.5,by+bh*0.64);
+    c.font="600 "+(bw*0.12)+"px Inter,Arial,sans-serif";c.fillText(BNR.badgeSub,bx+bw*0.5,by+bh*0.9);
+    c.textAlign='left';hlX=bx+bw+W*0.02;
+  }
+  c.fillStyle=BNR.text;c.font="700 "+(W*0.026)+"px Inter,Arial,sans-serif";c.textAlign=BNR.layout==='centered'?'center':'left';
+  var hy=BNR.layout==='centered'?yy+H*0.02:yy-H*0.03;
+  hy=bnrWrap(c,BNR.headline,hlX,hy,textW-(hlX-cx),W*0.03);
+  c.font="400 "+(W*0.016)+"px Inter,Arial,sans-serif";c.globalAlpha=.85;
+  bnrWrap(c,BNR.sub,hlX,hy+W*0.006,textW-(hlX-cx),W*0.022);c.globalAlpha=1;
+  if(BNR.showFeatures){
+    var feats=BNR.features.split('·').map(function(s){return s.trim();}).filter(Boolean);
+    c.font="500 "+(W*0.013)+"px Inter,Arial,sans-serif";
+    var startX=BNR.layout==='centered'?W/2-(feats.reduce(function(a,f){return a+c.measureText(f).width+W*0.05;},0))/2:cx;
+    var fx=startX,fy=H*0.68;c.textAlign='left';
+    feats.forEach(function(f){
+      var tw=c.measureText(f).width,pw=tw+W*0.028,ph=W*0.026;
+      c.strokeStyle='rgba(255,255,255,.3)';c.lineWidth=1.5;c.fillStyle='rgba(255,255,255,.08)';
+      bnrRR(c,fx,fy,pw,ph,ph/2);c.fill();c.stroke();
+      c.fillStyle=BNR.text;c.fillText(f,fx+W*0.014,fy+ph*0.66);fx+=pw+W*0.012;
+      if(fx>textX+textW-W*0.1&&!isVert){fx=startX;fy+=ph+W*0.008;}
+    });
+  }
+  if(BNR.showCta){
+    c.font="600 "+(W*0.02)+"px Inter,Arial,sans-serif";
+    var tw=c.measureText(BNR.cta).width,bw2=tw+W*0.06,bh2=W*0.045;
+    var bx2=BNR.layout==='centered'?W/2-bw2/2:(BNR.layout==='split-right'?textX:(isVert?cx:W*0.5+W*0.045));
+    var by2=isVert?H*0.9:H*0.78;
+    c.fillStyle=BNR.ctaBg;bnrRR(c,bx2,by2,bw2,bh2,bh2/2);c.fill();
+    c.fillStyle=BNR.text;c.textAlign='center';c.fillText('▸ '+BNR.cta,bx2+bw2/2,by2+bh2*0.64);c.textAlign='left';
+  }
+  if(BNR.disclaimer){c.fillStyle=BNR.text;c.globalAlpha=.7;c.font="400 "+(W*0.012)+"px Inter,Arial,sans-serif";c.textAlign=BNR.layout==='centered'?'center':'left';c.fillText(BNR.disclaimer,cx,H*0.9);c.globalAlpha=1;}
+  c.textAlign='left';
+}
+function bnrField(label,key){return '<div><label style="display:block;font-size:11px;color:var(--muted);margin-bottom:4px;">'+label+'</label><input class="bnr-in" data-bk="'+key+'" value="'+(BNR[key]||'').replace(/"/g,'&quot;').replace(/\n/g,' / ')+'" style="width:100%;padding:7px 9px;background:var(--bg3);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:12px;"></div>';}
+function bnrColor(label,key){return '<div style="flex:1;"><label style="display:block;font-size:10px;color:var(--muted);margin-bottom:4px;">'+label+'</label><input type="color" data-bc="'+key+'" value="'+BNR[key]+'" style="width:100%;height:30px;border:1px solid var(--border);border-radius:5px;background:none;cursor:pointer;"></div>';}
+function bnrTgl(label,key){return '<label style="display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--text);cursor:pointer;"><span>'+label+'</span><input type="checkbox" data-btk="'+key+'" '+(BNR[key]?'checked':'')+' style="width:auto;"></label>';}
+function bnrThemeSwatches(){return '<div style="display:flex;flex-wrap:wrap;gap:6px;">'+Object.keys(BNR_THEMES).map(function(n){var t=BNR_THEMES[n];return '<button type="button" class="bnr-th" data-bth="'+n+'" title="'+n+'" style="width:32px;height:24px;border-radius:5px;border:1px solid var(--border);cursor:pointer;background:linear-gradient(135deg,'+t.bg+' 0%,'+t.bg+' 55%,'+t.accent+' 55%,'+t.accent+' 100%);"></button>';}).join('')+'</div>';}
+function bnrBuildControls(){
+  var box=document.getElementById('bnrControls');if(!box)return;
+  var h='';
+  h+='<div><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Tema</div>'+bnrThemeSwatches()+'</div>';
+  h+=bnrField('Marca','brand')+bnrField('Tagline','tagline')+bnrField('Titular','headline')+bnrField('Subtexto','sub');
+  h+=bnrTgl('Badge de descuento','showBadge');
+  if(BNR.showBadge)h+=bnrField('Badge arriba','badgeLabel')+bnrField('Badge grande','badge')+bnrField('Badge abajo','badgeSub');
+  h+=bnrTgl('Píldoras de features','showFeatures');
+  if(BNR.showFeatures)h+=bnrField('Features (· separa)','features');
+  h+=bnrTgl('Botón CTA','showCta');
+  if(BNR.showCta)h+=bnrField('Texto CTA','cta');
+  h+=bnrField('Disclaimer','disclaimer');
+  h+='<div style="display:flex;gap:8px;">'+bnrColor('Fondo','bg')+bnrColor('Acento','accent')+'</div>';
+  h+='<div style="display:flex;gap:8px;">'+bnrColor('Texto','text')+bnrColor('CTA','ctaBg')+'</div>';
+  box.innerHTML=h;
+  box.querySelectorAll('[data-bk]').forEach(function(inp){inp.addEventListener('input',function(){BNR[inp.dataset.bk]=inp.value.replace(/ \/ /g,'\n');bnrRender();});});
+  box.querySelectorAll('[data-bc]').forEach(function(inp){inp.addEventListener('input',function(){BNR[inp.dataset.bc]=inp.value;bnrRender();});});
+  box.querySelectorAll('[data-btk]').forEach(function(inp){inp.addEventListener('change',function(){BNR[inp.dataset.btk]=inp.checked;bnrBuildControls();bnrRender();});});
+  box.querySelectorAll('[data-bth]').forEach(function(b){b.addEventListener('click',function(){var t=BNR_THEMES[b.dataset.bth];for(var p in t)BNR[p]=t[p];bnrSetLay(BNR.layout);bnrBuildControls();bnrRender();});});
+}
 </script>
 
 </body>
