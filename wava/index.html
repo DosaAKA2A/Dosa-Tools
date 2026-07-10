@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- cache: 20260710a -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WAVA — Batidos & Raspados</title>
+<meta name="description" content="WAVA — batidos y raspados artesanales. Fruta fresca, hielo y buen rollo.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   WAVA — tokens
+   ============================================================ */
+:root{
+  --bg:        #F5F2FC;   /* lila hielo (fondo general) */
+  --ink:       #33254A;   /* ciruela oscuro (texto)      */
+  --ink-soft:  #6B5C86;
+  --lila:      #C9B4F2;
+  --fresa:     #F7BFD6;
+  --menta:     #B8E6CE;
+  --melocoton: #FFD2B8;
+  --cielo:     #BEDFF6;
+  --card:      #FFFFFF;
+  --radius:    28px;
+  --disp: "Bricolage Grotesque", sans-serif;
+  --body: "Instrument Sans", sans-serif;
+  --nav-h: 76px;
+}
+*{ margin:0; padding:0; box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.55;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+img,video{ max-width:100%; display:block; }
+a{ color:inherit; text-decoration:none; }
+ul{ list-style:none; }
+::selection{ background:var(--fresa); color:var(--ink); }
+
+/* ============================================================
+   Placeholders de imagen / vídeo  →  sustituir luego
+   Uso: reemplazar el <div class="ph"> por <img src="..."> o <video>
+   ============================================================ */
+.ph{
+  position:relative;
+  width:100%;
+  height:100%;
+  min-height:220px;
+  border:2px dashed rgba(51,37,74,.35);
+  border-radius:var(--radius);
+  background:
+    repeating-linear-gradient(45deg, rgba(51,37,74,.045) 0 14px, transparent 14px 28px),
+    rgba(255,255,255,.55);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  text-align:center;
+  padding:24px;
+  overflow:hidden;
+}
+.ph .ph-ico{ font-size:34px; line-height:1; }
+.ph .ph-tag{
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:13px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.ph .ph-file{
+  font-size:12px;
+  color:var(--ink-soft);
+  opacity:.75;
+  font-style:italic;
+}
+
+/* ============================================================
+   Intro (cortina)
+   ============================================================ */
+#intro{
+  position:fixed; inset:0; z-index:9999;
+  background:var(--lila);
+  display:flex; align-items:center; justify-content:center;
+  transition:transform .9s cubic-bezier(.76,0,.24,1);
+}
+#intro .intro-word{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(64px, 14vw, 180px);
+  letter-spacing:-.02em;
+  color:var(--ink);
+  display:flex;
+}
+#intro .intro-word span{
+  display:inline-block;
+  transform:translateY(120%);
+  animation:introUp .7s cubic-bezier(.22,1,.36,1) forwards;
+}
+#intro .intro-word span:nth-child(2){ animation-delay:.08s; }
+#intro .intro-word span:nth-child(3){ animation-delay:.16s; }
+#intro .intro-word span:nth-child(4){ animation-delay:.24s; }
+@keyframes introUp{ to{ transform:translateY(0); } }
+#intro.lift{ transform:translateY(-100%); }
+body.locked{ overflow:hidden; }
+
+/* ============================================================
+   Nav
+   ============================================================ */
+header{
+  position:fixed; top:0; left:0; right:0; z-index:900;
+  height:var(--nav-h);
+  display:flex; align-items:center; justify-content:space-between;
+  padding:0 clamp(20px, 4vw, 56px);
+  transition:background .35s ease, box-shadow .35s ease;
+}
+header.scrolled{
+  background:rgba(245,242,252,.85);
+  backdrop-filter:blur(14px);
+  box-shadow:0 1px 0 rgba(51,37,74,.08);
+}
+.logo{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:26px;
+  letter-spacing:-.01em;
+}
+.logo .dot{ color:var(--fresa); }
+nav.main-nav{ display:flex; align-items:center; gap:34px; }
+nav.main-nav a.nav-link{
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  position:relative;
+  padding:6px 0;
+}
+nav.main-nav a.nav-link::after{
+  content:""; position:absolute; left:0; bottom:0;
+  width:100%; height:2px; background:var(--ink);
+  transform:scaleX(0); transform-origin:right;
+  transition:transform .35s cubic-bezier(.22,1,.36,1);
+}
+nav.main-nav a.nav-link:hover::after{ transform:scaleX(1); transform-origin:left; }
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:14px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  background:var(--ink);
+  color:var(--bg);
+  padding:14px 26px;
+  border-radius:999px;
+  border:2px solid var(--ink);
+  transition:background .3s ease, color .3s ease, transform .3s ease;
+  cursor:pointer;
+}
+.btn:hover{ background:var(--fresa); color:var(--ink); transform:translateY(-2px); }
+.btn.ghost{ background:transparent; color:var(--ink); }
+.btn.ghost:hover{ background:var(--ink); color:var(--bg); }
+.burger{ display:none; }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero{
+  min-height:100svh;
+  padding:calc(var(--nav-h) + 24px) clamp(20px, 4vw, 56px) 40px;
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:clamp(24px, 4vw, 64px);
+  align-items:center;
+}
+.hero-eyebrow{
+  display:inline-flex; align-items:center; gap:10px;
+  font-size:13px; font-weight:600;
+  letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-soft);
+  margin-bottom:18px;
+}
+.hero-eyebrow::before{
+  content:""; width:34px; height:2px; background:var(--fresa); border-radius:2px;
+}
+.hero-stack{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(64px, 11.5vw, 168px);
+  line-height:.88;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+  user-select:none;
+}
+.hero-stack .row{ display:flex; }
+.hero-stack .row span{ display:inline-block; animation:wave 3.6s ease-in-out infinite; }
+/* colores alternos: relleno pastel / contorno */
+.hero-stack .row.fill-fresa span{ color:var(--fresa); }
+.hero-stack .row.fill-lila  span{ color:var(--lila); }
+.hero-stack .row.fill-menta span{ color:var(--menta); }
+/* Delineado limpio: relleno = color del fondo + trazo pintado debajo
+   (paint-order) para ocultar las costuras internas de la fuente variable */
+.hero-stack .row.outline span{
+  color:var(--band, var(--bg));
+  -webkit-text-stroke:4px var(--ink);
+  paint-order:stroke fill;
+}
+@keyframes wave{
+  0%,100%{ transform:translateY(0); }
+  50%    { transform:translateY(-.09em); }
+}
+.hero-sub{
+  margin-top:26px;
+  max-width:420px;
+  font-size:18px;
+  color:var(--ink-soft);
+}
+.hero-cta{ margin-top:30px; display:flex; gap:14px; flex-wrap:wrap; }
+.hero-since{
+  margin-top:36px;
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:13px;
+  letter-spacing:.22em;
+  text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.hero-media{
+  position:relative;
+  height:min(72vh, 640px);
+  border-radius:var(--radius);
+}
+.hero-media .ph{ min-height:100%; }
+.hero-badge{
+  position:absolute; z-index:2;
+  bottom:-18px; left:-18px;
+  width:120px; height:120px;
+  animation:spin 14s linear infinite;
+  pointer-events:none;
+}
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* ============================================================
+   Divisor de ola
+   ============================================================ */
+.wave-div{ display:block; width:100%; height:70px; }
+.wave-div svg{ width:100%; height:100%; display:block; }
+
+/* ============================================================
+   Marquees
+   ============================================================ */
+.marquee{
+  overflow:hidden;
+  white-space:nowrap;
+  user-select:none;
+}
+.marquee .track{
+  display:inline-flex;
+  align-items:center;
+  animation:scrollX 22s linear infinite;
+  will-change:transform;
+}
+.marquee.rev .track{ animation-direction:reverse; }
+@keyframes scrollX{
+  from{ transform:translateX(0); }
+  to  { transform:translateX(-50%); }
+}
+.marquee-big{
+  padding:34px 0;
+  background:var(--ink);
+  color:var(--bg);
+}
+.marquee-big .track > span{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(40px, 6vw, 84px);
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  padding:0 .45em;
+}
+.marquee-big .track > i{
+  font-style:normal;
+  font-size:clamp(24px, 3.4vw, 44px);
+  color:var(--fresa);
+  padding:0 .2em;
+}
+
+/* Cabecera de sección de carta (palabra repetida) */
+.menu-marquee{
+  padding:20px 0 22px;
+  border-top:2px solid var(--ink);
+  border-bottom:2px solid var(--ink);
+}
+.menu-marquee .track > span{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(44px, 7.5vw, 108px);
+  text-transform:uppercase;
+  letter-spacing:-.02em;
+  line-height:1;
+  padding:0 .35em;
+}
+.menu-marquee .track > span:nth-child(even){
+  color:var(--band, var(--bg));
+  -webkit-text-stroke:4px var(--ink);
+  paint-order:stroke fill;
+}
+
+/* ============================================================
+   Secciones de carta
+   ============================================================ */
+.menu-section{ padding-bottom:clamp(60px, 8vw, 120px); }
+.menu-body{
+  display:grid;
+  grid-template-columns:.9fr 1.1fr;
+  gap:clamp(28px, 5vw, 80px);
+  padding:clamp(36px, 5vw, 72px) clamp(20px, 4vw, 56px) 0;
+  align-items:start;
+}
+.menu-media{
+  position:sticky;
+  top:calc(var(--nav-h) + 20px);
+  height:min(62vh, 560px);
+}
+.menu-media .ph{ min-height:100%; }
+.menu-list li{
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:6px 22px;
+  padding:26px 18px;
+  border-bottom:1px solid rgba(51,37,74,.18);
+  border-radius:18px;
+  position:relative;
+  transition:background .35s ease, transform .35s ease;
+}
+.menu-list li:hover{
+  background:var(--hover, var(--fresa));
+  transform:translateX(8px);
+  border-bottom-color:transparent;
+}
+.menu-list h3{
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:clamp(20px, 2.2vw, 27px);
+  letter-spacing:-.01em;
+}
+.menu-list .price{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(18px, 2vw, 24px);
+  align-self:center;
+}
+.menu-list p{
+  grid-column:1 / -1;
+  color:var(--ink-soft);
+  font-size:15.5px;
+  max-width:52ch;
+}
+.menu-list li:hover p{ color:var(--ink); }
+
+/* tinte de fondo por sección (--band alimenta el relleno del delineado) */
+.menu-section.tint-fresa     { --band:var(--fresa); }
+.menu-section.tint-menta     { --band:var(--menta); }
+.menu-section.tint-cielo     { --band:var(--cielo); }
+.menu-section.tint-melocoton { --band:var(--melocoton); }
+.menu-section .menu-marquee{ background:var(--band); }
+
+/* ============================================================
+   Tarjetas destacadas (01 / 02 / 03)
+   ============================================================ */
+.features{
+  padding:clamp(60px, 8vw, 120px) clamp(20px, 4vw, 56px);
+}
+.features-head{
+  display:flex; align-items:flex-end; justify-content:space-between;
+  gap:24px; flex-wrap:wrap;
+  margin-bottom:clamp(28px, 4vw, 52px);
+}
+.features-head h2{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(36px, 5.5vw, 72px);
+  line-height:1;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+}
+.features-head p{ max-width:360px; color:var(--ink-soft); }
+.cards{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:clamp(16px, 2.4vw, 32px);
+}
+.card{
+  border-radius:var(--radius);
+  padding:26px;
+  min-height:460px;
+  display:flex; flex-direction:column; gap:18px;
+  transition:transform .4s cubic-bezier(.22,1,.36,1);
+}
+.card:hover{ transform:translateY(-10px) rotate(-.6deg); }
+.card .num{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:15px;
+  letter-spacing:.16em;
+}
+.card h3{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(24px, 2.4vw, 34px);
+  line-height:1.05;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  white-space:pre-line;
+}
+.card .card-media{ flex:1; min-height:200px; }
+.card .card-media .ph{ min-height:100%; background:rgba(255,255,255,.5); }
+.card.c-fresa{ background:var(--fresa); }
+.card.c-menta{ background:var(--menta); }
+.card.c-cielo{ background:var(--cielo); }
+
+/* ============================================================
+   CTA
+   ============================================================ */
+.cta{
+  padding:clamp(80px, 10vw, 150px) clamp(20px, 4vw, 56px);
+  text-align:center;
+  position:relative;
+}
+.cta h2{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(38px, 6.5vw, 90px);
+  line-height:1.02;
+  letter-spacing:-.02em;
+  text-transform:uppercase;
+  max-width:16ch;
+  margin:0 auto 22px;
+}
+.cta h2 em{
+  font-style:normal;
+  color:var(--band, var(--bg));
+  -webkit-text-stroke:4px var(--ink);
+  paint-order:stroke fill;
+}
+.cta p{ max-width:46ch; margin:0 auto 34px; color:var(--ink-soft); font-size:18px; }
+.cta .cta-actions{
+  display:flex; align-items:center; justify-content:center;
+  gap:18px; flex-wrap:wrap;
+}
+.cta .phone{
+  font-family:var(--disp);
+  font-weight:600;
+  font-size:20px;
+  letter-spacing:.02em;
+  border-bottom:2px solid var(--fresa);
+  padding-bottom:2px;
+  transition:border-color .3s ease;
+}
+.cta .phone:hover{ border-color:var(--ink); }
+
+/* ============================================================
+   Footer
+   ============================================================ */
+footer{
+  background:var(--ink);
+  color:var(--bg);
+  border-radius:var(--radius) var(--radius) 0 0;
+  padding:clamp(60px, 8vw, 110px) clamp(20px, 4vw, 56px) 34px;
+}
+.foot-grid{
+  display:grid;
+  grid-template-columns:1.3fr 1fr 1fr;
+  gap:clamp(28px, 5vw, 70px);
+  margin-bottom:clamp(46px, 6vw, 80px);
+}
+.foot-grid h4{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(28px, 3.4vw, 46px);
+  line-height:1.02;
+  text-transform:uppercase;
+  letter-spacing:-.01em;
+  margin-bottom:20px;
+  white-space:pre-line;
+}
+.foot-grid h4 em{
+  font-style:normal;
+  color:var(--ink);
+  -webkit-text-stroke:3px var(--bg);
+  paint-order:stroke fill;
+}
+.foot-grid p, .foot-grid li{ color:rgba(245,242,252,.72); font-size:16px; }
+.foot-grid .hours li{
+  display:flex; justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid rgba(245,242,252,.14);
+}
+.foot-logo{
+  font-family:var(--disp);
+  font-weight:800;
+  font-size:clamp(64px, 12vw, 190px);
+  line-height:.9;
+  letter-spacing:-.03em;
+  text-transform:uppercase;
+  color:var(--ink);
+  -webkit-text-stroke:4px #807791; /* equivalente sólido de blanco al 40% sobre ciruela */
+  paint-order:stroke fill;
+  text-align:center;
+  margin-bottom:34px;
+  user-select:none;
+}
+.foot-bottom{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:16px; flex-wrap:wrap;
+  font-size:13px;
+  color:rgba(245,242,252,.55);
+  border-top:1px solid rgba(245,242,252,.14);
+  padding-top:22px;
+}
+.foot-bottom a{ text-decoration:underline; text-underline-offset:3px; }
+.foot-bottom a:hover{ color:var(--fresa); }
+
+/* ============================================================
+   Reveal on scroll
+   ============================================================ */
+.reveal{
+  opacity:0;
+  transform:translateY(34px);
+  transition:opacity .8s cubic-bezier(.22,1,.36,1), transform .8s cubic-bezier(.22,1,.36,1);
+}
+.reveal.in{ opacity:1; transform:none; }
+.reveal.d1{ transition-delay:.1s; }
+.reveal.d2{ transition-delay:.2s; }
+.reveal.d3{ transition-delay:.3s; }
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 980px){
+  .hero{ grid-template-columns:1fr; min-height:auto; padding-top:calc(var(--nav-h) + 40px); }
+  .hero-media{ height:52vh; }
+  .menu-body{ grid-template-columns:1fr; }
+  .menu-media{ position:static; height:44vh; }
+  .cards{ grid-template-columns:1fr; }
+  .foot-grid{ grid-template-columns:1fr; }
+}
+@media (max-width: 720px){
+  nav.main-nav .nav-link{ display:none; }
+  .hero-stack{ font-size:clamp(56px, 17vw, 110px); }
+  .hero-badge{ width:90px; height:90px; bottom:-12px; left:-8px; }
+  .menu-list li{ padding:20px 10px; }
+}
+
+/* ============================================================
+   Reduced motion
+   ============================================================ */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+  }
+  .reveal{ opacity:1; transform:none; }
+  #intro{ display:none; }
+}
+</style>
+</head>
+<body class="locked">
+
+<!-- ============ INTRO (cortina) ============ -->
+<div id="intro" aria-hidden="true">
+  <div class="intro-word"><span>W</span><span>A</span><span>V</span><span>A</span></div>
+</div>
+
+<!-- ============ NAV ============ -->
+<header id="topbar">
+  <a class="logo" href="#top">WAVA<span class="dot">.</span></a>
+  <nav class="main-nav">
+    <a class="nav-link" href="#carta">Carta</a>
+    <a class="nav-link" href="#nosotros">Nosotros</a>
+    <a class="nav-link" href="#encuentranos">Encuéntranos</a>
+    <a class="btn" href="#pedir">Pedir ahora</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="top">
+  <div>
+    <p class="hero-eyebrow reveal">Batidos &amp; raspados artesanales</p>
+    <h1 class="hero-stack" aria-label="WAVA">
+      <span class="row fill-fresa reveal"><span>W</span><span>A</span><span>V</span><span>A</span></span>
+      <span class="row outline reveal d1"><span>W</span><span>A</span><span>V</span><span>A</span></span>
+      <span class="row fill-lila reveal d2"><span>W</span><span>A</span><span>V</span><span>A</span></span>
+      <span class="row outline reveal d3"><span>W</span><span>A</span><span>V</span><span>A</span></span>
+    </h1>
+    <p class="hero-sub reveal d2">Fruta de verdad, hielo recién raspado y cero prisas. Frío que sienta bien.</p>
+    <div class="hero-cta reveal d3">
+      <a class="btn" href="#carta">Ver la carta</a>
+      <a class="btn ghost" href="#encuentranos">Dónde estamos</a>
+    </div>
+    <p class="hero-since reveal d3">— Desde 2026 —</p>
+  </div>
+
+  <div class="hero-media reveal d1">
+    <!-- PLACEHOLDER: imagen o vídeo principal del hero -->
+    <div class="ph" id="ph-hero">
+      <span class="ph-ico">🎬</span>
+      <span class="ph-tag">Vídeo / imagen hero</span>
+      <span class="ph-file">sustituir: assets/wava/hero.mp4 · vertical u horizontal, esquinas redondeadas</span>
+    </div>
+    <!-- Sello giratorio decorativo -->
+    <svg class="hero-badge" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><path id="circ" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
+      <circle cx="60" cy="60" r="58" fill="#F7BFD6"/>
+      <text font-family="Bricolage Grotesque, sans-serif" font-size="13.5" font-weight="800" letter-spacing="3.5" fill="#33254A">
+        <textPath href="#circ">FRÍO · FRUTA · WAVA · FRÍO · FRUTA ·</textPath>
+      </text>
+      <text x="60" y="67" text-anchor="middle" font-size="22">✺</text>
+    </svg>
+  </div>
+</section>
+
+<!-- ola divisoria -->
+<div class="wave-div" aria-hidden="true">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none">
+    <path d="M0,35 C120,70 240,0 360,35 C480,70 600,0 720,35 C840,70 960,0 1080,35 C1200,70 1320,0 1440,35 L1440,70 L0,70 Z" fill="#F7BFD6"/>
+  </svg>
+</div>
+
+<!-- ============ MARQUEE GRANDE ============ -->
+<div class="marquee marquee-big" aria-hidden="true">
+  <div class="track">
+    <span>Wava</span><i>✺</i><span>Batidos</span><i>✺</i><span>Raspados</span><i>✺</i>
+    <span>Wava</span><i>✺</i><span>Batidos</span><i>✺</i><span>Raspados</span><i>✺</i>
+  </div>
+</div>
+
+<!-- ============ CARTA ============ -->
+<main id="carta">
+
+  <!-- ---------- BATIDOS ---------- -->
+  <section class="menu-section tint-fresa">
+    <div class="menu-marquee marquee" aria-label="Batidos">
+      <div class="track">
+        <span>Batidos</span><span>Batidos</span><span>Batidos</span><span>Batidos</span>
+        <span>Batidos</span><span>Batidos</span><span>Batidos</span><span>Batidos</span>
+      </div>
+    </div>
+    <div class="menu-body">
+      <div class="menu-media reveal">
+        <!-- PLACEHOLDER: foto de batidos -->
+        <div class="ph" id="ph-batidos">
+          <span class="ph-ico">🥤</span>
+          <span class="ph-tag">Imagen · batidos</span>
+          <span class="ph-file">sustituir: assets/wava/batidos.jpg</span>
+        </div>
+      </div>
+      <ul class="menu-list" style="--hover:var(--fresa)">
+        <li class="reveal">
+          <h3>Fresa &amp; Plátano</h3><span class="price">4,50&nbsp;€</span>
+          <p>El clásico que nunca falla: fresa madura, plátano y un toque de leche fría.</p>
+        </li>
+        <li class="reveal d1">
+          <h3>Mango Lassi</h3><span class="price">5,00&nbsp;€</span>
+          <p>Mango cremoso con yogur y una pizca de cardamomo. Suave y refrescante.</p>
+        </li>
+        <li class="reveal d2">
+          <h3>Verde Wava</h3><span class="price">5,50&nbsp;€</span>
+          <p>Espinaca, piña, manzana verde y jengibre. Frescura que despierta.</p>
+        </li>
+        <li class="reveal d3">
+          <h3>Choco-Avena</h3><span class="price">5,00&nbsp;€</span>
+          <p>Cacao, avena, plátano y leche vegetal. Postre y merienda a la vez.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ---------- RASPADOS ---------- -->
+  <section class="menu-section tint-cielo">
+    <div class="menu-marquee marquee rev" aria-label="Raspados">
+      <div class="track">
+        <span>Raspados</span><span>Raspados</span><span>Raspados</span><span>Raspados</span>
+        <span>Raspados</span><span>Raspados</span><span>Raspados</span><span>Raspados</span>
+      </div>
+    </div>
+    <div class="menu-body">
+      <div class="menu-media reveal">
+        <!-- PLACEHOLDER: foto de raspados -->
+        <div class="ph" id="ph-raspados">
+          <span class="ph-ico">🍧</span>
+          <span class="ph-tag">Imagen · raspados</span>
+          <span class="ph-file">sustituir: assets/wava/raspados.jpg</span>
+        </div>
+      </div>
+      <ul class="menu-list" style="--hover:var(--cielo)">
+        <li class="reveal">
+          <h3>Limón Yuzu</h3><span class="price">3,50&nbsp;€</span>
+          <p>Hielo finísimo con cítricos brillantes. Ácido, limpio, adictivo.</p>
+        </li>
+        <li class="reveal d1">
+          <h3>Sandía Fresca</h3><span class="price">4,00&nbsp;€</span>
+          <p>Sandía de temporada raspada al momento con lima y hierbabuena.</p>
+        </li>
+        <li class="reveal d2">
+          <h3>Tamarindo</h3><span class="price">4,00&nbsp;€</span>
+          <p>Dulce, ácido y con un puntito picante opcional. El favorito de la casa.</p>
+        </li>
+        <li class="reveal d3">
+          <h3>Coco &amp; Lima</h3><span class="price">4,50&nbsp;€</span>
+          <p>Crema de coco sobre hielo de lima. Vacaciones en vaso.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ---------- ESPECIALES ---------- -->
+  <section class="menu-section tint-menta">
+    <div class="menu-marquee marquee" aria-label="Especiales">
+      <div class="track">
+        <span>Especiales</span><span>Especiales</span><span>Especiales</span><span>Especiales</span>
+        <span>Especiales</span><span>Especiales</span><span>Especiales</span><span>Especiales</span>
+      </div>
+    </div>
+    <div class="menu-body">
+      <div class="menu-media reveal">
+        <!-- PLACEHOLDER: foto de especiales -->
+        <div class="ph" id="ph-especiales">
+          <span class="ph-ico">✨</span>
+          <span class="ph-tag">Imagen · especiales</span>
+          <span class="ph-file">sustituir: assets/wava/especiales.jpg</span>
+        </div>
+      </div>
+      <ul class="menu-list" style="--hover:var(--menta)">
+        <li class="reveal">
+          <h3>Wava Flotante</h3><span class="price">6,00&nbsp;€</span>
+          <p>Raspado del día coronado con helado artesanal. Dos texturas, un vaso.</p>
+        </li>
+        <li class="reveal d1">
+          <h3>Açaí Bowl</h3><span class="price">7,50&nbsp;€</span>
+          <p>Base de açaí batido con granola, fruta fresca y coco tostado.</p>
+        </li>
+        <li class="reveal d2">
+          <h3>Matcha Frappé</h3><span class="price">6,50&nbsp;€</span>
+          <p>Matcha ceremonial batido con hielo y leche a elegir.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ---------- TOPPINGS ---------- -->
+  <section class="menu-section tint-melocoton">
+    <div class="menu-marquee marquee rev" aria-label="Toppings">
+      <div class="track">
+        <span>Toppings</span><span>Toppings</span><span>Toppings</span><span>Toppings</span>
+        <span>Toppings</span><span>Toppings</span><span>Toppings</span><span>Toppings</span>
+      </div>
+    </div>
+    <div class="menu-body">
+      <div class="menu-media reveal">
+        <!-- PLACEHOLDER: foto de toppings -->
+        <div class="ph" id="ph-toppings">
+          <span class="ph-ico">🍓</span>
+          <span class="ph-tag">Imagen · toppings</span>
+          <span class="ph-file">sustituir: assets/wava/toppings.jpg</span>
+        </div>
+      </div>
+      <ul class="menu-list" style="--hover:var(--melocoton)">
+        <li class="reveal">
+          <h3>Perlas de tapioca</h3><span class="price">1,00&nbsp;€</span>
+          <p>Masticables y dulces, para batidos con juego.</p>
+        </li>
+        <li class="reveal d1">
+          <h3>Fruta fresca</h3><span class="price">1,50&nbsp;€</span>
+          <p>Cortada al momento: fresa, mango, kiwi o lo que haya de temporada.</p>
+        </li>
+        <li class="reveal d2">
+          <h3>Chamoy &amp; Tajín</h3><span class="price">1,00&nbsp;€</span>
+          <p>El combo agridulce-picante para raspados valientes.</p>
+        </li>
+        <li class="reveal d3">
+          <h3>Nata montada</h3><span class="price">0,75&nbsp;€</span>
+          <p>Nube fría por encima. No hace falta decir más.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<!-- ============ DESTACADOS 01/02/03 ============ -->
+<section class="features" id="nosotros">
+  <div class="features-head">
+    <h2 class="reveal">Más que<br>un vaso frío</h2>
+    <p class="reveal d1">Tres razones por las que la gente vuelve a WAVA (aparte del calor).</p>
+  </div>
+  <div class="cards">
+    <article class="card c-fresa reveal">
+      <span class="num">01</span>
+      <h3>Fruta &amp;
+frescura</h3>
+      <div class="card-media">
+        <!-- PLACEHOLDER: foto tarjeta 01 -->
+        <div class="ph" id="ph-card-01">
+          <span class="ph-ico">📷</span>
+          <span class="ph-tag">Imagen · tarjeta 01</span>
+          <span class="ph-file">sustituir: assets/wava/card-fruta.jpg</span>
+        </div>
+      </div>
+    </article>
+    <article class="card c-cielo reveal d1">
+      <span class="num">02</span>
+      <h3>Eventos &amp;
+fiestas</h3>
+      <div class="card-media">
+        <!-- PLACEHOLDER: foto tarjeta 02 -->
+        <div class="ph" id="ph-card-02">
+          <span class="ph-ico">📷</span>
+          <span class="ph-tag">Imagen · tarjeta 02</span>
+          <span class="ph-file">sustituir: assets/wava/card-eventos.jpg</span>
+        </div>
+      </div>
+    </article>
+    <article class="card c-menta reveal d2">
+      <span class="num">03</span>
+      <h3>Para
+llevar</h3>
+      <div class="card-media">
+        <!-- PLACEHOLDER: foto tarjeta 03 -->
+        <div class="ph" id="ph-card-03">
+          <span class="ph-ico">📷</span>
+          <span class="ph-tag">Imagen · tarjeta 03</span>
+          <span class="ph-file">sustituir: assets/wava/card-llevar.jpg</span>
+        </div>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- ola divisoria -->
+<div class="wave-div" aria-hidden="true">
+  <svg viewBox="0 0 1440 70" preserveAspectRatio="none">
+    <path d="M0,35 C120,0 240,70 360,35 C480,0 600,70 720,35 C840,0 960,70 1080,35 C1200,0 1320,70 1440,35 L1440,70 L0,70 Z" fill="#B8E6CE"/>
+  </svg>
+</div>
+
+<!-- ============ CTA ============ -->
+<section class="cta" id="pedir" style="background:var(--menta); --band:var(--menta)">
+  <h2 class="reveal">¿Se te antoja <em>algo frío</em>?</h2>
+  <p class="reveal d1">Pide para recoger, pregunta por la carta de hoy o tráete a quien quieras. Aquí siempre hay hielo.</p>
+  <div class="cta-actions reveal d2">
+    <a class="btn" href="#">Pedir ahora</a>
+    <a class="phone" href="tel:+34600000000">+34 600 000 000</a>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer id="encuentranos">
+  <div class="foot-grid">
+    <div class="reveal">
+      <h4>Dónde
+<em>encontrarnos</em></h4>
+      <p>WAVA</p>
+      <p>Calle Placeholder 12,</p>
+      <p>28000 Madrid</p>
+      <p style="margin-top:14px"><a href="mailto:hola@wava.example" style="text-decoration:underline; text-underline-offset:3px;">hola@wava.example</a></p>
+    </div>
+    <div class="reveal d1">
+      <h4>Horario</h4>
+      <ul class="hours">
+        <li><span>Lun – Vie</span><span>12:00 – 21:00</span></li>
+        <li><span>Sábado</span><span>11:00 – 23:00</span></li>
+        <li><span>Domingo</span><span>11:00 – 20:00</span></li>
+      </ul>
+    </div>
+    <div class="reveal d2">
+      <h4>Síguenos</h4>
+      <ul class="hours">
+        <li><a href="#">Instagram ↗</a></li>
+        <li><a href="#">TikTok ↗</a></li>
+        <li><a href="#">Google Maps ↗</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="foot-logo" aria-hidden="true">WAVA</div>
+
+  <div class="foot-bottom">
+    <span>© 2026 WAVA — Batidos &amp; Raspados</span>
+    <span><a href="#">Aviso legal</a> · <a href="#">Privacidad</a> · <a href="#">Cookies</a></span>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   WAVA — interacciones
+   ============================================================ */
+(function(){
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Intro: la cortina sube tras la animación del logo */
+  const intro = document.getElementById('intro');
+  function liftIntro(){
+    intro.classList.add('lift');
+    document.body.classList.remove('locked');
+    setTimeout(() => intro.remove(), 1000);
+  }
+  if (reduced) { document.body.classList.remove('locked'); if(intro) intro.remove(); }
+  else window.addEventListener('load', () => setTimeout(liftIntro, 950));
+  /* fallback por si 'load' tarda demasiado */
+  setTimeout(() => { if (document.getElementById('intro')) liftIntro(); }, 3500);
+
+  /* Nav con fondo al hacer scroll */
+  const bar = document.getElementById('topbar');
+  const onScroll = () => bar.classList.toggle('scrolled', window.scrollY > 24);
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+
+  /* Reveal on scroll */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* Ola del hero: retardo escalonado por letra */
+  document.querySelectorAll('.hero-stack .row').forEach((row, r) => {
+    row.querySelectorAll('span').forEach((ch, i) => {
+      ch.style.animationDelay = (r * 0.12 + i * 0.15) + 's';
+    });
+  });
+})();
+</script>
+</body>
+</html>
