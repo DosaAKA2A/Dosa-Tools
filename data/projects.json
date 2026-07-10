@@ -8,5 +8,16 @@
     "review": 3,
     "estado": "curso",
     "notas": "Crear sitio de Spacio2 futurista"
+  },
+  {
+    "id": "p_wava",
+    "nombre": "WAVA",
+    "cliente": "WAVA — Batidos & Raspados",
+    "inicio": "2026-07-10",
+    "deadline": "2026-08-01",
+    "review": 0,
+    "estado": "curso",
+    "notas": "Landing page completa. Deploy en /wava/. Pendiente: añadir imágenes/vídeos y datos reales (dirección, teléfono, redes).",
+    "url": "/wava/"
   }
 ]
