@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<!-- cache: 20260710g -->
+<!-- cache: 20260710h -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Herramientas Corlima — IRIS</title>
@@ -333,7 +333,7 @@ button:disabled { opacity: .3; cursor: default; }
 }
 
 body { font-family: 'Inter', system-ui, sans-serif; }
-.header h1, .header-title { font-family: "Clash Display", sans-serif; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 15px; color:#1c2128; }
+.header h1, .header-title { font-family: "Clash Display", sans-serif; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; font-size: 15px; color: var(--text); }
 .header-logo { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; outline: none; }
 .header-logo:focus { outline: none; }
 .header-logo img { border-radius: 7px; }
@@ -346,6 +346,10 @@ body.dark {
 }
 body.dark .header { border-bottom-color:#2c2e38; }
 body.dark .tab.active { background:var(--accent); color:#fff; }
+body.dark .tab:not(.active) { color: var(--text); opacity:.72; }
+body.dark .tab:hover:not(.active) { opacity:1; }
+body.dark #panelCatalogos { background:#1a1c24; border-radius:12px; }
+body.dark #panelCatalogos iframe { background:#1a1c24; border-color:#2c2e38; }
 body.dark #ebStage {
   background:#1a1c24 !important;
   background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.06) 1px,transparent 0) !important;
@@ -2810,6 +2814,8 @@ function ebLayer(action){var o=ebSelObj();if(!o)return;var zs=EB.objects.map(fun
     document.body.classList.toggle('dark', dark);
     btn.textContent = dark ? '☾' : '☀';
     iso.style.filter = dark ? 'brightness(0) invert(1)' : 'brightness(0)';
+    var ht = document.querySelector('.header-title');
+    if(ht) ht.style.color = dark ? '#d8dce8' : '';
   }
   btn.addEventListener('click', function(){ dark = !dark; apply(); });
   apply(); // estado inicial: claro, isotipo negro
