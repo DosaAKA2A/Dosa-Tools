@@ -1,10 +1,10 @@
 <!doctype html>
-<!-- cache: 20260711a -->
+<!-- cache: 20260711b -->
 <html lang="es">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Portafolio — Magnetic Cards</title>
+    <title>Portafolio</title>
     <style>
       * {
         margin: 0;
@@ -12,167 +12,70 @@
         box-sizing: border-box;
       }
 
-      img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
+      html,
+      body {
+        background: #141414;
       }
 
-      .spotlight {
+      .demo {
         position: relative;
         width: 100%;
         height: 100svh;
-        background-color: #141414;
-        overflow: hidden;
       }
 
-      .cards {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+      .demo iframe {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border: 0;
       }
 
-      .card {
+      .demo .tag {
         position: absolute;
-        width: 250px;
-        height: 250px;
-        border-radius: 1rem;
-        overflow: hidden;
+        top: 14px;
+        left: 16px;
+        z-index: 5;
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        color: #fff;
+        background: rgba(0, 0, 0, 0.45);
+        padding: 5px 10px;
+        border-radius: 999px;
+        pointer-events: none;
+        mix-blend-mode: difference;
       }
     </style>
   </head>
   <body>
-    <!-- ============ SECCIÓN 01 · MAGNETIC CARDS ============ -->
-    <section class="spotlight">
-      <div class="cards">
-        <div class="card"><img src="card-img-1.jpg" alt="" /></div>
-        <div class="card"><img src="card-img-2.jpg" alt="" /></div>
-        <div class="card"><img src="card-img-3.jpg" alt="" /></div>
-        <div class="card"><img src="card-img-4.jpg" alt="" /></div>
-      </div>
+    <section class="demo">
+      <span class="tag">01 · MAGNETIC CARDS</span>
+      <iframe src="magnetic-cards/index.html?v=20260711b" title="Magnetic Cards" loading="eager"></iframe>
     </section>
 
-    <script src="gsap.min.js"></script>
-    <script>
-      const cards = document.querySelectorAll(".card");
-      const spotlight = document.querySelector(".spotlight");
-      const cardsContainer = document.querySelector(".cards");
+    <section class="demo">
+      <span class="tag">02 · TEAM SECTION</span>
+      <iframe src="team-section/index.html?v=20260711b" title="Interactive Team Section" loading="lazy"></iframe>
+    </section>
 
-      const PROXIMITY_RADIUS = 500;
-      const PUSH_FORCE = 10;
-      const TILT_AMOUNT = 0.1;
-      const NEIGHBOR_INFLUENCE = 0.2;
-      const SPRING_STIFFNESS = 0.05;
-      const BOUNCE_FRICTION = 0.85;
-      const CURSOR_SMOOTHING = 0.75;
+    <section class="demo">
+      <span class="tag">03 · ASCII LOGO</span>
+      <iframe src="ascii-logo/index.html?v=20260711b" title="Interactive ASCII Logo" loading="lazy"></iframe>
+    </section>
 
-      const layout = {
-        rotation: [5, -5, 7.5, -10],
-        x: [-275, -100, 100, 275],
-        y: [10, -10, 25, -10],
-      };
+    <section class="demo">
+      <span class="tag">04 · MARQUEE MENU</span>
+      <iframe src="marquee-menu/index.html?v=20260711b" title="Menu with Marquee Hover" loading="lazy"></iframe>
+    </section>
 
-      const cursor = { x: 0, y: 0, vx: 0, vy: 0 };
-      let prevCursorX = 0;
-      let prevCursorY = 0;
+    <section class="demo">
+      <span class="tag">05 · PIXEL REVEAL</span>
+      <iframe src="pixel-reveal/index.html?v=20260711b" title="Pixelated Image Reveal" loading="lazy"></iframe>
+    </section>
 
-      const cardPhysics = [...cards].map((el, i) => {
-        gsap.set(el, {
-          x: layout.x[i],
-          y: layout.y[i],
-          rotation: layout.rotation[i],
-          zIndex: i,
-          xPercent: -50,
-          yPercent: -50,
-        });
-
-        return {
-          el,
-          restX: layout.x[i],
-          restY: layout.y[i],
-          restR: layout.rotation[i],
-          x: layout.x[i],
-          y: layout.y[i],
-          r: layout.rotation[i],
-          vx: 0,
-          vy: 0,
-          vr: 0,
-        };
-      });
-
-      spotlight.addEventListener("mousemove", (e) => {
-        cursor.vx =
-          cursor.vx * CURSOR_SMOOTHING +
-          (e.clientX - prevCursorX) * (1 - CURSOR_SMOOTHING);
-        cursor.vy =
-          cursor.vy * CURSOR_SMOOTHING +
-          (e.clientY - prevCursorY) * (1 - CURSOR_SMOOTHING);
-        prevCursorX = cursor.x = e.clientX;
-        prevCursorY = cursor.y = e.clientY;
-      });
-
-      spotlight.addEventListener("mouseleave", () => {
-        cursor.vx = cursor.vy = 0;
-      });
-
-      function calculatePushForce(card) {
-        const speed = Math.sqrt(cursor.vx ** 2 + cursor.vy ** 2);
-        if (speed < 0.5) return { fx: 0, fy: 0 };
-
-        const rect = cardsContainer.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2 + card.restX;
-        const cy = rect.top + rect.height / 2 + card.restY;
-        const dist = Math.sqrt((cursor.x - cx) ** 2 + (cursor.y - cy) ** 2);
-
-        if (dist > PROXIMITY_RADIUS) return { fx: 0, fy: 0 };
-
-        const weight = (1 - dist / PROXIMITY_RADIUS) ** 3;
-
-        return {
-          fx: cursor.vx * PUSH_FORCE * weight,
-          fy: cursor.vy * PUSH_FORCE * weight,
-        };
-      }
-
-      function applyNeighborInfluence(forces, index) {
-        let fx = forces[index].fx;
-        let fy = forces[index].fy;
-
-        forces.forEach((f, j) => {
-          if (j === index) return;
-          const falloff = NEIGHBOR_INFLUENCE ** Math.abs(j - index);
-          fx += f.fx * falloff;
-          fy += f.fy * falloff * 0.6;
-        });
-
-        return { fx, fy };
-      }
-
-      gsap.ticker.add(() => {
-        const forces = cardPhysics.map(calculatePushForce);
-
-        cardPhysics.forEach((card, i) => {
-          const { fx, fy } = applyNeighborInfluence(forces, i);
-
-          card.vx =
-            (card.vx + (card.restX + fx - card.x) * SPRING_STIFFNESS) *
-            BOUNCE_FRICTION;
-          card.vy =
-            (card.vy + (card.restY + fy - card.y) * SPRING_STIFFNESS) *
-            BOUNCE_FRICTION;
-          card.vr =
-            (card.vr +
-              (card.restR + fx * TILT_AMOUNT - card.r) * SPRING_STIFFNESS) *
-            BOUNCE_FRICTION;
-
-          card.x += card.vx;
-          card.y += card.vy;
-          card.r += card.vr;
-
-          gsap.set(card.el, { x: card.x, y: card.y, rotation: card.r });
-        });
-      });
-    </script>
+    <section class="demo">
+      <span class="tag">06 · NITE RIOT</span>
+      <iframe src="nite-riot/index.html?v=20260711b" title="Nite Riot Landing Reveal" loading="lazy"></iframe>
+    </section>
   </body>
 </html>
