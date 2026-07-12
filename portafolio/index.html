@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- cache: 20260712f -->
+<!-- cache: 20260712g -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -1222,6 +1222,7 @@
     /* --- 11 variantes de animación de cambio de imagen --- */
     function makeIncoming(cell, src) {
       const im = document.createElement("img");
+      im.style.visibility = "hidden"; /* oculta hasta estar decodificada y posicionada */
       im.src = src; im.alt = "";
       cell.appendChild(im);
       return im;
@@ -1320,12 +1321,20 @@
 
       const finish = () => {
         gsap.set(cell, { clearProps: "rotation,rotationY,scale" });
-        gsap.set(nu, { clearProps: "clipPath,opacity,x,y,xPercent,filter,scale" });
+        gsap.set(nu, { clearProps: "clipPath,opacity,x,y,xPercent,filter,scale,visibility" });
         if (oldEl && oldEl.parentElement === cell) oldEl.remove();
         busyCells.delete(cell);
       };
-      const run = () => variant(cell, oldEl, nu, finish);
-      if (nu.complete) run(); else { nu.onload = run; nu.onerror = finish; }
+      const run = () => {
+        /* la variante aplica su gsap.set inicial de forma síncrona;
+           recién después se hace visible → sin flash ni media imagen */
+        variant(cell, oldEl, nu, finish);
+        gsap.set(nu, { visibility: "visible" });
+      };
+      /* decode() garantiza píxeles completos antes del primer frame */
+      if (nu.decode) nu.decode().then(run).catch(run);
+      else if (nu.complete) run();
+      else { nu.onload = run; nu.onerror = finish; }
     }
 
     cells.forEach((cell) => cell.addEventListener("click", () => swapImage(cell)));
