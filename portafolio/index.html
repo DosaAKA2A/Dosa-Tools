@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- cache: 20260712g -->
+<!-- cache: 20260712h -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -1297,8 +1297,8 @@
           .to(cell, { rotation: 90, scale: 0.55, duration: 0.4, ease: "power2.in" })
           .set(oldEl, { opacity: 0 })
           .set(nu, { opacity: 1 })
-          .to(cell, { rotation: 180, scale: 1, duration: 0.45, ease: "hop" })
-          .set(cell, { rotation: 0 });
+          .to(cell, { rotation: 360, scale: 1, duration: 0.8, ease: "power2.out" })
+          .set(cell, { rotation: 0 }); /* 360° ≡ 0° visualmente: reset imperceptible */
       },
       /* 11 · Barrido diagonal */
       (cell, oldEl, nu, done) => {
