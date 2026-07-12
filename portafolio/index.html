@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- cache: 20260712b -->
+<!-- cache: 20260712c -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -1150,7 +1150,7 @@
               const imgEl = img.querySelector("img");
               if (cycle === totalCycles - 1 && img === heroImage) {
                 imgEl.src = "placeholder/img33.jpeg";
-                gsap.set("#sec-hero .hero-img img", { scale: 2 });
+                gsap.set("#sec-hero .hero-img img", { scale: 1 });
               } else {
                 imgEl.src = randomImages[index];
               }
@@ -1261,11 +1261,11 @@
 
       imagesTimeline.to("#sec-hero .hero-img", {
         scale: 4,
+        aspectRatio: "4 / 5",
         clipPath: "polygon(20% 10%, 80% 10%, 80% 90%, 20% 90%)",
         duration: 1.5,
         ease: "hop",
         onStart: () => {
-          gsap.to("#sec-hero .hero-img img", { scale: 1, duration: 1.5, ease: "hop" });
           gsap.to("#sec-hero .banner-img", { scale: 1, delay: 0.5, duration: 0.5 });
           gsap.to("#sec-hero nav", { y: "0%", duration: 1, ease: "hop", delay: 0.25 });
         },
