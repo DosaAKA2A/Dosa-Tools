@@ -97,24 +97,22 @@
       gap: 1em;
       z-index: 2;
     }
-    #sec-hero .grid-row { width: 100%; display: flex; gap: 1em; flex: 1 1 0%; min-height: 0; }
+    #sec-hero .grid-row { width: 100%; flex: 1; min-height: 0; display: flex; gap: 1em; perspective: 900px; }
     #sec-hero .img {
       position: relative;
-      flex: 1 1 0%;
+      flex: 1;
       min-width: 0;
       overflow: hidden;
+      cursor: pointer;
+      transform-style: preserve-3d;
       clip-path: polygon(0% 0%, 100% 0%, 100% 0%, 0% 0%);
     }
-    #sec-hero .image-grid.is-live .img { cursor: pointer; }
-    #sec-hero .image-grid.is-live .hero-img { cursor: default; }
-    #sec-hero .img .swap-in {
+    #sec-hero .img img {
       position: absolute;
       inset: 0;
       width: 100%;
       height: 100%;
       object-fit: cover;
-      opacity: 0;
-      will-change: transform, clip-path, opacity, filter;
     }
     #sec-hero nav {
       position: absolute;
@@ -1116,21 +1114,39 @@
     const section = document.getElementById("sec-hero");
     const projectsContainer = section.querySelector(".projects");
     const locationsContainer = section.querySelector(".locations");
-    const gridImages = gsap.utils.toArray("#sec-hero .image-grid .img");
-    const heroImage = section.querySelector(".img.hero-img");
-    const images = gridImages.filter((img) => img !== heroImage);
+    const grid = section.querySelector(".image-grid");
+    const rows = gsap.utils.toArray("#sec-hero .grid-row");
+    const cells = gsap.utils.toArray("#sec-hero .image-grid .img");
+    const heroCell = section.querySelector(".img.hero-img");
+    const HERO_SRC = "placeholder/img33.jpeg";
+
+    cells.forEach((c, idx) => { c.dataset.col = String(idx % 3); });
 
     const introCopy = new SplitType("#sec-hero .intro-copy h3", { types: "words", absolute: false });
     const titleHeading = new SplitType("#sec-hero .title h1", { types: "words", absolute: false });
 
-    const allImageSources = Array.from({ length: 35 }, (_, i) => `placeholder/img${i + 1}.jpeg`);
-    const CENTER_SRC = "placeholder/img33.jpeg";
-    const fileOf = (s) => s.split("/").pop().split("?")[0];
-    const shuffle = (arr) => [...arr].sort(() => 0.5 - Math.random());
-    /* Set de 9 imágenes ÚNICAS: nunca se repite una imagen dentro de la grilla */
-    const getUniqueImageSet = () => shuffle(allImageSources).slice(0, 9);
+    /* Pool: 1..35 excluyendo la 33 (reservada al centro) */
+    const imagePool = Array.from({ length: 35 }, (_, i) => `placeholder/img${i + 1}.jpeg`)
+      .filter((s) => s !== HERO_SRC);
 
-    let gridInteractive = false;
+    /* Muestreo sin repetición — la grilla nunca muestra la misma imagen dos veces */
+    const sampleUnique = (n, exclude = []) => {
+      const ex = new Set(exclude);
+      const pool = imagePool.filter((s) => !ex.has(s));
+      for (let k = pool.length - 1; k > 0; k--) {
+        const r = Math.floor(Math.random() * (k + 1));
+        [pool[k], pool[r]] = [pool[r], pool[k]];
+      }
+      return pool.slice(0, n);
+    };
+
+    const currentSrcs = () => cells.map((c) => c.dataset.src);
+
+    function setCellSrc(cell, src) {
+      cell.dataset.src = src;
+      const im = cell.querySelector("img");
+      if (im) im.src = src;
+    }
 
     function initializeDynamicContent() {
       projectsData.forEach((p) => {
@@ -1145,25 +1161,29 @@
         el.innerHTML = `<p>${p.location}</p>`;
         locationsContainer.appendChild(el);
       });
+      cells.forEach((c) => { c.dataset.src = c.querySelector("img").getAttribute("src"); });
     }
 
     function startImageRotation() {
       const totalCycles = 20;
       for (let cycle = 0; cycle < totalCycles; cycle++) {
-        gsap.delayedCall(cycle * 0.15, () => {
-          if (cycle === totalCycles - 1) {
-            /* Estado final: img33 fija en el centro, 8 únicas alrededor (sin img33) */
-            const finales = shuffle(allImageSources.filter((s) => fileOf(s) !== fileOf(CENTER_SRC))).slice(0, 8);
-            let k = 0;
-            gridImages.forEach((cell) => {
-              cell.querySelector("img").src = cell === heroImage ? CENTER_SRC : finales[k++];
-            });
-          } else {
-            const set = getUniqueImageSet();
-            gridImages.forEach((cell, idx) => {
-              cell.querySelector("img").src = set[idx];
-            });
-          }
+        gsap.to({}, {
+          duration: 0, delay: cycle * 0.15,
+          onComplete: () => {
+            if (cycle === totalCycles - 1) {
+              /* Estado final: 33 fija en el centro + 8 únicas alrededor */
+              const finals = sampleUnique(8);
+              let k = 0;
+              cells.forEach((cell) => {
+                if (cell === heroCell) setCellSrc(cell, HERO_SRC);
+                else setCellSrc(cell, finals[k++]);
+              });
+            } else {
+              /* Cada ciclo: 9 imágenes distintas entre sí */
+              const randomImages = sampleUnique(9);
+              cells.forEach((cell, index) => setCellSrc(cell, randomImages[index]));
+            }
+          },
         });
       }
     }
@@ -1174,6 +1194,143 @@
       gsap.set(titleHeading.words, { y: "110%" });
     }
 
+    /* ============ INTERACTIVIDAD DE LA GRILLA ============ */
+    let interactive = false;
+    const busyCells = new Set();
+    const GROW = 1.75;
+
+    function setGrow(el, v) {
+      gsap.to(el, { flexGrow: v, duration: 0.55, ease: "power3.out", overwrite: "auto" });
+    }
+
+    function focusCell(cell) {
+      const rowEl = cell.parentElement;
+      const col = cell.dataset.col;
+      rows.forEach((r) => setGrow(r, r === rowEl ? GROW : 1));
+      cells.forEach((c) => setGrow(c, c.dataset.col === col ? GROW : 1));
+    }
+    function resetGrid() {
+      rows.forEach((r) => setGrow(r, 1));
+      cells.forEach((c) => setGrow(c, 1));
+    }
+
+    cells.forEach((cell) => {
+      cell.addEventListener("mouseenter", () => { if (interactive) focusCell(cell); });
+    });
+    grid.addEventListener("mouseleave", () => { if (interactive) resetGrid(); });
+
+    /* --- 11 variantes de animación de cambio de imagen --- */
+    function makeIncoming(cell, src) {
+      const im = document.createElement("img");
+      im.src = src; im.alt = "";
+      cell.appendChild(im);
+      return im;
+    }
+
+    const swapVariants = [
+      /* 1 · Cortina vertical (arriba → abajo) */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { clipPath: "inset(0% 0% 100% 0%)" });
+        gsap.to(nu, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: "hop", onComplete: done });
+      },
+      /* 2 · Cortina vertical inversa (abajo → arriba) */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { clipPath: "inset(100% 0% 0% 0%)" });
+        gsap.to(nu, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.8, ease: "hop", onComplete: done });
+      },
+      /* 3 · Barrido lateral con empuje */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { xPercent: 100 });
+        gsap.to(nu, { xPercent: 0, duration: 0.7, ease: "hop" });
+        gsap.to(oldEl, { xPercent: -100, duration: 0.7, ease: "hop", onComplete: done });
+      },
+      /* 4 · Círculo expansivo desde el centro */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { clipPath: "circle(0% at 50% 50%)" });
+        gsap.to(nu, { clipPath: "circle(75% at 50% 50%)", duration: 0.85, ease: "power3.inOut", onComplete: done });
+      },
+      /* 5 · Apertura desde el centro (split) */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { clipPath: "inset(0% 50% 0% 50%)" });
+        gsap.to(oldEl, { scale: 1.12, duration: 0.85, ease: "power2.out" });
+        gsap.to(nu, { clipPath: "inset(0% 0% 0% 0%)", duration: 0.85, ease: "hop", onComplete: done });
+      },
+      /* 6 · Zoom crossfade */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { opacity: 0, scale: 1.35 });
+        gsap.to(oldEl, { scale: 0.86, opacity: 0.25, duration: 0.7, ease: "power2.inOut" });
+        gsap.to(nu, { opacity: 1, scale: 1, duration: 0.7, ease: "power2.inOut", onComplete: done });
+      },
+      /* 7 · Flip 3D en Y */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { opacity: 0 });
+        gsap.timeline({ onComplete: done })
+          .to(cell, { rotationY: 90, duration: 0.35, ease: "power2.in" })
+          .set(oldEl, { opacity: 0 })
+          .set(nu, { opacity: 1 })
+          .set(cell, { rotationY: -90 })
+          .to(cell, { rotationY: 0, duration: 0.35, ease: "power2.out" });
+      },
+      /* 8 · Glitch flicker */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { opacity: 0 });
+        const tl = gsap.timeline({ onComplete: done });
+        for (let i = 0; i < 7; i++) {
+          tl.set(nu, { opacity: i % 2 ? 0 : 1, x: gsap.utils.random(-10, 10), y: gsap.utils.random(-6, 6) }, i * 0.055);
+          tl.set(oldEl, { x: gsap.utils.random(-10, 10) }, i * 0.055);
+        }
+        tl.set(nu, { opacity: 1, x: 0, y: 0 }, 7 * 0.055);
+        tl.set(oldEl, { x: 0 }, 7 * 0.055);
+        tl.to({}, { duration: 0.12 });
+      },
+      /* 9 · Blur morph */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { opacity: 0, filter: "blur(16px)", scale: 1.08 });
+        gsap.to(oldEl, { filter: "blur(16px)", opacity: 0, duration: 0.6, ease: "power2.in" });
+        gsap.to(nu, { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.75, ease: "power2.out", delay: 0.15, onComplete: done });
+      },
+      /* 10 · Spin swap */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { opacity: 0 });
+        gsap.timeline({ onComplete: done })
+          .to(cell, { rotation: 90, scale: 0.55, duration: 0.4, ease: "power2.in" })
+          .set(oldEl, { opacity: 0 })
+          .set(nu, { opacity: 1 })
+          .to(cell, { rotation: 180, scale: 1, duration: 0.45, ease: "hop" })
+          .set(cell, { rotation: 0 });
+      },
+      /* 11 · Barrido diagonal */
+      (cell, oldEl, nu, done) => {
+        gsap.set(nu, { clipPath: "polygon(0% 0%, 0% 0%, 0% 0%, 0% 0%)" });
+        gsap.to(nu, { clipPath: "polygon(0% 0%, 200% 0%, 200% 200%, 0% 200%)", duration: 0.85, ease: "hop", onComplete: done });
+      },
+    ];
+
+    function swapImage(cell) {
+      if (!interactive || busyCells.has(cell) || cell === heroCell) return;
+      const candidates = sampleUnique(1, currentSrcs());
+      if (!candidates.length) return;
+      const nextSrc = candidates[0];
+      busyCells.add(cell);
+      cell.dataset.src = nextSrc;
+
+      const oldEl = cell.querySelector("img");
+      const nu = makeIncoming(cell, nextSrc);
+      const variant = swapVariants[Math.floor(Math.random() * swapVariants.length)];
+
+      const finish = () => {
+        gsap.set(cell, { clearProps: "rotation,rotationY,scale" });
+        gsap.set(nu, { clearProps: "clipPath,opacity,x,y,xPercent,filter,scale" });
+        if (oldEl && oldEl.parentElement === cell) oldEl.remove();
+        busyCells.delete(cell);
+      };
+      const run = () => variant(cell, oldEl, nu, finish);
+      if (nu.complete) run(); else { nu.onload = run; nu.onerror = finish; }
+    }
+
+    cells.forEach((cell) => cell.addEventListener("click", () => swapImage(cell)));
+
+    /* ============ TIMELINES DE INTRO ============ */
     function createAnimationTimelines() {
       const overlayTimeline = gsap.timeline();
       const imagesTimeline = gsap.timeline();
@@ -1236,7 +1393,7 @@
         },
       });
 
-      /* -- imagesTimeline: la grilla 3x3 se revela y QUEDA como estado final -- */
+      /* -- imagesTimeline: la grilla aparece, cicla y SE QUEDA -- */
       imagesTimeline.to("#sec-hero .image-grid .img", {
         clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
         duration: 1,
@@ -1249,184 +1406,32 @@
             gsap.to("#sec-hero .loader", { opacity: 0, duration: 0.3 });
           }, 1000);
         },
+        onComplete: () => {
+          /* la rotación termina ~3s después → habilitar interactividad */
+          gsap.delayedCall(3.2, () => { interactive = true; });
+        },
       });
 
-      /* Tras la rotación (~6.4s abs): nav baja y la grilla pasa a modo interactivo */
-      imagesTimeline.add(() => {
-        gsap.to("#sec-hero nav", { y: "0%", duration: 1, ease: "hop" });
-        enableGridInteractivity();
-      }, "+=2.7");
-
-      /* -- textTimeline -- */
-      textTimeline.to(titleHeading.words, {
+      /* -- textTimeline: nav + títulos entran al terminar el ciclo -- */
+      textTimeline.to("#sec-hero nav", {
         y: "0%",
         duration: 1,
-        stagger: 0.1,
-        delay: 6.9,
-        ease: "power3.out",
+        ease: "hop",
+        delay: 7,
       });
 
       textTimeline.to(
+        titleHeading.words,
+        { y: "0%", duration: 1, stagger: 0.1, ease: "power3.out" },
+        "<+=0.25"
+      );
+
+      textTimeline.to(
         introCopy.words,
-        { y: "0%", duration: 1, stagger: 0.1, delay: 0.25, ease: "power3.out" },
-        "<"
+        { y: "0%", duration: 1, stagger: 0.1, ease: "power3.out" },
+        "<+=0.25"
       );
     }
-
-    /* ============ GRILLA REACTIVA · HOVER + SWAP ============ */
-    const gridEl = section.querySelector(".image-grid");
-    const gridRows = gsap.utils.toArray("#sec-hero .grid-row");
-
-    function enableGridInteractivity() {
-      gridInteractive = true;
-      gridEl.classList.add("is-live");
-    }
-
-    /* Hover: la celda crece y empuja al resto (fila + columna, fluido) */
-    const GROW = 1.8;
-    function focusCell(cell) {
-      const row = cell.parentElement;
-      const col = Array.prototype.indexOf.call(row.children, cell);
-      gridRows.forEach((r) => {
-        gsap.to(r, { flexGrow: r === row ? GROW : 1, duration: 0.55, ease: "power3.out" });
-        Array.from(r.children).forEach((c, i) => {
-          gsap.to(c, { flexGrow: i === col ? GROW : 1, duration: 0.55, ease: "power3.out" });
-        });
-      });
-    }
-    function resetCells() {
-      gridRows.forEach((r) => {
-        gsap.to(r, { flexGrow: 1, duration: 0.6, ease: "power3.inOut" });
-        Array.from(r.children).forEach((c) => {
-          gsap.to(c, { flexGrow: 1, duration: 0.6, ease: "power3.inOut" });
-        });
-      });
-    }
-
-    gridImages.forEach((cell) => {
-      cell.addEventListener("mouseenter", () => { if (gridInteractive) focusCell(cell); });
-    });
-    gridEl.addEventListener("mouseleave", () => { if (gridInteractive) resetCells(); });
-
-    /* ---- 12 variantes de animación de cambio de imagen (aleatorias al click) ---- */
-    const SWAP_FX = [
-      /* 1 · Barrido izq → der */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "inset(0% 100% 0% 0%)", opacity: 1 },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "hop", onComplete: done });
-        gsap.fromTo(o, { scale: 1 }, { scale: 1.12, duration: 0.7, ease: "power2.out" });
-      },
-      /* 2 · Barrido der → izq */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "inset(0% 0% 0% 100%)", opacity: 1 },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "hop", onComplete: done });
-        gsap.fromTo(o, { scale: 1 }, { scale: 1.12, duration: 0.7, ease: "power2.out" });
-      },
-      /* 3 · Cortina arriba → abajo */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "inset(0% 0% 100% 0%)", opacity: 1 },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "hop", onComplete: done });
-        gsap.fromTo(o, { y: 0 }, { y: 24, duration: 0.7, ease: "power2.out" });
-      },
-      /* 4 · Cortina abajo → arriba */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "inset(100% 0% 0% 0%)", opacity: 1 },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "hop", onComplete: done });
-        gsap.fromTo(o, { y: 0 }, { y: -24, duration: 0.7, ease: "power2.out" });
-      },
-      /* 5 · Revelado circular desde el centro */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "circle(0% at 50% 50%)", opacity: 1 },
-          { clipPath: "circle(75% at 50% 50%)", duration: 0.8, ease: "hop", onComplete: done });
-      },
-      /* 6 · Barrido diagonal */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "polygon(0% 0%, 0% 0%, 0% 0%)", opacity: 1 },
-          { clipPath: "polygon(0% 0%, 220% 0%, 0% 220%)", duration: 0.8, ease: "hop", onComplete: done });
-      },
-      /* 7 · Zoom-in con fade */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { scale: 1.4, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.7, ease: "power3.out", onComplete: done });
-      },
-      /* 8 · Empuje lateral (la nueva desplaza a la vieja) */
-      (cell, o, n, done) => {
-        gsap.set(n, { opacity: 1 });
-        const tl = gsap.timeline({ onComplete: done });
-        tl.fromTo(n, { xPercent: 100 }, { xPercent: 0, duration: 0.7, ease: "hop" });
-        tl.fromTo(o, { xPercent: 0 }, { xPercent: -55, duration: 0.7, ease: "hop" }, "<");
-      },
-      /* 9 · Flip 3D vertical */
-      (cell, o, n, done) => {
-        gsap.set([o, n], { transformPerspective: 700, transformOrigin: "50% 50%" });
-        const tl = gsap.timeline({ onComplete: done });
-        tl.to(o, { rotationY: 90, duration: 0.35, ease: "power2.in" });
-        tl.fromTo(n, { rotationY: -90, opacity: 1 }, { rotationY: 0, duration: 0.45, ease: "power2.out" });
-      },
-      /* 10 · Crossfade con desenfoque */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { opacity: 0, filter: "blur(14px)", scale: 1.06 },
-          { opacity: 1, filter: "blur(0px)", scale: 1, duration: 0.8, ease: "power2.out", onComplete: done });
-      },
-      /* 11 · Apertura desde el eje central */
-      (cell, o, n, done) => {
-        gsap.fromTo(n, { clipPath: "inset(0% 50% 0% 50%)", opacity: 1 },
-          { clipPath: "inset(0% 0% 0% 0%)", duration: 0.7, ease: "hop", onComplete: done });
-        gsap.fromTo(o, { scale: 1 }, { scale: 1.1, duration: 0.7, ease: "power2.out" });
-      },
-      /* 12 · Glitch */
-      (cell, o, n, done) => {
-        const tl = gsap.timeline({ onComplete: done });
-        tl.set(n, { opacity: 1, clipPath: "inset(0% 0% 0% 0%)" });
-        for (let i = 0; i < 6; i++) {
-          tl.set(n, {
-            x: gsap.utils.random(-10, 10),
-            opacity: i % 2 ? 0 : 1,
-            clipPath: `inset(${gsap.utils.random(0, 55)}% 0% ${gsap.utils.random(0, 55)}% 0%)`,
-          }, i * 0.065);
-        }
-        tl.set(n, { x: 0, opacity: 1, clipPath: "inset(0% 0% 0% 0%)" }, 0.45);
-      },
-    ];
-
-    function swapImage(cell) {
-      if (!gridInteractive || cell.dataset.busy === "1") return;
-      /* La central (img33) no cambia: solo un pulso */
-      if (cell === heroImage) {
-        gsap.fromTo(cell.querySelector("img"), { scale: 1.06 }, { scale: 1, duration: 0.5, ease: "power2.out" });
-        return;
-      }
-      /* Candidatas: ni img33 ni ninguna ya visible en la grilla */
-      const enGrilla = Array.from(gridImages, (c) => fileOf(c.querySelector("img").src));
-      const candidatas = allImageSources.filter(
-        (s) => fileOf(s) !== fileOf(CENTER_SRC) && !enGrilla.includes(fileOf(s))
-      );
-      if (!candidatas.length) return;
-      const nextSrc = candidatas[Math.floor(Math.random() * candidatas.length)];
-
-      cell.dataset.busy = "1";
-      const oldImg = cell.querySelector("img");
-      const newImg = document.createElement("img");
-      newImg.className = "swap-in";
-      newImg.alt = "";
-      newImg.src = nextSrc;
-      cell.appendChild(newImg);
-
-      const run = () => {
-        const fx = SWAP_FX[Math.floor(Math.random() * SWAP_FX.length)];
-        fx(cell, oldImg, newImg, () => {
-          oldImg.src = nextSrc;
-          gsap.set(oldImg, { clearProps: "all" });
-          newImg.remove();
-          cell.dataset.busy = "0";
-        });
-      };
-      if (newImg.decode) { newImg.decode().then(run).catch(run); } else { newImg.onload = run; }
-    }
-
-    gridImages.forEach((cell) => {
-      cell.addEventListener("click", () => swapImage(cell));
-    });
 
     initializeDynamicContent();
     setupInitialStates();
