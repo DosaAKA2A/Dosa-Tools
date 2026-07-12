@@ -1547,7 +1547,7 @@
 
 
 </style>
-<!-- cache: 20260711a -->
+<!-- cache: 20260712a -->
 </head>
 <body>
 <div id="iris-intro">
@@ -2344,6 +2344,168 @@ function switchTheme(btn) {
   })();
   </script>
 
+<style>
+/* ── IRIS motion pass ── */
+#scrollProgress { position: fixed; top: 0; left: 0; width: 100%; height: 2px; background: var(--red); transform-origin: left center; z-index: 10000; pointer-events: none; }
+.foot-big { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { #scrollProgress { display: none; } }
+</style>
+<script src="lib/gsap.min.js"></script>
+<script src="lib/ScrollTrigger.min.js"></script>
+<script src="lib/split-type.min.js"></script>
+<script>
+/* ════════ IRIS · MOTION PASS (GSAP + ScrollTrigger) ════════ */
+(() => {
+  if (!window.gsap || !window.ScrollTrigger) return;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced) return; /* respeta la media query existente: sin motion extra */
+  gsap.registerPlugin(ScrollTrigger);
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const EASE = "power4.out";
+
+  /* ---- 1 · Barra de progreso de scroll ---- */
+  const bar = document.createElement("div");
+  bar.id = "scrollProgress";
+  document.body.appendChild(bar);
+  gsap.set(bar, { scaleX: 0 });
+  gsap.to(bar, {
+    scaleX: 1, ease: "none",
+    scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: 0.3 },
+  });
+
+  /* ---- 2 · Títulos: palabras que suben (sustituye el fade genérico) ---- */
+  const titleSel = [".serv-head", "#projects .sec-title", ".tarifas-sec .sec-title", ".contact-lead", ".form-title", ".success-title"];
+  titleSel.forEach((sel) => {
+    document.querySelectorAll(sel).forEach((h) => {
+      const holder = h.closest("[data-reveal]");
+      if (holder) holder.removeAttribute("data-reveal"); /* GSAP toma el control */
+      const split = new SplitType(h, { types: "words", absolute: false });
+      gsap.set(split.words, { yPercent: 120, opacity: 0 });
+      gsap.to(split.words, {
+        yPercent: 0, opacity: 1, duration: 0.9, stagger: 0.035, ease: EASE,
+        scrollTrigger: { trigger: h, start: "top 85%", once: true },
+      });
+      /* marker "( 0X )" del mismo bloque: slide-in propio */
+      const marker = holder ? holder.querySelector(".marker") : null;
+      if (marker) {
+        gsap.set(marker, { x: -24, opacity: 0 });
+        gsap.to(marker, {
+          x: 0, opacity: 1, duration: 0.7, ease: EASE,
+          scrollTrigger: { trigger: h, start: "top 85%", once: true },
+        });
+      }
+      /* resto de hermanos del bloque (subs, contact-info): fade suave */
+      if (holder) {
+        const rest = [...holder.children].filter((el) => el !== h && !el.classList.contains("marker"));
+        if (rest.length) {
+          gsap.set(rest, { y: 22, opacity: 0 });
+          gsap.to(rest, {
+            y: 0, opacity: 1, duration: 0.8, stagger: 0.1, delay: 0.25, ease: EASE,
+            scrollTrigger: { trigger: h, start: "top 85%", once: true },
+          });
+        }
+      }
+    });
+  });
+
+  /* ---- 3 · Iconos con trazo que se dibuja (features + checkmarks tarifas) ---- */
+  function drawIn(paths, trigger, stagger) {
+    const items = [];
+    paths.forEach((p) => {
+      let len = 0;
+      try { len = p.getTotalLength(); } catch (e) { return; }
+      if (!len) return;
+      p.style.strokeDasharray = len;
+      p.style.strokeDashoffset = len;
+      items.push(p);
+    });
+    if (!items.length) return;
+    gsap.to(items, {
+      strokeDashoffset: 0, duration: 1.1, stagger, ease: "power2.inOut",
+      scrollTrigger: { trigger, start: "top 82%", once: true },
+    });
+  }
+  document.querySelectorAll(".feat-grid").forEach((g) => drawIn(g.querySelectorAll(".ic path"), g, 0.12));
+  document.querySelectorAll(".tier").forEach((t) => drawIn(t.querySelectorAll(".tier-feats svg path"), t, 0.05));
+
+  /* ---- 4 · Bento cards: entrada escalonada con escala sutil ---- */
+  const bento = document.getElementById("bento-svc");
+  if (bento) {
+    const cards = bento.querySelectorAll(".bento-card");
+    gsap.set(cards, { y: 48, opacity: 0, scale: 0.97 });
+    gsap.to(cards, {
+      y: 0, opacity: 1, scale: 1, duration: 0.9, stagger: 0.1, ease: EASE,
+      scrollTrigger: { trigger: bento, start: "top 80%", once: true },
+    });
+  }
+
+  /* ---- 5 · Precios que cuentan desde 0 ---- */
+  document.querySelectorAll(".tier-price .amount").forEach((el) => {
+    const target = parseInt(el.textContent.replace(/[^\d]/g, ""), 10);
+    if (!target) return;
+    const obj = { v: 0 };
+    ScrollTrigger.create({
+      trigger: el, start: "top 85%", once: true,
+      onEnter: () => {
+        gsap.to(obj, {
+          v: target, duration: 1.4, ease: "power2.out",
+          onUpdate: () => { el.textContent = String(Math.round(obj.v)).replace(/\B(?=(\d{3})+(?!\d))/g, "."); },
+          onComplete: () => { el.textContent = String(target).replace(/\B(?=(\d{3})+(?!\d))/g, "."); },
+        });
+      },
+    });
+  });
+
+  /* ---- 6 · Footer IRIS: letras que suben + parallax sutil ---- */
+  const footBig = document.querySelector(".foot-big");
+  if (footBig) {
+    footBig.removeAttribute("data-reveal");
+    const chars = new SplitType(footBig, { types: "chars", absolute: false });
+    gsap.set(chars.chars, { yPercent: 110 });
+    gsap.to(chars.chars, {
+      yPercent: 0, duration: 1, stagger: 0.07, ease: EASE,
+      scrollTrigger: { trigger: footBig, start: "top 92%", once: true },
+    });
+    gsap.to(footBig, {
+      yPercent: -12, ease: "none",
+      scrollTrigger: { trigger: "#footer", start: "top bottom", end: "bottom bottom", scrub: 0.5 },
+    });
+  }
+
+  /* ---- 7 · Tilt 3D sutil en project cards (solo puntero fino) ---- */
+  if (fine) {
+    document.querySelectorAll(".pcard").forEach((card) => {
+      const rx = gsap.quickTo(card, "rotationX", { duration: 0.5, ease: "power3.out" });
+      const ry = gsap.quickTo(card, "rotationY", { duration: 0.5, ease: "power3.out" });
+      card.style.transformPerspective = "900px";
+      card.addEventListener("mousemove", (e) => {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        rx(py * -6);
+        ry(px * 6);
+      });
+      card.addEventListener("mouseleave", () => { rx(0); ry(0); });
+    });
+
+    /* ---- 8 · Botones magnéticos (CTAs de tarifas + enviar) ---- */
+    document.querySelectorAll(".tier-cta, .send-btn").forEach((btn) => {
+      const mx = gsap.quickTo(btn, "x", { duration: 0.4, ease: "power3.out" });
+      const my = gsap.quickTo(btn, "y", { duration: 0.4, ease: "power3.out" });
+      btn.addEventListener("mousemove", (e) => {
+        const r = btn.getBoundingClientRect();
+        mx((e.clientX - (r.left + r.width / 2)) * 0.18);
+        my((e.clientY - (r.top + r.height / 2)) * 0.28);
+      });
+      btn.addEventListener("mouseleave", () => {
+        gsap.to(btn, { x: 0, y: 0, duration: 0.6, ease: "elastic.out(1, 0.45)" });
+      });
+    });
+  }
+
+  window.addEventListener("load", () => ScrollTrigger.refresh());
+})();
+</script>
 </body>
 </html>
 
