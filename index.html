@@ -190,20 +190,20 @@
 
   /* ── Wordmark gigante ── */
   .hz-giant {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 8;
+    position: absolute; left: 0; right: 0; bottom: clamp(12px, 2.2vh, 26px); z-index: 8;
     font-family: "Clash Display", 'Inter', sans-serif;
     font-weight: 700; color: #fff; text-align: right;
     padding-right: 1.5vw;
-    font-size: min(25vw, 38vh); line-height: .72; letter-spacing: -.015em;
+    font-size: min(25vw, 38vh); line-height: .8; letter-spacing: -.015em;
     white-space: nowrap; pointer-events: none; user-select: none;
-    transform: translateY(16%);
+    transform: translateY(0);
     animation: hzGiant 1s cubic-bezier(0.22, 1, 0.36, 1) .5s both;
   }
   .hz-giant sup { font-size: .1em; font-weight: 600; vertical-align: 4.2em; letter-spacing: 0; }
 
   @keyframes hzDown  { from { opacity: 0; transform: translateY(-26px); } to { opacity: 1; transform: none; } }
   @keyframes hzUp    { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
-  @keyframes hzGiant { from { opacity: 0; transform: translateY(58%); } to { opacity: 1; transform: translateY(16%); } }
+  @keyframes hzGiant { from { opacity: 0; transform: translateY(42%); } to { opacity: 1; transform: translateY(0); } }
   @keyframes hzPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(63,185,80,0.5); } 50% { box-shadow: 0 0 0 6px rgba(63,185,80,0); } }
 
   /* .hz-mid usa translateY(-50%): variante de hzUp que la respeta */
@@ -239,7 +239,7 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .hz-top, .hz-mid, .hz-trust, .hz-giant { animation: none !important; opacity: 1 !important; }
-    .hz-giant { transform: translateY(16%) !important; }
+    .hz-giant { transform: translateY(0) !important; }
     .hz-mid { transform: translateY(-50%) !important; }
     .hz-dot { animation: none !important; }
   }
@@ -1185,7 +1185,7 @@
 
 
 </style>
-<!-- cache: 20260713e -->
+<!-- cache: 20260713f -->
 </head>
 <body>
 <div id="iris-intro">
