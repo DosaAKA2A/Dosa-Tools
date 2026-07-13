@@ -391,6 +391,10 @@
   .serv-head { font-size: clamp(28px, 4vw, 56px); font-weight: 700; line-height: 1.08; letter-spacing: -.02em; max-width: 20ch; margin: 22px 0 0; }
   .serv-head .g { color: #b3b3ae; }
   .feat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(20px, 3vw, 40px); margin-top: clamp(46px, 6vw, 72px); }
+  .serv-top { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: clamp(32px, 4vw, 72px); align-items: end; }
+  .serv-top .feat-grid { grid-template-columns: repeat(2, 1fr); margin-top: 0; gap: clamp(22px, 2.4vw, 34px) clamp(20px, 2.6vw, 40px); }
+  @media (max-width: 960px){ .serv-top { grid-template-columns: 1fr; } .serv-top .feat-grid { margin-top: clamp(46px, 6vw, 72px); } }
+  @media (max-width: 480px){ .serv-top .feat-grid { grid-template-columns: 1fr; } }
   @media (max-width: 860px){ .feat-grid { grid-template-columns: repeat(2, 1fr); row-gap: 40px; } }
   @media (max-width: 480px){ .feat-grid { grid-template-columns: 1fr; } }
   .feat .ic { width: 26px; height: 26px; color: var(--ink); margin-bottom: 16px; }
@@ -816,6 +820,7 @@
   
   /* ════════════════════ BENTO CARDS (servicios) ════════════════════ */
   .bento-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: clamp(46px,6vw,72px); }
+  #bento-svc { margin-bottom: clamp(24px, 3vw, 48px); }
   @media (max-width: 1024px){ .bento-grid { grid-template-columns: repeat(2, 1fr); } }
   @media (max-width: 560px)  { .bento-grid { grid-template-columns: 1fr; } }
   .bento-card { border-radius: 20px; overflow: hidden; position: relative; background: #fff; border: 1px solid rgba(0,0,0,0.09); display: flex; flex-direction: column; min-height: 380px; padding: 0; opacity: 0; transform: translateY(32px); transition: opacity .7s var(--ease), transform .7s var(--ease), box-shadow .3s var(--ease); }
@@ -1203,7 +1208,7 @@
 
 
 </style>
-<!-- cache: 20260713i -->
+<!-- cache: 20260713j -->
 </head>
 <body>
 <div id="iris-intro">
@@ -1309,6 +1314,7 @@
 <!-- ════════════════════ SERVICIOS (claro) ════════════════════ -->
 <section class="section sec-dark" id="servicios">
   <div class="wrap">
+    <div class="serv-top">
     <div data-reveal>
       <div class="marker on-dark"><span class="paren">(&nbsp;01&nbsp;)</span> &bull; <span>Estudio</span></div>
       <h2 class="serv-head on-dark">No seguimos tendencias, las definimos. <span class="g">IRIS ayuda a marcas y equipos a lanzar rápido, escalar con criterio y convertir mejor.</span></h2>
@@ -1336,6 +1342,7 @@
         <p>Sistemas que crecen contigo, de una landing a una plataforma completa.</p>
       </div>
     </div>
+    </div><!-- /serv-top -->
 
     <!-- BENTO GRID servicios al estilo Lyniq -->
     <div class="bento-grid" id="bento-svc">
