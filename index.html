@@ -258,24 +258,26 @@
   body.hn-open .hn-overlay { opacity: 1; pointer-events: auto; }
   .hn-panel {
     position: absolute;
-    top: clamp(58px, 8vh, 76px); left: 14px; right: 14px; bottom: 14px;
+    top: clamp(56px, 7.5vh, 72px); left: clamp(14px, 1.8vw, 30px);
+    width: min(520px, calc(100vw - 28px));
+    height: min(420px, calc(100vh - 92px));
     background: #0d0d0d; border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 10px; overflow: hidden;
-    display: grid; grid-template-columns: minmax(280px, 37%) 1fr;
-    transform: translateY(16px); opacity: 0;
+    border-radius: 8px; overflow: hidden;
+    display: grid; grid-template-columns: 40% 1fr;
+    transform: translateY(14px); opacity: 0;
     transition: transform .55s var(--ease), opacity .45s var(--ease);
   }
   body.hn-open .hn-panel { transform: none; opacity: 1; }
 
   .hn-panel-left {
     display: flex; flex-direction: column; justify-content: space-between;
-    padding: clamp(26px, 3.4vh, 40px) clamp(22px, 2.4vw, 38px);
-    gap: 32px; min-height: 0;
+    padding: 24px 22px;
+    gap: 26px; min-height: 0;
   }
-  .hn-ov-links { display: flex; flex-direction: column; gap: clamp(10px, 1.8vh, 18px); }
+  .hn-ov-links { display: flex; flex-direction: column; gap: 12px; }
   .hn-ov-links a {
     font-family: 'Inter', sans-serif;
-    font-size: 14px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
+    font-size: 12.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase;
     color: #fff; text-decoration: none; width: fit-content;
     opacity: 0; transform: translateY(12px);
     transition: opacity .45s var(--ease), transform .45s var(--ease), color .25s;
@@ -285,25 +287,25 @@
 
   .hn-author { display: flex; flex-direction: column; gap: 12px; }
   .hn-author-photo {
-    width: 58px; height: 58px; border-radius: 8px;
+    width: 46px; height: 46px; border-radius: 7px;
     background: #161616; border: 1px solid rgba(255,255,255,0.08);
     display: grid; place-items: center; margin-bottom: 4px;
   }
-  .hn-author-photo img { width: 28px; height: 28px; }
+  .hn-author-photo img { width: 22px; height: 22px; }
   .hn-author-name {
     display: flex; align-items: center; gap: 9px;
-    font-family: 'Inter', sans-serif; font-size: 13.5px; font-weight: 700;
+    font-family: 'Inter', sans-serif; font-size: 12px; font-weight: 700;
     letter-spacing: .14em; text-transform: uppercase; color: #fff;
   }
-  .hn-author-name .sq { width: 8px; height: 8px; background: var(--red); flex-shrink: 0; }
+  .hn-author-name .sq { width: 7px; height: 7px; background: var(--red); flex-shrink: 0; }
   .hn-author-role {
-    font-family: 'Geist Mono', monospace; font-size: 10.5px; font-weight: 500;
-    letter-spacing: .14em; color: rgba(255,255,255,0.5);
+    font-family: 'Geist Mono', monospace; font-size: 9.5px; font-weight: 500;
+    letter-spacing: .12em; color: rgba(255,255,255,0.5);
   }
   .hn-author-socials { display: flex; gap: 14px; margin-top: 6px; }
   .hn-author-socials a { color: rgba(255,255,255,0.75); transition: color .25s; }
   .hn-author-socials a:hover { color: var(--red); }
-  .hn-author-socials svg { width: 17px; height: 17px; display: block; }
+  .hn-author-socials svg { width: 15px; height: 15px; display: block; }
 
   .hn-panel-right { display: grid; grid-template-rows: 1fr 1fr; min-height: 0; }
   .hn-feature { position: relative; overflow: hidden; display: block; }
@@ -316,13 +318,13 @@
   .hn-feature span {
     position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
     font-family: "Clash Display", 'Inter', sans-serif;
-    font-size: clamp(20px, 2.2vw, 30px); font-weight: 700; letter-spacing: .04em;
+    font-size: clamp(13px, 1.1vw, 17px); font-weight: 700; letter-spacing: .05em;
     color: #fff; text-shadow: 0 2px 24px rgba(0,0,0,0.55);
     white-space: nowrap;
   }
 
   @media (max-width: 820px) {
-    .hn-panel { grid-template-columns: 1fr; left: 10px; right: 10px; bottom: 10px; }
+    .hn-panel { grid-template-columns: 1fr; width: calc(100vw - 24px); height: auto; max-height: calc(100vh - 88px); }
     .hn-panel-right { display: none; }
   }
   @media (prefers-reduced-motion: reduce) {
@@ -1183,7 +1185,7 @@
 
 
 </style>
-<!-- cache: 20260713d -->
+<!-- cache: 20260713e -->
 </head>
 <body>
 <div id="iris-intro">
