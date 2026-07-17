@@ -1549,7 +1549,7 @@
         <div class="pcard-bg-img"><img src="assets/cards/card-diseno.jpg?v=20260710" alt="Creative Tools"></div>
         <div class="pcard-veil-hover"></div>
         <div class="pcard-top">
-          <span class="pcard-lock" style="background:rgba(220,64,42,0.55);border-color:rgba(220,64,42,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Público</span>
+          <span class="pcard-lock" style="background:rgba(63,185,80,0.45);border-color:rgba(63,185,80,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Público</span>
           <span class="pcard-num">02</span>
         </div>
         <div class="pcard-bottom">
@@ -1564,7 +1564,7 @@
         <div class="pcard-bg-img"><img src="assets/cards/card-spacio.jpg?v=20260705" alt="SPACIO²"></div>
         <div class="pcard-veil-hover"></div>
         <div class="pcard-top">
-          <span class="pcard-lock" style="background:rgba(220,64,42,0.55);border-color:rgba(220,64,42,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Público</span>
+          <span class="pcard-lock" style="background:rgba(63,185,80,0.45);border-color:rgba(63,185,80,0.4);"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> Público</span>
           <span class="pcard-num">03</span>
         </div>
         <div class="pcard-bottom">
@@ -2467,6 +2467,8 @@ function switchTheme(btn) {
   function tick(){
     if(live()){
       badgeEl.innerHTML = '<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg> P&uacute;blico';
+      badgeEl.style.background = 'rgba(63,185,80,0.45)';
+      badgeEl.style.borderColor = 'rgba(63,185,80,0.4)';
       goEl.innerHTML = 'Ver proyecto <span class="arr">&#8599;</span>';
       clearInterval(iv);
       return;
