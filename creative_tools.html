@@ -122,14 +122,12 @@
   .mini-btn{font-family:var(--mono);font-size:10px;padding:7px 11px;border:1px solid var(--line);border-radius:6px;color:var(--ink-dim);background:var(--panel-2);transition:.13s;text-transform:uppercase;letter-spacing:.05em}
   .mini-btn:hover{border-color:var(--safe);color:var(--ink)}
 
-  .load-media{position:absolute;left:16px;top:38px;z-index:5;display:inline-flex;align-items:center;gap:7px;
+  .load-media{position:absolute;left:16px;top:14px;z-index:5;display:inline-flex;align-items:center;gap:7px;
     background:#f4f2ea;color:#0a0a0c;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.1em;
     text-transform:uppercase;padding:11px 18px;border-radius:100px;box-shadow:0 4px 18px rgba(0,0,0,.45);
     transition:.15s;cursor:pointer}
   .load-media svg{width:14px;height:14px}
   .load-media:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(0,0,0,.55)}
-  #btn-upload{border-color:var(--safe);color:var(--safe)}
-  #btn-upload:hover{background:var(--safe);color:#0a0a0c}
   .cvmodes{display:flex;gap:4px}
   .cvmodes button{flex:1;font-family:var(--mono);font-size:11px;font-weight:700;padding:8px 0;border:1px solid var(--line);border-radius:7px;color:var(--ink-faint);transition:.13s}
   .cvmodes button:hover{color:var(--ink)}
@@ -160,7 +158,11 @@
   .fxb-thumb{position:relative;aspect-ratio:1/1.15;border-radius:8px;border:1px solid var(--line);overflow:hidden;transition:.15s;display:flex;align-items:center;justify-content:center}
   .fxb-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
   .fxb-ph{font-family:var(--mono);font-size:20px;font-weight:600;color:rgba(255,255,255,.28);letter-spacing:.05em}
-  .fxb-name{font-family:var(--mono);font-size:10px;letter-spacing:.03em;color:var(--ink-dim);line-height:1.3}
+  .fxb-name{font-family:var(--mono);font-size:10.5px;letter-spacing:.03em;color:var(--ink-dim);line-height:1.3}
+  .fxb-card.active .fxb-thumb{border-color:var(--safe);box-shadow:0 0 0 1px var(--safe)}
+  .fxb-card.active .fxb-name{color:var(--safe)}
+  .shape-row{display:flex;gap:8px;margin-bottom:6px}
+  .shape-row .rail-btn{width:52px;height:42px;padding:5px}
   .curvecv{width:100%;height:120px;border:1px solid var(--line);border-radius:8px;background:var(--panel-2);cursor:crosshair;touch-action:none;display:block}
   @media(max-width:820px){
     .body.fx-mode{grid-template-columns:150px 1fr}
@@ -202,16 +204,14 @@
     <div class="brand"><a href="https://iris.it.com" class="brand-home" title="Volver a IRIS"><span class="iris">IRIS</span></a><span class="divider"></span><span class="tool">Creative Tools</span></div>
     <span class="badge-free">Free · No account</span>
     <div class="modesw">
-      <button data-mode="compose" class="active">Compose</button>
+      <button data-mode="effects" class="active">Effects</button>
+      <button data-mode="compose">Compose</button>
       <button data-mode="reduce">Reduce</button>
-      <button data-mode="banner">Banner</button>
-      <button data-mode="effects">Effects</button>
     </div>
     <div class="spacer"></div>
     <button class="top-btn ghost" id="btn-animate">Animate</button>
     <button class="top-btn" id="btn-random">Randomize</button>
     <button class="top-btn" id="btn-reset-all">Reset</button>
-    <button class="top-btn" id="btn-upload">Open image</button>
     <button class="top-btn primary" id="btn-export">Export PNG</button>
     <input type="file" id="file" accept="image/*" hidden>
   </div>
@@ -221,10 +221,8 @@
       <div class="canvas-wrap">
         <canvas id="glview"></canvas>
         <canvas id="view" style="display:none"></canvas>
-        <canvas id="bannerview" style="display:none"></canvas>
         <canvas id="fxview" style="display:none"></canvas>
       </div>
-      <div class="drop-hint" id="drop-hint"><span class="cta" id="drop-cta">Drop · click · paste</span> an image to blend the gradient over it</div>
       <button class="load-media" id="btn-load-media" title="Cargar imagen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg> Load media</button>
       <div class="stage-hud" id="hud"><span><b id="hud-a">GRADIENT</b></span><span id="hud-b">—</span></div>
     </div>
@@ -249,12 +247,9 @@ const MAX_DIM=1100;
 const glview=document.getElementById('glview');
 const view=document.getElementById('view');
 const vctx=view.getContext('2d');
-const bannerview=document.getElementById('bannerview');
-const bctx=bannerview.getContext('2d');
 const panel=document.getElementById('panel');
 const rail=document.getElementById('rail');
 const stage=document.getElementById('stage');
-const dropHint=document.getElementById('drop-hint');
 
 const clamp=(v,a,b)=>v<a?a:v>b?b:v;
 const hexRGB=h=>{h=h.replace('#','');return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
@@ -645,15 +640,16 @@ const SHAPE_ICONS=[
 ];
 function buildRail(){
   if(MODE==='compose'){
-    // Shape selector + gradient presets
-    const shapeHtml=`<div class="rail-lbl">Shape</div>`+SHAPE_ICONS.map((svg,i)=>
-      `<button class="rail-btn ${G.shape===i?'active':''}" data-sh="${i}" title="${['Linear','Radial','Conic'][i]}" style="width:44px;height:36px;padding:3px">${svg}</button>`
-    ).join('')+`<div class="rail-sep"></div><div class="rail-lbl">Preset</div>`;
-    const presetHtml=Object.entries(GRAD_PRESETS).map(([name,p])=>{
+    // Shape selector + tarjetas de presets (estilo Effects)
+    const shapeHtml=`<div class="fxb-cat" style="margin-top:0">Shape</div><div class="shape-row">`+SHAPE_ICONS.map((svg,i)=>
+      `<button class="rail-btn ${G.shape===i?'active':''}" data-sh="${i}" title="${['Linear','Radial','Conic'][i]}">${svg}</button>`
+    ).join('')+`</div>`;
+    const presetHtml=`<div class="fxb-cat">Presets</div><div class="fxb-grid">`+Object.entries(GRAD_PRESETS).map(([name,p])=>{
       const css=`linear-gradient(135deg,${p.stops.map(([c,pos])=>`${c} ${pos*100}%`).join(',')})`;
-      return `<button class="rail-swatch" title="${name}" data-gp="${name}" style="background:${css}"></button>`;
-    }).join('');
-    rail.innerHTML=shapeHtml+presetHtml;
+      const slug=name.toLowerCase().replace(/[^a-z0-9]+/g,'-');
+      return `<button class="fxb-card" data-gp="${name}"><div class="fxb-thumb" style="background:${css}"><img src="assets/fx/c-${slug}.jpg" loading="lazy" alt="" onerror="this.style.display='none'"></div><span class="fxb-name">${name}</span></button>`;
+    }).join('')+`</div>`;
+    rail.innerHTML=`<div class="fxb"><div class="fxb-list">`+shapeHtml+presetHtml+`</div></div>`;
     // shape buttons
     rail.querySelectorAll('[data-sh]').forEach(b=>b.addEventListener('click',()=>{
       G.shape=+b.dataset.sh;
@@ -666,20 +662,14 @@ function buildRail(){
       G.shape=p.shape;G.angle=p.angle;G.warp=p.warp;G.scale=p.scale;G.detail=p.detail;G.contrast=p.contrast;
       rail.querySelectorAll('[data-sh]').forEach(x=>x.classList.toggle('active',+x.dataset.sh===G.shape));
       buildComposePanel();glRender();toast(b.dataset.gp);}));
-  }else if(MODE==='banner'){
-    rail.innerHTML=`<div class="rail-lbl">Theme</div>`+Object.entries(B_TEMPLATES).map(([name,t])=>{
-      const css=`linear-gradient(135deg,${t.bg} 0%,${t.bg} 55%,${t.accent} 55%,${t.accent} 100%)`;
-      return `<button class="rail-swatch" title="${name}" data-bt="${name}" style="background:${css}"></button>`;
-    }).join('');
-    rail.querySelectorAll('[data-bt]').forEach(b=>b.addEventListener('click',()=>{
-      Object.assign(B,B_TEMPLATES[b.dataset.bt]);buildBannerPanel();bRender();toast(b.dataset.bt);}));
   }else if(MODE==='effects'){
     buildFxBrowser();
   }else{
-    rail.innerHTML=REDUCE_STYLES.map(([v,t])=>`<button class="rail-btn ${S.style===v?'active':''}" data-style="${v}">
-      <span class="rl">${t}</span></button>`).join('');
+    const NAMES={dither:'Dither',halftone:'Halftone',ascii:'ASCII',dots:'Dots',pixel:'Pixel',none:'Raw'};
+    rail.innerHTML=`<div class="fxb"><div class="fxb-list"><div class="fxb-cat" style="margin-top:0">Styles</div><div class="fxb-grid">`+
+      REDUCE_STYLES.map(([v,t])=>`<button class="fxb-card ${S.style===v?'active':''}" data-style="${v}">${fxThumb('r-'+v,NAMES[v]||t)}<span class="fxb-name">${NAMES[v]||t}</span></button>`).join('')+`</div></div></div>`;
     rail.querySelectorAll('[data-style]').forEach(b=>b.addEventListener('click',()=>{
-      rail.querySelectorAll('.rail-btn').forEach(x=>x.classList.remove('active'));b.classList.add('active');
+      rail.querySelectorAll('.fxb-card').forEach(x=>x.classList.remove('active'));b.classList.add('active');
       S.style=b.dataset.style;buildReducePanel();render();}));
   }
 }
@@ -1262,6 +1252,11 @@ function buildFxPanel(){
       h+=`</div></div>`;}
     h+=`</div></div>`;});
   h+=`</div>`;
+  h+=`<div class="grp"><div class="grp-title">Send to</div>
+    <div style="display:flex;gap:8px">
+      <button class="mini-btn" id="fx-send-compose" style="flex:1;padding:10px 0">→ Compose</button>
+      <button class="mini-btn" id="fx-send-reduce" style="flex:1;padding:10px 0">→ Reduce</button>
+    </div></div>`;
   h+=`<div class="grp"><div class="hint">Los filtros se aplican de arriba hacia abajo. Strength mezcla cada capa con el resultado anterior. Miniaturas: sube <b>assets/fx/&lt;id&gt;.jpg</b> (efectos) o <b>assets/fx/p-&lt;preset&gt;.jpg</b> y aparecerán solas.</div></div>`;
   panel.innerHTML=h;wireFx();}
 const fxById=id=>FX.stack.find(l=>l.id===+id);
@@ -1343,25 +1338,31 @@ function wireFx(){
     const[lid,ch]=b.dataset.cvreset.split('|');const L=fxById(lid);if(!L)return;
     L.p[ch]=ch==='hc'?[[0,0.5],[0.5,0.5],[1,0.5]]:[[0,0],[1,1]];
     buildFxPanel();fxRender();}));
-  panel.querySelectorAll('.curvecv').forEach(cv=>{drawCurve(cv);wireCurve(cv);});}
+  panel.querySelectorAll('.curvecv').forEach(cv=>{drawCurve(cv);wireCurve(cv);});
+  const sc=document.getElementById('fx-send-compose');
+  if(sc)sc.addEventListener('click',()=>fxSendTo('compose'));
+  const sr=document.getElementById('fx-send-reduce');
+  if(sr)sr.addEventListener('click',()=>fxSendTo('reduce'));}
+function fxSendTo(mode){_fxRender();
+  fxview.toBlob(blob=>{const img=new Image();img.onload=()=>{
+    PHOTO=img;S.img=img;setMode(mode);
+    toast('Sent to <b>'+(mode==='compose'?'Compose':'Reduce')+'</b>');};
+    img.src=URL.createObjectURL(blob);},'image/png');}
 
 /* ═══════════════ Mode switch ═══════════════ */
 function setMode(m){
   MODE=m;
   document.querySelectorAll('.modesw button').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));
-  const compose=m==='compose', banner=m==='banner', effects=m==='effects';
+  const compose=m==='compose', effects=m==='effects';
   glview.style.display=compose?'block':'none';
-  view.style.display=(!compose&&!banner&&!effects)?'block':'none';
-  bannerview.style.display=banner?'block':'none';
+  view.style.display=(!compose&&!effects)?'block':'none';
   fxview.style.display=effects?'block':'none';
   document.getElementById('btn-animate').style.display=compose?'':'none';
-  document.getElementById('btn-random').style.display=(compose||banner||effects)?'':'none';
-  document.getElementById('drop-hint').style.display=(banner||PHOTO)?'none':'';
-  document.getElementById('hud-a').textContent=effects?'EFFECTS':compose?'GRADIENT':banner?'BANNER':'REDUCE';
-  document.querySelector('.body').classList.toggle('fx-mode',effects);
+  document.getElementById('btn-random').style.display='';
+  document.getElementById('hud-a').textContent=effects?'EFFECTS':compose?'GRADIENT':'REDUCE';
+  document.querySelector('.body').classList.add('fx-mode');
   buildRail();
   if(compose){buildComposePanel();glRender();}
-  else if(banner){buildBannerPanel();bRender();}
   else if(effects){buildFxPanel();fxRender();}
   else{buildReducePanel();render();}
 }
@@ -1369,15 +1370,13 @@ document.querySelectorAll('.modesw button').forEach(b=>b.addEventListener('click
 
 /* ═══════════════ Shared: load / export / random ═══════════════ */
 function loadFile(file){if(!file||!file.type.startsWith('image/')){toast('Not an image file');return;}
-  const img=new Image();img.onload=()=>{PHOTO=img;S.img=img;dropHint.style.display='none';
+  const img=new Image();img.onload=()=>{PHOTO=img;S.img=img;
     if(glOK)uploadPhoto(img);toast(`Loaded <b>${img.naturalWidth}×${img.naturalHeight}</b>`);
     if(MODE==='compose')glRender();else if(MODE==='effects')fxRender();else render();};
   img.onerror=()=>toast('Could not decode image');img.src=URL.createObjectURL(file);}
 const fileInput=document.getElementById('file');
 fileInput.addEventListener('change',e=>loadFile(e.target.files[0]));
-document.getElementById('btn-upload').addEventListener('click',()=>fileInput.click());
 document.getElementById('btn-load-media').addEventListener('click',()=>fileInput.click());
-document.getElementById('drop-cta').addEventListener('click',()=>fileInput.click());
 stage.addEventListener('dragover',e=>{e.preventDefault();stage.classList.add('dragover');});
 stage.addEventListener('dragleave',()=>stage.classList.remove('dragover'));
 stage.addEventListener('drop',e=>{e.preventDefault();stage.classList.remove('dragover');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0]);});
@@ -1389,7 +1388,6 @@ function sendToReduce(){if(!glOK)return;glRender();
 document.getElementById('btn-export').addEventListener('click',()=>{
   let canvas;
   if(MODE==='compose'){glRender();canvas=glview;}
-  else if(MODE==='banner'){bRender();canvas=bannerview;}
   else if(MODE==='effects'){_fxRender();canvas=fxview;}
   else canvas=view;
   canvas.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);
@@ -1399,11 +1397,6 @@ document.getElementById('btn-random').addEventListener('click',()=>{
   if(MODE==='effects'){
     const keys=Object.keys(FX_PRESETS);
     fxLoadPreset(keys[Math.floor(Math.random()*keys.length)]);return;
-  }
-  if(MODE==='banner'){
-    const keys=Object.keys(B_TEMPLATES);Object.assign(B,B_TEMPLATES[keys[Math.floor(Math.random()*keys.length)]]);
-    const lays=['split-left','split-right','centered','overlay'];B.layout=lays[Math.floor(Math.random()*lays.length)];
-    buildBannerPanel();bRender();toast('Randomized');return;
   }
   const keys=Object.keys(GRAD_PRESETS);
   const p=GRAD_PRESETS[keys[Math.floor(Math.random()*keys.length)]];
@@ -1499,7 +1492,7 @@ function wrapText(c,text,x,y,maxW,lh){
   return yy;
 }
 function bRender(){
-  if(MODE!=='banner')return;
+  return; // Banner retirado
   const [W,H]=B_FORMATS[B.format];
   bannerview.width=W;bannerview.height=H;
   const c=bctx;
@@ -1651,7 +1644,7 @@ function wireBanner(){
 
 /* ═══════════════ Init ═══════════════ */
 try{glInit();}catch(e){console.error('GL init:',e);glOK=false;toast('WebGL error — Compose disabled');}
-setMode('compose');
+setMode('effects');
 window.addEventListener('resize',()=>{if(MODE==='compose')glRender();else render();});
 </script>
 </body>
