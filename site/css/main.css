@@ -138,6 +138,54 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
 }
 .nav__menu::before { top: 0; }
 .nav__menu::after  { bottom: 0; }
+/* Hamburguesa → X cuando el menú está abierto */
+.nav__menu.is-active::before { top: 50%; transform: translateY(-50%) rotate(45deg); }
+.nav__menu.is-active::after  { bottom: 50%; transform: translateY(50%) rotate(-45deg); }
+
+/* =========================================================
+   MENÚ — overlay a pantalla completa
+   ========================================================= */
+.menu {
+  position: fixed; inset: 0; z-index: 95;   /* debajo del nav (100) para que la X siga clicable */
+  background: var(--bg);
+  display: flex; flex-direction: column;
+  padding-top: var(--nav-h);
+  visibility: hidden;
+  transform: translateY(-100%);   /* panel opaco: se desliza desde arriba (sin capa translúcida) */
+  transition: transform .45s cubic-bezier(.7, 0, .2, 1), visibility .45s ease;
+}
+.menu.is-open { visibility: visible; transform: translateY(0); }
+.menu__inner {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: space-between;
+  gap: var(--space-5);
+  padding-block: var(--space-5) var(--space-5);
+}
+.menu__list { list-style: none; }
+.menu__list li { border-top: 1px solid var(--line); }
+.menu__list li:last-child { border-bottom: 1px solid var(--line); }
+.menu__list a {
+  display: flex; align-items: baseline; gap: var(--space-3);
+  padding-block: var(--space-2);
+  font-size: clamp(2rem, 9vw, 3.25rem);
+  font-weight: 600; letter-spacing: var(--tracking-display); line-height: 1.1;
+  color: var(--text);
+  transition: color .2s ease, padding-left .25s ease;
+}
+.menu__list a:hover { color: var(--muted); padding-left: var(--space-2); }
+.menu__idx { align-self: center; color: var(--muted); }
+.menu__foot { display: flex; flex-direction: column; gap: var(--space-3); }
+.menu__cta {
+  align-self: flex-start;
+  font-weight: 700; font-size: 1.05rem;
+  border-bottom: 1px solid var(--line); padding-bottom: 4px;
+  transition: border-color .25s ease;
+}
+.menu__cta:hover { border-color: var(--accent); }
+.menu__meta { display: flex; gap: var(--space-2); }
+
+/* Bloquea el scroll de fondo con el menú abierto */
+body.menu-open { overflow: hidden; }
 
 /* =========================================================
    HERO — vídeo full-bleed + wordmark gigante + card de conversión

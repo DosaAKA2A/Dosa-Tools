@@ -28,10 +28,31 @@
 
       <nav class="nav__right">
         <a class="nav__link" href="#proyectos">Proyectos <span>[6]</span></a>
-        <button class="nav__menu" aria-label="Abrir menú"></button>
+        <button class="nav__menu" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"></button>
       </nav>
     </div>
   </header>
+
+  <!-- ===================== MENÚ (overlay a pantalla completa) ===================== -->
+  <nav class="menu" id="menu" aria-hidden="true" aria-label="Menú principal">
+    <div class="menu__inner wrap">
+      <ul class="menu__list">
+        <li><a href="#proyectos"><span class="menu__idx label">01</span> Proyectos</a></li>
+        <li><a href="#trabajo"><span class="menu__idx label">02</span> Casos de estudio</a></li>
+        <li><a href="#proceso"><span class="menu__idx label">03</span> Proceso</a></li>
+        <li><a href="#servicios"><span class="menu__idx label">04</span> Servicios</a></li>
+        <li><a href="#precios"><span class="menu__idx label">05</span> Precios</a></li>
+        <li><a href="#faq"><span class="menu__idx label">06</span> FAQ</a></li>
+      </ul>
+      <div class="menu__foot">
+        <a class="menu__cta" href="https://iris.it.com/portafolio/" target="_blank" rel="noopener">Ver mi portafolio <span aria-hidden="true">↗</span></a>
+        <div class="menu__meta">
+          <span class="label">[Ciudad] (ES)</span>
+          <span class="label" id="clock-menu" style="color:var(--text)">--:--</span>
+        </div>
+      </div>
+    </div>
+  </nav>
 
   <!-- ===================== HERO ===================== -->
   <section class="hero" id="inicio">

@@ -3,7 +3,11 @@
 // (ScrollSmoother, reveals SplitText, etc.) se añaden por capas en la FASE 4.
 
 /* ---- Reloj en vivo (nav + footer, detalle firma) ---- */
-const clocks = [document.getElementById('clock'), document.getElementById('clock-footer')].filter(Boolean)
+const clocks = [
+  document.getElementById('clock'),
+  document.getElementById('clock-footer'),
+  document.getElementById('clock-menu'),
+].filter(Boolean)
 if (clocks.length) {
   const fmt = new Intl.DateTimeFormat('es-ES', {
     hour: '2-digit',
@@ -20,6 +24,23 @@ if (clocks.length) {
 /* ---- Año dinámico del footer ---- */
 const yearEl = document.getElementById('year')
 if (yearEl) yearEl.textContent = new Date().getFullYear()
+
+/* ---- Menú overlay (hamburguesa) ---- */
+const menuToggle = document.getElementById('menu-toggle')
+const menu = document.getElementById('menu')
+if (menuToggle && menu) {
+  const setOpen = (open) => {
+    menu.classList.toggle('is-open', open)
+    menuToggle.classList.toggle('is-active', open)
+    menuToggle.setAttribute('aria-expanded', String(open))
+    menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú')
+    menu.setAttribute('aria-hidden', String(!open))
+    document.body.classList.toggle('menu-open', open)
+  }
+  menuToggle.addEventListener('click', () => setOpen(!menu.classList.contains('is-open')))
+  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)))
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
+}
 
 /* ---- Proyectos: sticky-swap (la imagen cambia con el scroll) ----
    Versión base con IntersectionObserver. En la FASE 4 se pule con GSAP
