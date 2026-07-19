@@ -5,8 +5,9 @@
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ScrollSmoother } from 'gsap/ScrollSmoother'
+import { SplitText } from 'gsap/SplitText'
 
-gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText)
 
 /* ---- Scroll suave (respeta prefers-reduced-motion) ---- */
 const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -19,6 +20,49 @@ if (!prefersReduced && document.getElementById('smooth-wrapper')) {
     smooth: 1.2,          // segundos de "recuperación" del scroll (feel Mugen)
     effects: true,        // habilita data-speed / data-lag para las capas siguientes
     normalizeScroll: true // unifica el scroll en móvil/trackpad
+  })
+}
+
+/* ---- FASE 4 · capa 2: reveals de texto (SplitText) ----
+   Titulares que "suben" por líneas al entrar en pantalla; kickers y hero
+   con fade/slide. Si prefers-reduced-motion, no se toca nada (todo visible).
+   Esperamos a document.fonts.ready para que el corte por líneas sea exacto. */
+if (!prefersReduced) {
+  document.fonts.ready.then(() => {
+    // Titulares de sección: revelado por líneas con máscara
+    gsap.utils.toArray('.section__title').forEach((title) => {
+      const split = SplitText.create(title, { type: 'lines', mask: 'lines' })
+      gsap.from(split.lines, {
+        yPercent: 120,
+        duration: 0.9,
+        ease: 'power3.out',
+        stagger: 0.12,
+        scrollTrigger: { trigger: title, start: 'top 85%', once: true },
+      })
+    })
+
+    // Kickers / etiquetas de sección: fade + slide corto
+    gsap.utils.toArray('.section__label').forEach((el) => {
+      gsap.from(el, {
+        y: 18,
+        autoAlpha: 0,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: { trigger: el, start: 'top 90%', once: true },
+      })
+    })
+
+    // Hero (above the fold): timeline de entrada al cargar, sin scroll
+    const eyebrow = document.querySelector('.hero__eyebrow')
+    const wordmark = document.querySelector('.hero__wordmark')
+    const tagline = document.querySelector('.hero__tagline')
+    if (wordmark) {
+      const wm = SplitText.create(wordmark, { type: 'chars', mask: 'chars' })
+      gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.15 })
+        .from(eyebrow, { y: 16, autoAlpha: 0, duration: 0.6 })
+        .from(wm.chars, { yPercent: 120, duration: 0.9, stagger: 0.06 }, '-=0.2')
+        .from(tagline, { y: 20, autoAlpha: 0, duration: 0.7 }, '-=0.5')
+    }
   })
 }
 
