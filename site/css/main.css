@@ -475,8 +475,8 @@ body.menu-open { overflow: hidden; }
 .swap__step.is-active { opacity: 1; }
 .swap__num { display: block; color: var(--muted); margin-bottom: var(--space-1); }
 .swap__title {
-  font-size: clamp(1.75rem, 4.5vw, 2.75rem);
-  font-weight: 600; letter-spacing: var(--tracking-display); line-height: 1.02;
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+  font-weight: 600; letter-spacing: var(--tracking-display); line-height: 1.04;
 }
 .swap__cat { display: block; color: var(--muted); margin-top: var(--space-1); }
 /* Descripción y enlace: colapsados salvo en el proyecto activo (acordeón) */
@@ -672,10 +672,10 @@ body.menu-open { overflow: hidden; }
     align-items: end;
   }
   .cases { columns: 2; }
-  .swap { grid-template-columns: 1fr 1.1fr; gap: var(--space-5); align-items: center; }
+  .swap { grid-template-columns: 0.7fr 1.3fr; gap: var(--space-4); align-items: center; }
   .swap__list { order: 1; }
   .swap__media { order: 2; }
-  .swap__frame { aspect-ratio: 4 / 3; max-height: 68vh; }
+  .swap__frame { aspect-ratio: 5 / 4; max-height: 84vh; }
   .svc__item { grid-template-columns: 72px 1fr 1.4fr; align-items: baseline; gap: var(--space-3); }
   .steps { grid-template-columns: repeat(2, 1fr); column-gap: var(--space-4); }
   .plans { grid-template-columns: repeat(3, 1fr); }
