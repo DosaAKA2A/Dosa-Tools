@@ -113,7 +113,7 @@ if (!prefersReduced) {
    y sin prefers-reduced-motion; en táctil no aplica. */
 if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
   const magnets = document.querySelectorAll(
-    '.cta-btn, .plan__btn, .menu__cta, .contact-form__btn, .nav__menu'
+    '.cta-btn, .plan__btn, .contact-form__btn'
   )
   magnets.forEach((el) => {
     const xTo = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' })
@@ -161,11 +161,10 @@ if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
   }
 }
 
-/* ---- Reloj en vivo (nav + footer, detalle firma) ---- */
+/* ---- Reloj en vivo (top bar + footer, detalle firma) ---- */
 const clocks = [
-  document.getElementById('clock'),
+  document.getElementById('hzTimeVal'),
   document.getElementById('clock-footer'),
-  document.getElementById('clock-menu'),
 ].filter(Boolean)
 if (clocks.length) {
   const fmt = new Intl.DateTimeFormat('es-ES', {
@@ -230,21 +229,27 @@ if (contactForm) {
   })
 }
 
-/* ---- Menú overlay (hamburguesa) ---- */
-const menuToggle = document.getElementById('menu-toggle')
-const menu = document.getElementById('menu')
-if (menuToggle && menu) {
-  const setOpen = (open) => {
-    menu.classList.toggle('is-open', open)
-    menuToggle.classList.toggle('is-active', open)
-    menuToggle.setAttribute('aria-expanded', String(open))
-    menuToggle.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú')
-    menu.setAttribute('aria-hidden', String(!open))
-    document.body.classList.toggle('menu-open', open)
+/* ---- Menú overlay (portado de iris.it.com) ----
+   El botón MENU (top bar del hero) llama a toggleHnMenu() vía onclick, por eso
+   la función se expone en window. Reveal escalonado de los links con --d. */
+{
+  const overlay = document.getElementById('hnOverlay')
+  const btn = document.getElementById('hnMenuBtn')
+  if (overlay && btn) {
+    const label = btn.querySelector('.hn-menu-label')
+    const links = overlay.querySelectorAll('.hn-ov-links a')
+    links.forEach((a, i) => a.style.setProperty('--d', (0.12 + i * 0.055) + 's'))
+    const setState = (open) => {
+      document.body.classList.toggle('hn-open', open)
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false')
+      overlay.setAttribute('aria-hidden', open ? 'false' : 'true')
+      if (label) label.textContent = open ? label.dataset.close : label.dataset.open
+    }
+    window.toggleHnMenu = () => setState(!document.body.classList.contains('hn-open'))
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setState(false) })
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) setState(false) })
+    links.forEach((a) => a.addEventListener('click', () => setState(false)))
   }
-  menuToggle.addEventListener('click', () => setOpen(!menu.classList.contains('is-open')))
-  menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)))
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
 }
 
 /* ---- Anclas: scroll suave vía ScrollSmoother (si está activo) ---- */

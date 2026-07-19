@@ -15,44 +15,40 @@
 </head>
 <body>
 
-  <!-- ===================== NAV ===================== -->
-  <header class="nav">
-    <div class="nav__inner">
-      <a class="nav__brand" href="/">IRIS</a>
-
-      <div class="nav__center">
-        <!-- TODO Iris: ubicación real del estudio -->
-        <span class="label">Madrid (ES)</span>
-        <b class="label" id="clock" style="color:var(--text)">--:--</b>
-      </div>
-
-      <nav class="nav__right">
-        <a class="nav__link" href="#proyectos">Proyectos <span>[<span data-count="4">4</span>]</span></a>
-        <button class="nav__menu" id="menu-toggle" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu"></button>
-      </nav>
-    </div>
-  </header>
-
-  <!-- ===================== MENÚ (overlay a pantalla completa) ===================== -->
-  <nav class="menu" id="menu" aria-hidden="true" aria-label="Menú principal">
-    <div class="menu__inner wrap">
-      <ul class="menu__list">
-        <li><a href="#proyectos"><span class="menu__idx label">01</span> Proyectos</a></li>
-        <li><a href="#trabajo"><span class="menu__idx label">02</span> Casos de estudio</a></li>
-        <li><a href="#proceso"><span class="menu__idx label">03</span> Proceso</a></li>
-        <li><a href="#servicios"><span class="menu__idx label">04</span> Servicios</a></li>
-        <li><a href="#precios"><span class="menu__idx label">05</span> Precios</a></li>
-        <li><a href="#faq"><span class="menu__idx label">06</span> FAQ</a></li>
-      </ul>
-      <div class="menu__foot">
-        <a class="menu__cta" href="https://iris.it.com/portafolio/" target="_blank" rel="noopener">Ver mi portafolio <span aria-hidden="true">↗</span></a>
-        <div class="menu__meta">
-          <span class="label">Madrid (ES)</span>
-          <span class="label" id="clock-menu" style="color:var(--text)">--:--</span>
+  <!-- ===================== MENÚ OVERLAY (portado de iris.it.com) =====================
+       Va FUERA de #smooth-wrapper porque es position:fixed. Lo abre el botón MENU
+       de la top bar del hero (toggleHnMenu → body.hn-open). -->
+  <div class="hn-overlay" id="hnOverlay" aria-hidden="true">
+    <div class="hn-panel">
+      <div class="hn-panel-left">
+        <nav class="hn-ov-links" aria-label="Navegación principal">
+          <a href="#inicio">Inicio</a>
+          <a href="#proyectos">Proyectos</a>
+          <a href="#trabajo">Casos de estudio</a>
+          <a href="#proceso">Proceso</a>
+          <a href="#servicios">Servicios</a>
+          <a href="#precios">Precios</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+        <div class="hn-author">
+          <div class="hn-author-photo"><img src="/assets/IRIS_BLANCO.svg" alt="IRIS" /></div>
+          <div class="hn-author-name"><span class="sq" aria-hidden="true"></span>IRIS STUDIO</div>
+          <div class="hn-author-role">DISEÑO &amp; AUTOMATIZACIÓN — MADRID</div>
+          <div class="hn-author-socials">
+            <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3.5" y="3.5" width="17" height="17" rx="4.5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1.1" fill="currentColor" stroke="none"/></svg></a>
+            <a href="#" aria-label="X / Twitter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4l16 16M20 4L4 20"/></svg></a>
+            <a href="#" aria-label="Behance"><svg viewBox="0 0 24 24" fill="currentColor"><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="700" font-family="Inter,sans-serif">Bé</text></svg></a>
+            <a href="#" aria-label="LinkedIn"><svg viewBox="0 0 24 24" fill="currentColor"><text x="12" y="16.5" text-anchor="middle" font-size="13" font-weight="700" font-family="Inter,sans-serif">in</text></svg></a>
+          </div>
         </div>
       </div>
+      <div class="hn-panel-right">
+        <a class="hn-feature" href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener"><span class="hn-feature-media" style="background:linear-gradient(135deg,#2a2118,#120c07)"></span><span>SPACIO²</span></a>
+        <a class="hn-feature" href="https://iris.it.com/portafolio/" target="_blank" rel="noopener"><span class="hn-feature-media" style="background:linear-gradient(135deg,#20202a,#0b0b12)"></span><span>PORTAFOLIO</span></a>
+      </div>
     </div>
-  </nav>
+  </div>
 
   <!-- ===================== SCROLL SMOOTHER (FASE 4 · capa 1) =====================
        Todo el contenido scrolleable va dentro de #smooth-wrapper > #smooth-content.
@@ -63,6 +59,24 @@
 
   <!-- ===================== HERO ===================== -->
   <section class="hero" id="inicio">
+    <!-- Top bar (portada de iris.it.com): botón MENU, wordmark, hora y CTA -->
+    <header class="hz-top">
+      <div class="hz-top-left">
+        <button class="hz-menu-btn" id="hnMenuBtn" onclick="toggleHnMenu()" aria-expanded="false" aria-controls="hnOverlay" aria-label="Abrir menú">
+          <span class="hz-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          <span class="hn-menu-label" data-open="MENU" data-close="CERRAR">MENU</span>
+        </button>
+        <span class="hz-top-sep" aria-hidden="true"></span>
+        <a class="hz-wordmark" href="#inicio">IRIS</a>
+      </div>
+      <div class="hz-time" aria-hidden="true"><b id="hzTimeVal">--:--</b>&ensp;HORA&nbsp;LOCAL</div>
+      <a class="hz-cta" href="#contacto">
+        <span class="hz-cta-logo" aria-hidden="true"><img src="/assets/IRIS_BLANCO.svg" alt="" /></span>
+        <span class="hz-cta-txt">EMPEZAR&nbsp;PROYECTO&ensp;<em>/IRIS</em></span>
+        <span class="hz-cta-arrow" aria-hidden="true">→</span>
+      </a>
+    </header>
+
     <!-- Fondo: CSS "vivo" como placeholder del vídeo full-bleed -->
     <div class="hero__bg" aria-hidden="true"></div>
     <!--
