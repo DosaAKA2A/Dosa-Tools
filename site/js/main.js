@@ -66,6 +66,56 @@ if (!prefersReduced) {
   })
 }
 
+/* ---- FASE 4 · capa 3: media & profundidad ----
+   Reveal de imágenes (wipe + zoom), parallax de las columnas del masonry a
+   distinta velocidad, y reveal escalonado de bloques para subir la densidad.
+   No depende de fuentes; se salta entero en prefers-reduced-motion. */
+if (!prefersReduced) {
+  // A) Reveal de imágenes de casos: cortina de abajo a arriba + leve zoom-out.
+  //    Funciona ahora con los placeholders y también con tus imágenes reales.
+  gsap.utils.toArray('.case').forEach((card) => {
+    const media = card.querySelector('.case__media')
+    if (!media) return
+    gsap.from(media, {
+      clipPath: 'inset(100% 0% 0% 0%)',
+      scale: 1.12,
+      duration: 1.1,
+      ease: 'power3.out',
+      clearProps: 'transform', // libera el transform al acabar → el hover CSS manda
+      scrollTrigger: { trigger: card, start: 'top 85%', once: true },
+    })
+  })
+
+  // B) Profundidad: las tarjetas del masonry derivan a distinta velocidad al
+  //    hacer scroll (data-speed de ScrollSmoother). Sutil, alternando columnas.
+  if (smoother) {
+    gsap.utils.toArray('.case').forEach((card, i) => {
+      smoother.effects(card, { speed: i % 2 === 0 ? 0.94 : 1.06 })
+    })
+    const ctaCard = document.querySelector('.hero .cta-card')
+    if (ctaCard) smoother.effects(ctaCard, { speed: 1.1 })
+  }
+
+  // C) Reveal escalonado de bloques (servicios, proceso, planes, testimonios,
+  //    FAQ). Batch por rendimiento; entra desde abajo con stagger.
+  const batchReveal = (selector, y = 26) => {
+    ScrollTrigger.batch(selector, {
+      start: 'top 88%',
+      once: true,
+      onEnter: (els) =>
+        gsap.from(els, {
+          autoAlpha: 0,
+          y,
+          duration: 0.8,
+          ease: 'power3.out',
+          stagger: 0.09,
+          overwrite: true,
+        }),
+    })
+  }
+  ;['.svc__item', '.step', '.plan', '.quote', '.faq__item'].forEach((s) => batchReveal(s))
+}
+
 /* ---- Reloj en vivo (nav + footer, detalle firma) ---- */
 const clocks = [
   document.getElementById('clock'),
