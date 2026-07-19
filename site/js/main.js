@@ -223,6 +223,14 @@ if (swap) {
           end: () => '+=' + (n - 1) * window.innerHeight * 0.7,
           pin: true,
           scrub: 0.4, // la imagen "persigue" al scroll con un pelín de inercia
+          // Snap magnético: al soltar, encaja en el proyecto más cercano con su
+          // imagen perfectamente centrada en el marco (puntos i/(n-1)).
+          snap: {
+            snapTo: 1 / (n - 1),
+            duration: { min: 0.2, max: 0.5 },
+            delay: 0.08,
+            ease: 'power2.inOut',
+          },
           onUpdate: (self) => setStep(Math.round(self.progress * (n - 1))),
         },
       })
