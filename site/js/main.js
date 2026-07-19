@@ -130,6 +130,37 @@ if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
   })
 }
 
+/* ---- FASE 4 · capa 5: contadores animados ----
+   Los números (rating, proyectos entregados, contador del nav) cuentan desde 0
+   al entrar en pantalla. El HTML ya lleva el valor final como fallback si el JS
+   no corre. En prefers-reduced-motion se dejan en su valor final sin animar. */
+{
+  const counters = [...document.querySelectorAll('[data-count]')]
+  const finalText = (el) =>
+    parseFloat(el.dataset.count).toFixed(parseInt(el.dataset.decimals || '0', 10))
+
+  if (prefersReduced) {
+    counters.forEach((el) => { el.textContent = finalText(el) })
+  } else {
+    const run = (el) => {
+      const target = parseFloat(el.dataset.count)
+      const decimals = parseInt(el.dataset.decimals || '0', 10)
+      const obj = { v: 0 }
+      gsap.to(obj, {
+        v: target,
+        duration: 1.4,
+        ease: 'power2.out',
+        onUpdate: () => { el.textContent = obj.v.toFixed(decimals) },
+      })
+    }
+    counters.forEach((el) => {
+      // el nav es fijo (siempre visible) → cuenta al cargar; el resto al entrar
+      if (el.closest('.nav')) run(el)
+      else ScrollTrigger.create({ trigger: el, start: 'top 92%', once: true, onEnter: () => run(el) })
+    })
+  }
+}
+
 /* ---- Reloj en vivo (nav + footer, detalle firma) ---- */
 const clocks = [
   document.getElementById('clock'),
