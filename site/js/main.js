@@ -66,9 +66,10 @@ if (!prefersReduced) {
   })
 }
 
-/* ---- FASE 4 · capa 3: media & profundidad ----
-   Reveal de imágenes (wipe + zoom), parallax de las columnas del masonry a
-   distinta velocidad, y reveal escalonado de bloques para subir la densidad.
+/* ---- FASE 4 · capa 3: media & reveals de bloque ----
+   Reveal de imágenes de casos (wipe + zoom) y reveal escalonado del resto de
+   bloques para subir la densidad de animación. Sin parallax por scroll en las
+   tarjetas (desplazaba las imágenes sobre el texto del masonry).
    No depende de fuentes; se salta entero en prefers-reduced-motion. */
 if (!prefersReduced) {
   // A) Reveal de imágenes de casos: cortina de abajo a arriba + leve zoom-out.
@@ -85,16 +86,6 @@ if (!prefersReduced) {
       scrollTrigger: { trigger: card, start: 'top 85%', once: true },
     })
   })
-
-  // B) Profundidad: las tarjetas del masonry derivan a distinta velocidad al
-  //    hacer scroll (data-speed de ScrollSmoother). Sutil, alternando columnas.
-  if (smoother) {
-    gsap.utils.toArray('.case').forEach((card, i) => {
-      smoother.effects(card, { speed: i % 2 === 0 ? 0.94 : 1.06 })
-    })
-    const ctaCard = document.querySelector('.hero .cta-card')
-    if (ctaCard) smoother.effects(ctaCard, { speed: 1.1 })
-  }
 
   // C) Reveal escalonado de bloques (servicios, proceso, planes, testimonios,
   //    FAQ). Batch por rendimiento; entra desde abajo con stagger.
@@ -182,12 +173,15 @@ if (swap) {
     steps.forEach((s) => s.classList.toggle('is-active', Number(s.dataset.index) === i))
     imgs.forEach((m) => m.classList.toggle('is-active', Number(m.dataset.index) === i))
   }
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((e) => { if (e.isIntersecting) setActive(Number(e.target.dataset.index)) })
-    },
-    // Banda de activación estrecha en el centro del viewport
-    { rootMargin: '-45% 0px -45% 0px', threshold: 0 }
-  )
-  steps.forEach((s) => io.observe(s))
+  // La imagen fija cambia según el proyecto que cruza el centro del viewport.
+  // ScrollTrigger se sincroniza con ScrollSmoother (el IntersectionObserver no
+  // seguía bien el scroll virtual y la imagen no cambiaba).
+  steps.forEach((s) => {
+    ScrollTrigger.create({
+      trigger: s,
+      start: 'top center',
+      end: 'bottom center',
+      onToggle: (self) => { if (self.isActive) setActive(Number(s.dataset.index)) },
+    })
+  })
 }
