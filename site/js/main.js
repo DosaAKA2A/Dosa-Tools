@@ -1,6 +1,26 @@
 // IRIS — JS de la web
-// FASE 2: solo contenido "vivo" (reloj del nav). Las animaciones GSAP
-// (ScrollSmoother, reveals SplitText, etc.) se añaden por capas en la FASE 4.
+// FASE 4 · capa 1: ScrollSmoother (scroll suave). Las siguientes capas
+// (reveals SplitText, media/parallax, hover, contadores) se añaden encima.
+
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { ScrollSmoother } from 'gsap/ScrollSmoother'
+
+gsap.registerPlugin(ScrollTrigger, ScrollSmoother)
+
+/* ---- Scroll suave (respeta prefers-reduced-motion) ---- */
+const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+let smoother = null
+if (!prefersReduced && document.getElementById('smooth-wrapper')) {
+  document.documentElement.classList.add('smooth-on')
+  smoother = ScrollSmoother.create({
+    wrapper: '#smooth-wrapper',
+    content: '#smooth-content',
+    smooth: 1.2,          // segundos de "recuperación" del scroll (feel Mugen)
+    effects: true,        // habilita data-speed / data-lag para las capas siguientes
+    normalizeScroll: true // unifica el scroll en móvil/trackpad
+  })
+}
 
 /* ---- Reloj en vivo (nav + footer, detalle firma) ---- */
 const clocks = [
@@ -41,6 +61,21 @@ if (menuToggle && menu) {
   menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setOpen(false)))
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setOpen(false) })
 }
+
+/* ---- Anclas: scroll suave vía ScrollSmoother (si está activo) ---- */
+document.querySelectorAll('a[href^="#"]').forEach((a) => {
+  a.addEventListener('click', (e) => {
+    const id = a.getAttribute('href')
+    if (id.length < 2) return                 // ignora href="#"
+    const target = document.querySelector(id)
+    if (!target) return
+    if (smoother) {                            // suaviza solo si ScrollSmoother corre
+      e.preventDefault()
+      smoother.scrollTo(target, true, 'top top') // true = animado
+    }
+    // sin smoother: se deja el salto nativo (o el smooth de CSS como fallback)
+  })
+})
 
 /* ---- Proyectos: sticky-swap (la imagen cambia con el scroll) ----
    Versión base con IntersectionObserver. En la FASE 4 se pule con GSAP

@@ -46,7 +46,13 @@
 *, *::before, *::after { box-sizing: border-box; }
 * { margin: 0; padding: 0; }
 
+/* scroll-behavior: por defecto smooth nativo (fallback si el JS de ScrollSmoother
+   no carga). Cuando ScrollSmoother arranca, JS pone html.smooth-on y lo desactiva
+   para no pelearse con el suavizado de GSAP. */
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+html.smooth-on { scroll-behavior: auto; }
+/* GSAP aplica el overflow/posición al wrapper al iniciar; no lo forzamos aquí
+   para que, sin JS, la página siga scrolleando de forma nativa. */
 
 body {
   background: var(--bg);

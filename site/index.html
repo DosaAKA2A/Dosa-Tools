@@ -54,6 +54,13 @@
     </div>
   </nav>
 
+  <!-- ===================== SCROLL SMOOTHER (FASE 4 · capa 1) =====================
+       Todo el contenido scrolleable va dentro de #smooth-wrapper > #smooth-content.
+       El nav y el menú (position:fixed) quedan FUERA a propósito: el transform del
+       scroll suave rompería su fijación al viewport. -->
+  <div id="smooth-wrapper">
+  <div id="smooth-content">
+
   <!-- ===================== HERO ===================== -->
   <section class="hero" id="inicio">
     <!-- Fondo: CSS "vivo" como placeholder del vídeo full-bleed -->
@@ -506,6 +513,9 @@
       </div>
     </div>
   </footer>
+
+  </div><!-- /#smooth-content -->
+  </div><!-- /#smooth-wrapper -->
 
   <script type="module" src="/js/main.js"></script>
 </body>
