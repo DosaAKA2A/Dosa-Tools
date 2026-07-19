@@ -435,27 +435,29 @@
         <h2 class="section__title">La confianza de equipos<br>que no se conforman.</h2>
       </header>
 
-      <!-- Testimonios de MUESTRA -->
+      <!-- Testimonios de MUESTRA — reemplazar por reseñas reales (con permiso del
+           cliente) antes de publicar. Fotos: randomuser.me (libre para prototipos);
+           self-hostéalas en /assets al ir a producción. -->
       <div class="quotes">
         <figure class="quote">
-          <blockquote class="quote__text">“Los resultados hablan más alto que las promesas. Iris entendió el problema antes que nosotros.”</blockquote>
+          <blockquote class="quote__text">“Nos montaron la tienda en tres semanas y automatizaron medio trabajo que hacíamos a mano. Trato cercano y todo claro.”</blockquote>
           <figcaption class="quote__by">
-            <span class="quote__avatar ph"><span class="ph__tag">Foto</span></span>
-            <span><b>[Nombre]</b><br><span class="label">[Cargo], [Empresa]</span></span>
+            <img class="quote__avatar" src="https://randomuser.me/api/portraits/women/68.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span><b>Laura Giménez</b><br><span class="label">Dueña, tienda online</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
-          <blockquote class="quote__text">“Trabajo sénior de verdad. Cero relleno, cero reuniones vacías. Recomendarían mil veces.”</blockquote>
+          <blockquote class="quote__text">“Le pasé una idea a medias y me devolvió algo mejor de lo que tenía en la cabeza. Sin rodeos ni reuniones eternas.”</blockquote>
           <figcaption class="quote__by">
-            <span class="quote__avatar ph"><span class="ph__tag">Foto</span></span>
-            <span><b>[Nombre]</b><br><span class="label">[Cargo], [Empresa]</span></span>
+            <img class="quote__avatar" src="https://randomuser.me/api/portraits/men/45.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span><b>Marc Soler</b><br><span class="label">Fundador, startup</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
-          <blockquote class="quote__text">“Se convirtieron en una extensión de nuestro equipo. Diseño que mueve la aguja del negocio.”</blockquote>
+          <blockquote class="quote__text">“Cero postureo, respuestas rápidas y todo funcionando desde el primer día. Repetiremos seguro.”</blockquote>
           <figcaption class="quote__by">
-            <span class="quote__avatar ph"><span class="ph__tag">Foto</span></span>
-            <span><b>[Nombre]</b><br><span class="label">[Cargo], [Empresa]</span></span>
+            <img class="quote__avatar" src="https://randomuser.me/api/portraits/women/32.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span><b>Elena Ruiz</b><br><span class="label">Clínica de fisioterapia</span></span>
           </figcaption>
         </figure>
       </div>
@@ -507,31 +509,66 @@
 
     <div class="footer__inner wrap">
       <div class="footer__top">
-        <div class="footer__meta">
-          <span class="label">Con base en Madrid (ES)</span>
-          <span class="label" id="clock-footer" style="color:var(--text)">--:--</span>
-          <a class="label" href="mailto:contacto@iris.it.com" style="color:var(--text)">contacto@iris.it.com</a>
+        <!-- Caja de consultas → backoffice de IRIS (Cloudflare Worker) -->
+        <div class="footer__cta">
+          <span class="section__label label">[08] — Contacto</span>
+          <h2 class="footer__title">Hablemos de lo que<br>estás construyendo.</h2>
+          <p class="footer__lead">
+            Cuéntanos tu proyecto y te respondemos en menos de 24 h.
+            ¿A la antigua? <a href="mailto:contacto@iris.it.com">contacto@iris.it.com</a>
+          </p>
+
+          <form class="contact-form" id="contact-form" novalidate>
+            <div class="contact-form__row">
+              <input id="cf-name" name="nombre" type="text" placeholder="Tu nombre *" required autocomplete="name" />
+              <input id="cf-email" name="email" type="email" placeholder="Tu e-mail *" required autocomplete="email" />
+            </div>
+            <textarea id="cf-msg" name="mensaje" rows="4" placeholder="Cuéntanos brevemente tu proyecto *" required></textarea>
+            <!-- Honeypot anti-bots (oculto; si se rellena, no se envía) -->
+            <input class="contact-form__hp" type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <div class="contact-form__foot">
+              <button class="contact-form__btn" type="submit">Enviar mensaje <span aria-hidden="true">↗</span></button>
+              <p class="contact-form__status label" id="cf-status" role="status" aria-live="polite"></p>
+            </div>
+          </form>
         </div>
-        <form class="footer__news" onsubmit="return false">
-          <label class="label" for="news-email">Suscríbete a la newsletter</label>
-          <div class="footer__field">
-            <input id="news-email" type="email" placeholder="Tu email" autocomplete="email" />
-            <button type="submit" aria-label="Suscribirse">+</button>
+
+        <!-- Datos reales del estudio -->
+        <div class="footer__cols">
+          <div class="footer__col">
+            <span class="footer__coltitle label">Estudio</span>
+            <p class="footer__about">Estudio de diseño y automatización. Identidad, producto digital y sistemas que crecen contigo.</p>
+            <p class="label footer__loc">Madrid (ES) · en remoto · <span id="clock-footer" style="color:var(--text)">--:--</span></p>
           </div>
-        </form>
+          <div class="footer__col">
+            <span class="footer__coltitle label">Navegación</span>
+            <nav class="footer__links">
+              <a href="#proyectos">Proyectos</a>
+              <a href="#servicios">Servicios</a>
+              <a href="#precios">Precios</a>
+              <a href="#faq">FAQ</a>
+            </nav>
+          </div>
+          <div class="footer__col">
+            <span class="footer__coltitle label">Proyectos</span>
+            <nav class="footer__links">
+              <a href="https://iris.it.com/corlima/herramientas_corlima.html" target="_blank" rel="noopener">Corlima Tools</a>
+              <a href="https://iris.it.com/creative_tools.html" target="_blank" rel="noopener">Creative Tools</a>
+              <a href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener">SPACIO²</a>
+            </nav>
+          </div>
+        </div>
       </div>
 
       <h2 class="footer__wordmark">IRIS</h2>
 
       <div class="footer__bottom">
         <nav class="footer__nav">
-          <a href="#trabajo">Proyectos</a>
-          <a href="#servicios">Servicios</a>
-          <a href="#precios">Precios</a>
-          <a href="#faq">FAQ</a>
-          <a href="mailto:contacto@iris.it.com">Contacto</a>
+          <a href="https://iris.it.com/aviso-legal.html" target="_blank" rel="noopener">Aviso legal</a>
+          <a href="https://iris.it.com/privacidad.html" target="_blank" rel="noopener">Privacidad</a>
+          <a href="https://iris.it.com/cookies.html" target="_blank" rel="noopener">Cookies</a>
         </nav>
-        <p class="footer__legal label">© <span id="year">20XX</span> Iris · Vemos el resultado</p>
+        <p class="footer__legal label">© <span id="year">20XX</span> IRIS · Todos los derechos reservados</p>
       </div>
     </div>
   </footer>

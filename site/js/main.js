@@ -113,7 +113,7 @@ if (!prefersReduced) {
    y sin prefers-reduced-motion; en táctil no aplica. */
 if (!prefersReduced && window.matchMedia('(pointer: fine)').matches) {
   const magnets = document.querySelectorAll(
-    '.cta-btn, .plan__btn, .menu__cta, .footer__field button, .nav__menu'
+    '.cta-btn, .plan__btn, .menu__cta, .contact-form__btn, .nav__menu'
   )
   magnets.forEach((el) => {
     const xTo = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' })
@@ -183,6 +183,52 @@ if (clocks.length) {
 /* ---- Año dinámico del footer ---- */
 const yearEl = document.getElementById('year')
 if (yearEl) yearEl.textContent = new Date().getFullYear()
+
+/* ---- Formulario de consultas → backoffice de IRIS ----
+   POST JSON { nombre, email, asunto, mensaje } al Worker de Cloudflare (el mismo
+   backoffice que usa iris.it.com). Honeypot anti-bots + estados de UI. */
+const contactForm = document.getElementById('contact-form')
+if (contactForm) {
+  const ENDPOINT = 'https://iris-backoffice.studio-iris2026.workers.dev/contact'
+  const statusEl = document.getElementById('cf-status')
+  const btn = contactForm.querySelector('.contact-form__btn')
+  const setStatus = (msg, kind) => {
+    statusEl.textContent = msg
+    statusEl.classList.toggle('is-ok', kind === 'ok')
+    statusEl.classList.toggle('is-err', kind === 'err')
+  }
+
+  contactForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    // Honeypot: si un bot rellena el campo oculto, fingimos éxito y no enviamos.
+    if (contactForm.querySelector('.contact-form__hp')?.value) { setStatus('Mensaje enviado ✓', 'ok'); return }
+    if (!contactForm.checkValidity()) { contactForm.reportValidity(); return }
+
+    const payload = {
+      nombre: document.getElementById('cf-name').value.trim(),
+      email: document.getElementById('cf-email').value.trim(),
+      asunto: 'Consulta desde la web (IRIS)',
+      mensaje: document.getElementById('cf-msg').value.trim(),
+    }
+
+    btn.disabled = true
+    setStatus('Enviando…', null)
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) throw new Error('HTTP ' + res.status)
+      setStatus('Mensaje enviado ✓ Te respondemos en menos de 24 h.', 'ok')
+      contactForm.reset()
+    } catch (err) {
+      setStatus('No se pudo enviar. Escríbenos a contacto@iris.it.com', 'err')
+    } finally {
+      btn.disabled = false
+    }
+  })
+}
 
 /* ---- Menú overlay (hamburguesa) ---- */
 const menuToggle = document.getElementById('menu-toggle')
