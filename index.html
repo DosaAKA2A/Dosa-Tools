@@ -18,7 +18,10 @@
   <!-- Overrides de marca: logo del hero como imagen (antes era texto) -->
   <style>
     .hero__wordmark--logo{line-height:0;font-size:0;margin:0}
-    .hero__wordmark--logo img{display:block;width:clamp(240px,58vw,980px);height:auto}
+    .hero__wordmark--logo img{display:block;width:clamp(210px,49vw,830px);height:auto}
+    /* Logo pequeño de la top bar: mismo SVG del hero, a altura equivalente al texto anterior */
+    .hz-wordmark--logo{line-height:0;font-size:0}
+    .hz-wordmark--logo img{display:block;height:clamp(13px,1.15vw,16px);width:auto}
     /* Velo oscuro sobre el vídeo del hero: mantiene legible el logo y el texto */
     .hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
       background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.22) 38%,rgba(5,5,5,.62) 100%)}
@@ -78,7 +81,7 @@
           <span class="hn-menu-label" data-open="MENU" data-close="CERRAR">MENU</span>
         </button>
         <span class="hz-top-sep" aria-hidden="true"></span>
-        <a class="hz-wordmark" href="#inicio">IRIS</a>
+        <a class="hz-wordmark hz-wordmark--logo" href="#inicio"><img src="./assets/iris-logo.svg" alt="IRIS" /></a>
       </div>
       <div class="hz-time" aria-hidden="true"><b id="hzTimeVal">--:--</b>&ensp;HORA&nbsp;LOCAL</div>
       <a class="hz-cta" href="#contacto">
