@@ -27,6 +27,8 @@
     @media (min-width:861px){
       .hero__tagline{max-width:clamp(420px,49vw,830px);text-wrap:balance;margin-top:calc(var(--space-3) * .75)}
     }
+    /* Media real en el swap de proyectos (img/video sobre el gradiente fallback) */
+    .swap__asset{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block}
     /* Velo oscuro sobre el vídeo del hero: mantiene legible el logo y el texto */
     .hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
       background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.22) 38%,rgba(5,5,5,.62) 100%)}
@@ -180,24 +182,24 @@
                imágenes apiladas se desplaza con el scroll (JS: scrub). -->
           <div class="swap__frame">
             <div class="swap__track">
-              <div class="swap__img ph" data-index="0"><span class="ph__tag">EDERUS · imagen 4:3 → /assets</span></div>
-              <div class="swap__img ph" data-index="1"><span class="ph__tag">FISIO · imagen 4:3 → /assets</span></div>
-              <div class="swap__img ph" data-index="2"><span class="ph__tag">WAVA · imagen 4:3 → /assets</span></div>
-              <div class="swap__img ph" data-index="3"><span class="ph__tag">SPACIO² · imagen 4:3 → /assets</span></div>
+              <div class="swap__img ph" data-index="0"><span class="ph__tag">SPACIO² · imagen → /assets</span></div>
+              <div class="swap__img" data-index="1"><img class="swap__asset" src="./assets/fisio-swap.jpg" alt="FISIO — clínica de fisioterapia" loading="lazy" decoding="async" /></div>
+              <div class="swap__img" data-index="2"><video class="swap__asset" src="./assets/ederus-swap.mp4" autoplay muted loop playsinline preload="metadata"></video></div>
+              <div class="swap__img ph" data-index="3"><span class="ph__tag">WAVA · imagen → /assets</span></div>
             </div>
           </div>
         </div>
 
         <!-- Lista de proyectos (cada uno es un "paso" del scroll). Enlaces reales:
-             EDERUS y FISIO (GitHub Pages), WAVA (/wava/), SPACIO²
-             (/spacio/spacio2.html). -->
+             SPACIO² (/spacio/spacio2.html), FISIO y EDERUS (GitHub Pages),
+             WAVA (/wava/). -->
         <ol class="swap__list">
           <li class="swap__step is-active" data-index="0">
             <span class="swap__num label">01</span>
-            <h3 class="swap__title">EDERUS</h3>
-            <p class="swap__cat label">E-commerce — 2024</p>
-            <p class="swap__desc">Tienda online a medida: de la ficha de producto al checkout, sin fricción.</p>
-            <a class="swap__link" href="https://dosaaka2a.github.io/EDERUS/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
+            <h3 class="swap__title">SPACIO²</h3>
+            <p class="swap__cat label">Diseño editorial — 2024</p>
+            <p class="swap__desc">Editorial web de exploración espacial: dirección de arte, tipografía y maquetación con carácter propio.</p>
+            <a class="swap__link" href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
           <li class="swap__step" data-index="1">
             <span class="swap__num label">02</span>
@@ -208,17 +210,17 @@
           </li>
           <li class="swap__step" data-index="2">
             <span class="swap__num label">03</span>
+            <h3 class="swap__title">EDERUS</h3>
+            <p class="swap__cat label">E-commerce — 2024</p>
+            <p class="swap__desc">Tienda online a medida: de la ficha de producto al checkout, sin fricción.</p>
+            <a class="swap__link" href="https://dosaaka2a.github.io/EDERUS/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
+          </li>
+          <li class="swap__step" data-index="3">
+            <span class="swap__num label">04</span>
             <h3 class="swap__title">WAVA</h3>
             <p class="swap__cat label">Branding — 2024</p>
             <p class="swap__desc">Identidad de marca para alimentación: del naming al sistema visual completo.</p>
             <a class="swap__link" href="https://iris.it.com/wava/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
-          </li>
-          <li class="swap__step" data-index="3">
-            <span class="swap__num label">04</span>
-            <h3 class="swap__title">SPACIO²</h3>
-            <p class="swap__cat label">Diseño editorial — 2024</p>
-            <p class="swap__desc">Editorial web de exploración espacial: dirección de arte, tipografía y maquetación con carácter propio.</p>
-            <a class="swap__link" href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
         </ol>
       </div>
