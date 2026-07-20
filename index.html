@@ -22,6 +22,11 @@
     /* Logo pequeño de la top bar: mismo SVG del hero, a altura equivalente al texto anterior */
     .hz-wordmark--logo{line-height:0;font-size:0}
     .hz-wordmark--logo img{display:block;height:clamp(13px,1.15vw,16px);width:auto}
+    /* Tagline estructurado con el logo: mismo ancho de caja en desktop, muted en su propia línea */
+    .hero__tagline .muted{display:block;margin-top:.3em}
+    @media (min-width:861px){
+      .hero__tagline{max-width:clamp(420px,49vw,830px);text-wrap:balance;margin-top:calc(var(--space-3) * .75)}
+    }
     /* Velo oscuro sobre el vídeo del hero: mantiene legible el logo y el texto */
     .hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
       background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.22) 38%,rgba(5,5,5,.62) 100%)}
@@ -46,7 +51,7 @@
           <a href="#contacto">Contacto</a>
         </nav>
         <div class="hn-author">
-          <div class="hn-author-photo"><img src="data:image/svg+xml,%3c?xml%20version='1.0'%20encoding='UTF-8'?%3e%3csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20127.71%20133.66'%3e%3cpath%20fill='%23ffffff'%20fill-rule='evenodd'%20d='M.06,44.42C-.92,26.17,9.65,14.36,21.66,8.43c6.33-3.13,13.55-5.37,21.95-6.96,8.19-1.55,18.05-2.14,26.27-.48,15.39,3.11,27.54,10.81,37.67,20.15,9.65,8.91,17.98,21.42,19.79,37.91,2.04,18.53-4.51,33.08-12.84,44.26-8.47,11.38-18.81,20-32.15,25.67-13.2,5.62-34.56,6.16-49.66,1.68-13.44-3.99-25.35-14.59-29.99-27.71-2.62-7.41-2.44-16.7,1.08-23.51,3.17-6.13,9.11-10.04,17.75-11.16,19.62-2.54,26.88,12,36.23,20.87,5.01,4.76,10.11,9.16,17.15,11.76,7.03,2.59,16.5,3.46,24.47.84,14.15-4.65,24.22-14.64,26.63-31.07,2.8-19.11-7.48-31.51-19.31-37.55-6.79-3.46-14.6-5.55-23.63-4.56-8.55.94-14.04,4.68-19.67,9.24-4.63,3.74-9.73,9.77-13.92,15-4.02,5.01-9.11,11.41-15.71,13.19-8.59,2.32-17.82.88-23.75-2.52C3.86,59.96.54,53.32.06,44.42Z'/%3e%3cpath%20fill='%23ffffff'%20fill-rule='evenodd'%20d='M69.52,68.17c-.58-9,2.6-15.43,6.72-20.27,4.08-4.8,11.55-9.58,21.23-9,7.61.46,13.28,3.92,17.39,8.04,4.18,4.18,7.73,9.83,8.16,17.27.44,7.58-2.55,14.23-6.72,18.71-4.18,4.5-9.22,7.9-16.31,9-6.96,1.08-13.46-1.12-17.39-3.36-4.17-2.37-8.05-6.03-10.44-10.68-1.44-2.81-2.36-5.44-2.64-9.72Z'/%3e%3c/svg%3e" alt="IRIS" /></div>
+          <div class="hn-author-photo"><img src="./assets/iris-favicon.svg" alt="IRIS" /></div>
           <div class="hn-author-name"><span class="sq" aria-hidden="true"></span>IRIS STUDIO</div>
           <div class="hn-author-role">DISEÑO &amp; AUTOMATIZACIÓN — MADRID</div>
           <div class="hn-author-socials">
@@ -112,8 +117,8 @@
         <span class="hero__eyebrow label">© Estudio de diseño &amp; automatización — Madrid</span>
         <h1 class="hero__wordmark hero__wordmark--logo"><img src="./assets/iris-logo.svg" alt="IRIS" /></h1>
         <p class="hero__tagline">
-          Vemos el resultado.
-          <span class="muted">Diseñamos con el final en la cabeza.</span>
+          Hacemos pocas webs al año. Por eso salen bien.
+          <span class="muted">A medida, de la primera idea al lanzamiento.</span>
         </p>
       </div>
 
@@ -132,9 +137,9 @@
           </div>
 
           <p class="hero__pitch">
-            <b>Diseño y automatización a medida.</b> Sin plantillas, sin reuniones
-            eternas: lanzamos rápido, escalamos con criterio y convertimos mejor.
-            Un solo equipo, respuesta directa en menos de 24 h.
+            <b>Hablas directamente con quien diseña y programa tu web.</b>
+            Sin gestores de cuenta ni cadenas de correos: presupuesto claro,
+            entregas por fases y respuesta en menos de 24&nbsp;h.
           </p>
         </div>
 
