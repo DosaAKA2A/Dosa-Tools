@@ -19,6 +19,9 @@
   <style>
     .hero__wordmark--logo{line-height:0;font-size:0;margin:0}
     .hero__wordmark--logo img{display:block;width:clamp(240px,58vw,980px);height:auto}
+    /* Velo oscuro sobre el vídeo del hero: mantiene legible el logo y el texto */
+    .hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
+      background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.22) 38%,rgba(5,5,5,.62) 100%)}
   </style>
 </head>
 <body>
@@ -85,8 +88,12 @@
       </a>
     </header>
 
-    <!-- Fondo: CSS "vivo" como placeholder del vídeo full-bleed -->
+    <!-- Fondo: vídeo full-bleed (mudo, loop). El gradiente queda de fallback. -->
     <div class="hero__bg" aria-hidden="true"></div>
+    <video class="hero__video" autoplay loop muted playsinline preload="auto" poster="assets/hero-poster.jpg">
+      <source src="assets/hero.mp4" type="video/mp4" />
+    </video>
+    <div class="hero__scrim" aria-hidden="true"></div>
     <!--
       TODO recurso Iris — sustituir el .hero__bg por vídeo full-bleed:
       <video class="hero__video" autoplay loop muted playsinline
@@ -95,7 +102,6 @@
       </video>
       Formato: mp4 H.264, mudo, en loop, cover a pantalla (fuente 16:9).
     -->
-    <span class="ph-note" aria-hidden="true">placeholder de vídeo · hero full-bleed (mp4, mudo, loop)</span>
 
     <div class="hero__inner">
       <!-- Wordmark + tagline -->
