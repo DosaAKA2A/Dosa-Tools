@@ -35,6 +35,9 @@
     /* Velo oscuro sobre el vídeo del hero: mantiene legible el logo y el texto */
     .hero__scrim{position:absolute;inset:0;z-index:1;pointer-events:none;
       background:linear-gradient(180deg,rgba(5,5,5,.5) 0%,rgba(5,5,5,.22) 38%,rgba(5,5,5,.62) 100%)}
+    /* Avatares de monograma (self-hosted, sin dependencias externas) */
+    .quote__mono{display:grid;place-items:center;font-family:var(--font-mono,ui-monospace,monospace);font-weight:700;font-size:15px;color:#fff;letter-spacing:.02em;background:linear-gradient(135deg,var(--mono,#6e5bff),color-mix(in srgb,var(--mono,#6e5bff) 52%,#000));border:1px solid rgba(255,255,255,.12)}
+    .rating__avatars span{display:grid;place-items:center;font-family:var(--font-mono,ui-monospace,monospace);font-weight:700;font-size:11px;color:#fff;background:linear-gradient(135deg,var(--mono,#6e5bff),color-mix(in srgb,var(--mono,#6e5bff) 52%,#000))}
   </style>
 </head>
 <body>
@@ -134,11 +137,11 @@
         <div class="hero__foot-left">
           <div class="rating">
             <div class="rating__avatars" aria-hidden="true">
-              <span></span><span></span><span></span>
+              <span style="--mono:#6e5bff">LG</span><span style="--mono:#2dd4bf">MS</span><span style="--mono:#ff8a5c">ER</span>
             </div>
             <p class="rating__meta">
               <b><span data-count="4.9" data-decimals="1">4.9</span>/5</b> ·
-              <span>+<span data-count="40">40</span> proyectos entregados</span>
+              <span>+<span data-count="20">20</span> proyectos entregados</span>
             </p>
           </div>
 
@@ -478,27 +481,27 @@
       </header>
 
       <!-- Testimonios de MUESTRA — reemplazar por reseñas reales (con permiso del
-           cliente) antes de publicar. Fotos: randomuser.me (libre para prototipos);
-           self-hostéalas en /assets al ir a producción. -->
+           cliente) antes de publicar. Avatares: monogramas self-hosted (sin
+           dependencias externas). -->
       <div class="quotes">
         <figure class="quote">
           <blockquote class="quote__text">“Nos montaron la tienda en tres semanas y automatizaron medio trabajo que hacíamos a mano. Trato cercano y todo claro.”</blockquote>
           <figcaption class="quote__by">
-            <img class="quote__avatar" src="https://randomuser.me/api/portraits/women/68.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span class="quote__avatar quote__mono" aria-hidden="true" style="--mono:#6e5bff">LG</span>
             <span><b>Laura Giménez</b><br><span class="label">Dueña, tienda online</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote class="quote__text">“Le pasé una idea a medias y me devolvió algo mejor de lo que tenía en la cabeza. Sin rodeos ni reuniones eternas.”</blockquote>
           <figcaption class="quote__by">
-            <img class="quote__avatar" src="https://randomuser.me/api/portraits/men/45.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span class="quote__avatar quote__mono" aria-hidden="true" style="--mono:#2dd4bf">MS</span>
             <span><b>Marc Soler</b><br><span class="label">Fundador, startup</span></span>
           </figcaption>
         </figure>
         <figure class="quote">
           <blockquote class="quote__text">“Cero postureo, respuestas rápidas y todo funcionando desde el primer día. Repetiremos seguro.”</blockquote>
           <figcaption class="quote__by">
-            <img class="quote__avatar" src="https://randomuser.me/api/portraits/women/32.jpg" alt="" width="44" height="44" loading="lazy" />
+            <span class="quote__avatar quote__mono" aria-hidden="true" style="--mono:#ff8a5c">ER</span>
             <span><b>Elena Ruiz</b><br><span class="label">Clínica de fisioterapia</span></span>
           </figcaption>
         </figure>
