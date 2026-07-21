@@ -40,6 +40,15 @@
     /* Títulos de la lista de proyectos más grandes (como los nombres de Services en Mugen) */
     .swap__title{font-size:clamp(1.8rem,3.6vw,3rem)}
     .swap__step{padding-block:var(--space-4)}
+    /* Chips de categorías por proyecto (estilo Mugen): se despliegan solo en el activo */
+    .swap__cats{overflow:hidden;max-height:0;opacity:0;margin-top:0;
+      transition:max-height .5s cubic-bezier(.7,0,.2,1),opacity .4s ease,margin-top .4s ease}
+    .swap__step.is-active .swap__cats{max-height:16em;opacity:1;margin-top:var(--space-3)}
+    .swap__cats-label{display:block;margin-bottom:.7rem;color:var(--muted)}
+    .swap__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0}
+    .swap__tags li{font-size:.8rem;line-height:1;padding:.55em .85em;border:1px solid var(--line);
+      border-radius:999px;color:var(--text);white-space:nowrap;transition:border-color .2s ease,background .2s ease}
+    .swap__tags li:hover{border-color:var(--text)}
     /* Grano de película sutil sobre las imágenes del swap (overlay fijo, no degrada el JPEG) */
     .swap__frame::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
       background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='150'%20height='150'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
@@ -232,6 +241,12 @@
             <h3 class="swap__title">SPACIO²</h3>
             <p class="swap__cat label">Diseño editorial — 2024</p>
             <p class="swap__desc">Editorial web de exploración espacial: dirección de arte, tipografía y maquetación con carácter propio.</p>
+            <div class="swap__cats">
+              <span class="swap__cats-label label">Categorías</span>
+              <ul class="swap__tags">
+                <li>Dirección de arte</li><li>Tipografía</li><li>Diseño editorial</li><li>Maquetación web</li><li>WebGL</li>
+              </ul>
+            </div>
             <a class="swap__link" href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
           <li class="swap__step" data-index="1">
@@ -239,6 +254,12 @@
             <h3 class="swap__title">FISIO</h3>
             <p class="swap__cat label">Branding &amp; Web — 2023</p>
             <p class="swap__desc">Identidad y web para una clínica de fisioterapia: cercana, clara y profesional.</p>
+            <div class="swap__cats">
+              <span class="swap__cats-label label">Categorías</span>
+              <ul class="swap__tags">
+                <li>Branding</li><li>Logotipo</li><li>Identidad visual</li><li>Diseño web</li><li>Guía de estilo</li>
+              </ul>
+            </div>
             <a class="swap__link" href="https://dosaaka2a.github.io/FISIO/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
           <li class="swap__step" data-index="2">
@@ -246,6 +267,12 @@
             <h3 class="swap__title">EDERUS</h3>
             <p class="swap__cat label">E-commerce — 2024</p>
             <p class="swap__desc">Tienda online a medida: de la ficha de producto al checkout, sin fricción.</p>
+            <div class="swap__cats">
+              <span class="swap__cats-label label">Categorías</span>
+              <ul class="swap__tags">
+                <li>E-commerce</li><li>UX/UI</li><li>Ficha de producto</li><li>Checkout</li><li>Desarrollo web</li>
+              </ul>
+            </div>
             <a class="swap__link" href="https://dosaaka2a.github.io/EDERUS/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
           <li class="swap__step" data-index="3">
@@ -253,6 +280,12 @@
             <h3 class="swap__title">WAVA</h3>
             <p class="swap__cat label">Branding — 2024</p>
             <p class="swap__desc">Identidad de marca para alimentación: del naming al sistema visual completo.</p>
+            <div class="swap__cats">
+              <span class="swap__cats-label label">Categorías</span>
+              <ul class="swap__tags">
+                <li>Naming</li><li>Branding</li><li>Identidad visual</li><li>Packaging</li><li>Sistema de marca</li>
+              </ul>
+            </div>
             <a class="swap__link" href="https://iris.it.com/wava/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
         </ol>
