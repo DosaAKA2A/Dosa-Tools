@@ -35,6 +35,10 @@
       .swap{grid-template-columns:.5fr 1.5fr;gap:var(--space-3)}
       .swap__frame{max-height:92vh}
     }
+    /* Grano de película sutil sobre las imágenes del swap (overlay fijo, no degrada el JPEG) */
+    .swap__frame::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
+      background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='150'%20height='150'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size:150px 150px;opacity:.12;mix-blend-mode:overlay}
     /* Wordmark del footer: SVG a ancho completo, mismo comportamiento de margen */
     .footer__wordmark--logo{line-height:0;font-size:0}
     .footer__wordmark--logo img{display:block;width:100%;height:auto}
