@@ -18,14 +18,14 @@
   <!-- Overrides de marca: logo del hero como imagen (antes era texto) -->
   <style>
     .hero__wordmark--logo{line-height:0;font-size:0;margin:0}
-    .hero__wordmark--logo img{display:block;width:clamp(210px,49vw,830px);height:auto}
+    .hero__wordmark--logo img{display:block;width:clamp(150px,28vw,440px);height:auto}
     /* Logo pequeño de la top bar: mismo SVG del hero, a altura equivalente al texto anterior */
     .hz-wordmark--logo{line-height:0;font-size:0}
     .hz-wordmark--logo img{display:block;height:clamp(13px,1.15vw,16px);width:auto}
     /* Tagline estructurado con el logo: mismo ancho de caja en desktop, muted en su propia línea */
     .hero__tagline .muted{display:block;margin-top:.3em}
     @media (min-width:861px){
-      .hero__tagline{max-width:clamp(420px,49vw,830px);text-wrap:balance;margin-top:calc(var(--space-3) * .75)}
+      .hero__tagline{max-width:clamp(360px,38vw,560px);text-wrap:balance;margin-top:calc(var(--space-3) * .75)}
     }
     /* Media real en el swap de proyectos (img/video sobre el gradiente fallback) */
     .swap__asset{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;display:block}
@@ -48,6 +48,9 @@
     /* Avatares de monograma (self-hosted, sin dependencias externas) */
     .quote__mono{display:grid;place-items:center;font-family:var(--font-mono,ui-monospace,monospace);font-weight:700;font-size:15px;color:#fff;letter-spacing:.02em;background:linear-gradient(135deg,var(--mono,#6e5bff),color-mix(in srgb,var(--mono,#6e5bff) 52%,#000));border:1px solid rgba(255,255,255,.12)}
     .rating__avatars span{display:grid;place-items:center;font-family:var(--font-mono,ui-monospace,monospace);font-weight:700;font-size:11px;color:#fff;background:linear-gradient(135deg,var(--mono,#6e5bff),color-mix(in srgb,var(--mono,#6e5bff) 52%,#000))}
+    /* Avatares con foto real en el rating (mismo tamaño/solape que el monograma) */
+    .rating__avatars img{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--bg);margin-left:-8px;object-fit:cover;display:block}
+    .rating__avatars img:first-child{margin-left:0}
   </style>
 </head>
 <body>
@@ -136,8 +139,8 @@
         <span class="hero__eyebrow label">© Estudio de diseño &amp; automatización — Madrid</span>
         <h1 class="hero__wordmark hero__wordmark--logo"><img src="./assets/iris-logo.svg" alt="IRIS" /></h1>
         <p class="hero__tagline">
-          Hacemos pocas webs al año. Por eso salen bien.
-          <span class="muted">A medida, de la primera idea al lanzamiento.</span>
+          La web que hace crecer tu marca.
+          <span class="muted">Diseño y desarrollo a medida, de la primera idea al lanzamiento.</span>
         </p>
       </div>
 
@@ -147,7 +150,11 @@
         <div class="hero__foot-left">
           <div class="rating">
             <div class="rating__avatars" aria-hidden="true">
-              <span style="--mono:#6e5bff">LG</span><span style="--mono:#2dd4bf">MS</span><span style="--mono:#ff8a5c">ER</span>
+              <img src="./assets/avatar-1.jpg" alt="" width="30" height="30" loading="lazy" decoding="async">
+              <img src="./assets/avatar-2.jpg" alt="" width="30" height="30" loading="lazy" decoding="async">
+              <img src="./assets/avatar-3.jpg" alt="" width="30" height="30" loading="lazy" decoding="async">
+              <img src="./assets/avatar-4.jpg" alt="" width="30" height="30" loading="lazy" decoding="async">
+              <img src="./assets/avatar-5.jpg" alt="" width="30" height="30" loading="lazy" decoding="async">
             </div>
             <p class="rating__meta">
               <b><span data-count="4.9" data-decimals="1">4.9</span>/5</b> ·
@@ -156,9 +163,9 @@
           </div>
 
           <p class="hero__pitch">
-            <b>Hablas directamente con quien diseña y programa tu web.</b>
-            Sin gestores de cuenta ni cadenas de correos: presupuesto claro,
-            entregas por fases y respuesta en menos de 24&nbsp;h.
+            <b>Trato directo con quien diseña y programa tu web, sin intermediarios.</b>
+            Presupuesto cerrado, entregas por fases y respuesta en menos de 24&nbsp;h.
+            Lo que acordamos es lo que pagas.
           </p>
         </div>
 
