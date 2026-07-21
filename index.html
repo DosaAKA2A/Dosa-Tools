@@ -33,22 +33,43 @@
     .swap__frame{border:0!important;border-radius:0!important;box-shadow:none!important}
     @media (min-width:1024px){
       .swap{grid-template-columns:.72fr 2.28fr;gap:var(--space-4);align-items:center}
-      .swap__frame{max-height:82vh;aspect-ratio:3 / 2}
+      .swap__frame{max-height:64vh;aspect-ratio:3 / 2}
     }
     /* Escala general tipo Mugen: contenedor más ancho para que no se quede pequeño en monitores grandes */
     :root{--maxw:1600px}
     /* Títulos de la lista de proyectos más grandes (como los nombres de Services en Mugen) */
     .swap__title{font-size:clamp(1.8rem,3.6vw,3rem)}
     .swap__step{padding-block:var(--space-4)}
-    /* Chips de categorías por proyecto (estilo Mugen): se despliegan solo en el activo */
-    .swap__cats{overflow:hidden;max-height:0;opacity:0;margin-top:0;
-      transition:max-height .5s cubic-bezier(.7,0,.2,1),opacity .4s ease,margin-top .4s ease}
-    .swap__step.is-active .swap__cats{max-height:16em;opacity:1;margin-top:var(--space-3)}
+    /* Chips de categorías JUNTO a la imagen (columna del media), sincronizados con el activo */
+    .swap__cats{margin-top:var(--space-3)}
     .swap__cats-label{display:block;margin-bottom:.7rem;color:var(--muted)}
     .swap__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0}
-    .swap__tags li{font-size:.8rem;line-height:1;padding:.55em .85em;border:1px solid var(--line);
-      border-radius:999px;color:var(--text);white-space:nowrap;transition:border-color .2s ease,background .2s ease}
+    .swap__tags li{font-size:.82rem;line-height:1;padding:.55em .85em;border:1px solid var(--line);
+      border-radius:999px;color:var(--text);white-space:nowrap;transition:border-color .2s ease,opacity .35s ease,transform .35s ease}
     .swap__tags li:hover{border-color:var(--text)}
+    .swap__tags.is-anim li{animation:swapTagIn .4s ease both}
+    @keyframes swapTagIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+    /* Enlace bloqueado (EDERUS con contador) */
+    .swap__link.is-locked{color:var(--muted);cursor:default}
+    .swap__link.is-locked:hover{color:var(--muted)}
+    .swap__link .swap__timer{font-variant-numeric:tabular-nums}
+    /* Modal genérico (WAVA privado) */
+    .pmodal{position:fixed;inset:0;z-index:9998;display:flex;align-items:center;justify-content:center;
+      padding:1.5rem;background:rgba(0,0,0,.8);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      opacity:0;visibility:hidden;transition:opacity .3s ease,visibility .3s ease}
+    .pmodal.is-open{opacity:1;visibility:visible}
+    .pmodal__box{position:relative;width:min(420px,92vw);background:#101012;border:1px solid var(--line);
+      border-radius:18px;padding:2.4rem 2.1rem;box-shadow:0 24px 64px rgba(0,0,0,.6);
+      transform:translateY(14px) scale(.98);transition:transform .35s cubic-bezier(.7,0,.2,1)}
+    .pmodal.is-open .pmodal__box{transform:none}
+    .pmodal__close{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;
+      border:1px solid var(--line);background:transparent;color:var(--muted);font-size:16px;cursor:pointer;transition:.2s}
+    .pmodal__close:hover{color:#fff;border-color:#fff}
+    .pmodal__label{color:var(--muted);margin-bottom:.9rem}
+    .pmodal__title{font-size:1.5rem;font-weight:600;letter-spacing:var(--tracking-display);margin:0 0 .6rem}
+    .pmodal__text{color:var(--muted);line-height:1.55;margin:0 0 1.4rem;max-width:40ch}
+    .pmodal__tags{list-style:none;display:flex;flex-wrap:wrap;gap:.5rem;padding:0;margin:0}
+    .pmodal__tags li{font-size:.8rem;padding:.5em .8em;border:1px solid var(--line);border-radius:999px;color:var(--text)}
     /* Grano de película sutil sobre las imágenes del swap (overlay fijo, no degrada el JPEG) */
     .swap__frame::after{content:"";position:absolute;inset:0;z-index:3;pointer-events:none;
       background-image:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='150'%20height='150'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='2'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3C/filter%3E%3Crect%20width='100%25'%20height='100%25'%20filter='url(%23n)'/%3E%3C/svg%3E");
@@ -221,72 +242,59 @@
       </header>
 
       <div class="swap">
-        <!-- Media sticky (imagen limpia): cambia según el proyecto activo al hacer scroll. -->
+        <!-- Media sticky (imagen limpia): cambia según el proyecto activo. Debajo, los
+             chips de Categorías del proyecto activo (sincronizados por JS). -->
         <div class="swap__media">
           <div class="swap__frame">
             <div class="swap__track">
-              <div class="swap__img" data-index="0"><img class="swap__asset" src="./assets/spacio-swap.jpg" alt="SPACIO² — editorial web de exploración espacial" loading="lazy" decoding="async" width="1500" height="1200"></div>
-              <div class="swap__img" data-index="1"><img class="swap__asset" src="./assets/fisio-swap.jpg" alt="FISIO — branding y web para clínica de fisioterapia" loading="lazy" decoding="async" width="1500" height="1200"></div>
-              <div class="swap__img" data-index="2"><img class="swap__asset" src="./assets/ederus-swap.jpg" alt="EDERUS — tienda online a medida" loading="lazy" decoding="async" width="1500" height="1200"></div>
+              <div class="swap__img" data-index="0"><img class="swap__asset" src="./assets/spacio-swap.jpg" alt="SPACIO² — diseño web editorial de una nave de carga autónoma" loading="lazy" decoding="async" width="1500" height="1200"></div>
+              <div class="swap__img" data-index="1"><img class="swap__asset" src="./assets/fisio-swap.jpg" alt="FISIO — rediseño web y rebranding de clínica de fisioterapia" loading="lazy" decoding="async" width="1500" height="1200"></div>
+              <div class="swap__img" data-index="2"><img class="swap__asset" src="./assets/ederus-swap.jpg" alt="EDERUS — sitio oficial del servidor ederus.com" loading="lazy" decoding="async" width="1500" height="1200"></div>
               <div class="swap__img ph" data-index="3"><span class="ph__tag">WAVA · imagen → /assets</span></div>
             </div>
+          </div>
+          <div class="swap__cats" aria-live="polite">
+            <span class="swap__cats-label label">Categorías</span>
+            <ul class="swap__tags" data-role="tags"></ul>
           </div>
         </div>
 
         <!-- Lista de proyectos (modelo Mugen): nombre + categoría siempre visibles;
-             la descripción y el enlace se despliegan solo en el proyecto activo. -->
+             la descripción y el enlace se despliegan solo en el activo. Los chips van
+             en data-tags y se muestran junto a la imagen. -->
         <ol class="swap__list">
-          <li class="swap__step is-active" data-index="0">
+          <li class="swap__step is-active" data-index="0"
+              data-tags="Diseño web,Dirección de arte,Tipografía,Editorial,Concepto,Animación">
             <span class="swap__num label">01</span>
             <h3 class="swap__title">SPACIO²</h3>
-            <p class="swap__cat label">Diseño editorial — 2024</p>
-            <p class="swap__desc">Editorial web de exploración espacial: dirección de arte, tipografía y maquetación con carácter propio.</p>
-            <div class="swap__cats">
-              <span class="swap__cats-label label">Categorías</span>
-              <ul class="swap__tags">
-                <li>Dirección de arte</li><li>Tipografía</li><li>Diseño editorial</li><li>Maquetación web</li><li>WebGL</li>
-              </ul>
-            </div>
+            <p class="swap__cat label">Diseño web · Concepto — 2024</p>
+            <p class="swap__desc">Diseño web editorial para un proyecto ficticio: SPACIO², una nave de carga autónoma que atraviesa el vacío transportando oxígeno. Un ejercicio de dirección de arte y tipografía donde la forma nace de la función.</p>
             <a class="swap__link" href="https://iris.it.com/spacio/spacio2.html" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
-          <li class="swap__step" data-index="1">
+          <li class="swap__step" data-index="1"
+              data-tags="Rebranding,Rediseño web,Modernización,Identidad visual,UX/UI">
             <span class="swap__num label">02</span>
             <h3 class="swap__title">FISIO</h3>
-            <p class="swap__cat label">Branding &amp; Web — 2023</p>
-            <p class="swap__desc">Identidad y web para una clínica de fisioterapia: cercana, clara y profesional.</p>
-            <div class="swap__cats">
-              <span class="swap__cats-label label">Categorías</span>
-              <ul class="swap__tags">
-                <li>Branding</li><li>Logotipo</li><li>Identidad visual</li><li>Diseño web</li><li>Guía de estilo</li>
-              </ul>
-            </div>
+            <p class="swap__cat label">Rediseño web &amp; Rebranding — 2025</p>
+            <p class="swap__desc">Reestructuración de una web con más de 10 años: rebranding completo y un sitio nuevo, moderno, rápido y claro para la clínica de fisioterapia.</p>
             <a class="swap__link" href="https://dosaaka2a.github.io/FISIO/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
           </li>
-          <li class="swap__step" data-index="2">
+          <li class="swap__step" data-index="2"
+              data-tags="Web,Microtransacciones,E-commerce,Servidor de juego,UX/UI">
             <span class="swap__num label">03</span>
             <h3 class="swap__title">EDERUS</h3>
-            <p class="swap__cat label">E-commerce — 2024</p>
-            <p class="swap__desc">Tienda online a medida: de la ficha de producto al checkout, sin fricción.</p>
-            <div class="swap__cats">
-              <span class="swap__cats-label label">Categorías</span>
-              <ul class="swap__tags">
-                <li>E-commerce</li><li>UX/UI</li><li>Ficha de producto</li><li>Checkout</li><li>Desarrollo web</li>
-              </ul>
-            </div>
-            <a class="swap__link" href="https://dosaaka2a.github.io/EDERUS/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
+            <p class="swap__cat label">Web &amp; Microtransacciones — 2026</p>
+            <p class="swap__desc">Sitio oficial del servidor ederus.com: microtransacciones y solicitudes que alteran el modo de juego de cada usuario, con una tienda a medida sin fricción.</p>
+            <a class="swap__link is-locked" id="ederusLink" href="https://ederus.com/" target="_blank" rel="noopener"
+               data-launch="2026-08-01T00:00:00" aria-disabled="true">Abre el 01 AGO · <span class="swap__timer" id="ederusTimer">—</span> <span aria-hidden="true">↗</span></a>
           </li>
-          <li class="swap__step" data-index="3">
+          <li class="swap__step" data-index="3"
+              data-tags="Naming,Branding,Identidad visual,Web animada,Packaging">
             <span class="swap__num label">04</span>
             <h3 class="swap__title">WAVA</h3>
-            <p class="swap__cat label">Branding — 2024</p>
-            <p class="swap__desc">Identidad de marca para alimentación: del naming al sistema visual completo.</p>
-            <div class="swap__cats">
-              <span class="swap__cats-label label">Categorías</span>
-              <ul class="swap__tags">
-                <li>Naming</li><li>Branding</li><li>Identidad visual</li><li>Packaging</li><li>Sistema de marca</li>
-              </ul>
-            </div>
-            <a class="swap__link" href="https://iris.it.com/wava/" target="_blank" rel="noopener">Ver caso <span aria-hidden="true">↗</span></a>
+            <p class="swap__cat label">Branding &amp; Web — 2023</p>
+            <p class="swap__desc">Marca nueva de pastelería, heladería y juguería. Identidad propia y una web animada y cuidada — proyecto aún en desarrollo.</p>
+            <a class="swap__link" href="#" data-modal="wava" role="button">Acceso privado <span aria-hidden="true">↗</span></a>
           </li>
         </ol>
       </div>
@@ -679,6 +687,87 @@
 
   </div><!-- /#smooth-content -->
   </div><!-- /#smooth-wrapper -->
+
+  <!-- Modal privado de WAVA (proyecto en desarrollo, no público) -->
+  <div class="pmodal" id="modalWava" role="dialog" aria-modal="true" aria-labelledby="modalWavaTitle" aria-hidden="true">
+    <div class="pmodal__box">
+      <button class="pmodal__close" type="button" data-close aria-label="Cerrar">&#215;</button>
+      <p class="pmodal__label label">WAVA · Proyecto privado</p>
+      <h3 class="pmodal__title" id="modalWavaTitle">En desarrollo</h3>
+      <p class="pmodal__text">WAVA es una marca nueva de pastelería, heladería y juguería con una web animada aún en construcción. El caso todavía no es público.</p>
+      <ul class="pmodal__tags">
+        <li>Naming</li><li>Branding</li><li>Identidad visual</li><li>Web animada</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Proyectos: chips de categorías junto a la imagen + contador de EDERUS + modal de WAVA -->
+  <script>
+  (function(){
+    var swap = document.querySelector('.proyectos .swap');
+    if(swap){
+      var steps = Array.prototype.slice.call(swap.querySelectorAll('.swap__step'));
+      var tagsEl = swap.querySelector('.swap__tags[data-role="tags"]');
+      if(tagsEl && steps.length){
+        var cur = null;
+        function renderTags(step){
+          if(!step || step === cur) return; cur = step;
+          var tags = (step.getAttribute('data-tags') || '').split(',')
+            .map(function(t){ return t.trim(); }).filter(Boolean);
+          tagsEl.innerHTML = tags.map(function(t){ return '<li>' + t + '</li>'; }).join('');
+          tagsEl.classList.remove('is-anim'); void tagsEl.offsetWidth; tagsEl.classList.add('is-anim');
+        }
+        function activeStep(){
+          for(var i=0;i<steps.length;i++){ if(steps[i].classList.contains('is-active')) return steps[i]; }
+          return steps[0];
+        }
+        renderTags(activeStep());
+        var obs = new MutationObserver(function(muts){
+          for(var i=0;i<muts.length;i++){
+            var t = muts[i].target;
+            if(t.classList && t.classList.contains('is-active')){ renderTags(t); return; }
+          }
+        });
+        steps.forEach(function(s){ obs.observe(s, {attributes:true, attributeFilter:['class']}); });
+      }
+    }
+
+    // EDERUS: contador hasta el lanzamiento público (01/08/2026)
+    var link = document.getElementById('ederusLink'), timer = document.getElementById('ederusTimer');
+    if(link && timer){
+      var LAUNCH = new Date(link.getAttribute('data-launch') || '2026-08-01T00:00:00').getTime();
+      function pad(n){ return n < 10 ? '0' + n : '' + n; }
+      function live(){ return Date.now() >= LAUNCH; }
+      function tick(){
+        if(live()){
+          link.classList.remove('is-locked');
+          link.removeAttribute('aria-disabled');
+          link.innerHTML = 'Ver caso <span aria-hidden="true">&#8599;</span>';
+          clearInterval(iv);
+          return;
+        }
+        var ms = LAUNCH - Date.now();
+        var d = Math.floor(ms/86400000), h = Math.floor(ms%86400000/3600000),
+            mi = Math.floor(ms%3600000/60000), s = Math.floor(ms%60000/1000);
+        timer.textContent = d + 'd ' + pad(h) + ':' + pad(mi) + ':' + pad(s);
+      }
+      link.addEventListener('click', function(e){ if(!live()) e.preventDefault(); });
+      var iv = setInterval(tick, 1000); tick();
+    }
+
+    // WAVA: modal privado
+    var modal = document.getElementById('modalWava');
+    function openModal(){ if(modal){ modal.classList.add('is-open'); modal.setAttribute('aria-hidden','false'); } }
+    function closeModal(){ if(modal){ modal.classList.remove('is-open'); modal.setAttribute('aria-hidden','true'); } }
+    Array.prototype.slice.call(document.querySelectorAll('[data-modal="wava"]')).forEach(function(el){
+      el.addEventListener('click', function(e){ e.preventDefault(); openModal(); });
+    });
+    if(modal){
+      modal.addEventListener('click', function(e){ if(e.target === modal || e.target.hasAttribute('data-close')) closeModal(); });
+      document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+    }
+  })();
+  </script>
 
 </body>
 </html>
