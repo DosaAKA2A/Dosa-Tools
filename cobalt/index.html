@@ -238,9 +238,13 @@
           <div class="dl-actions">
             <a id="dl-main" class="btn btn-dl" href="https://github.com/DosaAKA2A/Cobalt/releases/latest">
               <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              <span id="dl-main-label">Descargar instalador</span>
+              <span id="dl-main-label">Descargar para Windows</span>
             </a>
-            <a id="dl-portable" class="btn btn-ghost" href="https://github.com/DosaAKA2A/Cobalt/releases/latest">Versión portable</a>
+            <a id="dl-android" class="btn btn-ghost" href="https://github.com/DosaAKA2A/Cobalt/releases">
+              <svg viewBox="0 0 24 24" fill="none" style="width:16px;height:16px"><path d="M6 18a1 1 0 0 0 1 1h1v3.5a1.5 1.5 0 0 0 3 0V19h2v3.5a1.5 1.5 0 0 0 3 0V19h1a1 1 0 0 0 1-1V8H6v10ZM3.5 8A1.5 1.5 0 0 0 2 9.5v6a1.5 1.5 0 0 0 3 0v-6A1.5 1.5 0 0 0 3.5 8Zm17 0A1.5 1.5 0 0 0 19 9.5v6a1.5 1.5 0 0 0 3 0v-6A1.5 1.5 0 0 0 20.5 8ZM17.4 4.2l1.06-1.06a.4.4 0 1 0-.57-.57l-1.2 1.2A6.47 6.47 0 0 0 12 3a6.47 6.47 0 0 0-4.69 1.77l-1.2-1.2a.4.4 0 1 0-.57.57L6.6 4.2A6.5 6.5 0 0 0 5.5 8h13a6.5 6.5 0 0 0-1.1-3.8ZM9.5 6.5a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Zm5 0a.75.75 0 1 1 0-1.5.75.75 0 0 1 0 1.5Z" fill="currentColor"/></svg>
+              <span id="dl-android-label">Descargar APK Android</span>
+            </a>
+            <a id="dl-portable" class="btn btn-ghost" href="https://github.com/DosaAKA2A/Cobalt/releases/latest">Portable</a>
           </div>
           <div class="reqs">
             <span><b>Versión:</b> <span id="ver-main">—</span></span>
@@ -301,6 +305,19 @@
         document.getElementById('dl-hero').href=fallback;
         document.getElementById('dl-portable').href=fallback;
       }
+      // APK de Android: busca el .apk más reciente en todos los releases
+      try{
+        const rr=await fetch('https://api.github.com/repos/'+REPO+'/releases',{headers:{'Accept':'application/vnd.github+json'}});
+        if(rr.ok){
+          const rels=await rr.json();
+          let apk=null,tag='';
+          for(const rel of rels){ const a=(rel.assets||[]).find(x=>/\.apk$/i.test(x.name)); if(a){apk=a;tag=rel.tag_name;break;} }
+          if(apk){
+            document.getElementById('dl-android').href=apk.browser_download_url;
+            document.getElementById('dl-android-label').textContent='Descargar APK Android';
+          }
+        }
+      }catch(e){}
     })();
   </script>
 </body>
