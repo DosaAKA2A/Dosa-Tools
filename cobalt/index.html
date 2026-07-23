@@ -3,68 +3,83 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cobalt — Navegador de Iris Studio</title>
-  <meta name="description" content="Cobalt: navegador ligero de Iris Studio sobre Chromium. Descarga, herramientas de descarga de vídeo, bloqueador de anuncios y hub personalizable." />
+  <title>Cobalt — Navegador ligero de Iris Studio</title>
+  <meta name="description" content="Cobalt: navegador monocromático sobre Chromium. Descarga vídeo y audio con Rat Tool, reclama puntos y drops de Twitch con AutoLoot, gestor de contraseñas con Windows Hello, bloqueador de anuncios y bajo consumo. Gratis y de código abierto." />
+  <meta property="og:title" content="Cobalt — Navegador ligero de Iris Studio" />
+  <meta property="og:description" content="Las herramientas que normalmente son extensiones, aquí vienen dentro. Rat Tool, AutoLoot para Twitch, gestor de contraseñas y más." />
+  <meta property="og:type" content="website" />
   <link rel="icon" href="../assets/iris-favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <style>
     :root{
-      --bg:#08080a; --bg-2:#0e0e12; --panel:#131317; --panel-2:#1a1a20; --line:#232327;
+      --bg:#08080a; --bg-2:#0e0e12; --panel:#131317; --panel-2:#1a1a20; --line:#232327; --line-2:#2c2c33;
       --text:#ececef; --muted:#8b8d94; --dim:#5c5e64; --accent:#e8e9ec;
+      --violet:#b98cff; --violet-dim:#8f6fd6;
       --font:'Inter',system-ui,sans-serif; --mono:'Geist Mono',ui-monospace,monospace;
-      --maxw:1180px; --tracking-display:-0.02em;
+      --maxw:1180px;
     }
     *{margin:0;padding:0;box-sizing:border-box}
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
     a{color:inherit;text-decoration:none}
     .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
-    .label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .label{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+    ::selection{background:rgba(185,140,255,.28)}
 
     /* Grano ambiental sutil */
     body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.04;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='150' height='150'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:150px 150px}
+    /* Halo de color detrás del hero */
+    .glow{position:fixed;top:-16%;left:50%;transform:translateX(-50%);width:1100px;height:620px;z-index:0;pointer-events:none;
+      background:radial-gradient(50% 50% at 50% 50%,rgba(140,110,215,.16),transparent 70%);filter:blur(24px)}
 
     /* ===== Nav ===== */
     header{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(8,8,10,.72);border-bottom:1px solid rgba(35,35,39,.6)}
     .nav{display:flex;align-items:center;gap:26px;height:66px}
     .brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.04em;font-size:15px}
     .brand .logo{width:26px;height:26px}
-    .nav a.link{color:var(--muted);font-size:13.5px}
+    .nav a.link{color:var(--muted);font-size:13.5px;transition:color .15s}
     .nav a.link:hover{color:var(--text)}
     .nav .spacer{flex:1}
     .nav .back{font-family:var(--mono);font-size:12px;color:var(--dim)}
     .nav .back:hover{color:var(--text)}
-    .btn{display:inline-flex;align-items:center;gap:9px;border:none;cursor:pointer;font-family:inherit;border-radius:11px;font-weight:600;transition:transform .15s,background .15s,border-color .15s}
+    .btn{display:inline-flex;align-items:center;gap:9px;border:none;cursor:pointer;font-family:inherit;border-radius:11px;font-weight:600;transition:transform .15s,background .15s,border-color .15s,color .15s}
     .btn-sm{background:var(--accent);color:#0a0a0a;font-size:13px;padding:9px 16px}
     .btn-sm:hover{background:#fff}
 
     /* ===== Hero ===== */
-    .hero{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.08fr;gap:52px;align-items:center;padding:78px 0 84px}
-    .eyebrow{display:flex;align-items:center;gap:9px;margin-bottom:22px}
-    .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:#7fd39b}
-    h1{font-size:clamp(44px,6vw,74px);font-weight:800;letter-spacing:-0.03em;line-height:.98;text-wrap:balance}
-    .hero p.lead{margin:22px 0 32px;max-width:44ch;color:var(--muted);font-size:16.5px;line-height:1.62}
-    .cta-row{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+    .hero{position:relative;z-index:1;display:grid;grid-template-columns:1fr 1.08fr;gap:52px;align-items:center;padding:74px 0 70px}
+    .eyebrow{display:inline-flex;align-items:center;gap:9px;margin-bottom:22px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.02)}
+    .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--violet);box-shadow:0 0 10px rgba(185,140,255,.7)}
+    h1{font-size:clamp(44px,6vw,74px);font-weight:900;letter-spacing:-0.035em;line-height:.97;text-wrap:balance}
+    h1 .g{background:linear-gradient(100deg,#b9aae6,#a4d9c2,#e6a9b4);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero p.lead{margin:22px 0 30px;max-width:46ch;color:var(--muted);font-size:16.5px;line-height:1.62}
+    .cta-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
     .btn-dl{background:var(--accent);color:#0a0a0a;font-size:16px;padding:16px 28px;border-radius:13px}
     .btn-dl:hover{background:#fff;transform:translateY(-2px)}
     .btn-dl svg{width:19px;height:19px}
-    .btn-ghost{border:1px solid var(--line);color:var(--text);font-size:14px;padding:15px 22px;background:transparent}
-    .btn-ghost:hover{border-color:#47484f}
+    .btn-ghost{border:1px solid var(--line-2);color:var(--text);font-size:14px;padding:15px 22px;background:transparent}
+    .btn-ghost:hover{border-color:#55565c}
     .dl-meta{margin-top:16px;font-family:var(--mono);font-size:12px;color:var(--dim);letter-spacing:.03em}
     .dl-meta b{color:var(--muted);font-weight:500}
+    .stats{display:flex;gap:34px;margin-top:34px;flex-wrap:wrap}
+    .stat .n{font-size:23px;font-weight:800;letter-spacing:-.02em}
+    .stat .l{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.08em;text-transform:uppercase;margin-top:2px}
 
     /* ===== Mockup del navegador ===== */
     .mock{position:relative;border-radius:15px;background:#0a0a0c;border:1px solid var(--line);box-shadow:0 34px 90px rgba(0,0,0,.6);overflow:hidden;aspect-ratio:16/10.6;animation:rise .9s cubic-bezier(.2,.7,.2,1) both}
     @keyframes rise{from{opacity:0;transform:translateY(28px) scale(.97)}to{opacity:1;transform:none}}
-    .m-bar{display:flex;align-items:center;gap:8px;height:36px;padding:0 12px;background:#0a0a0c}
+    .m-bar{display:flex;align-items:center;gap:6px;height:36px;padding:0 12px;background:#0a0a0c}
     .m-tab{display:flex;align-items:center;gap:7px;height:26px;padding:0 12px;border-radius:8px;background:#1b1b1f;font-size:10.5px;color:var(--text)}
     .m-tab .tdot{width:7px;height:7px;border-radius:50%;background:#45464c}
+    .m-group{display:flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:8px;border:1px solid rgba(145,112,214,.4);background:rgba(120,90,190,.12);font-size:10px;color:#d3c1ff}
+    .m-group svg{width:12px;height:12px}
+    .m-mini{display:flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:8px;border:1px solid rgba(145,112,214,.22);background:rgba(120,90,190,.06);font-size:10px;color:#c9b8ef}
     .m-nav{display:flex;align-items:center;gap:9px;height:36px;padding:0 12px;background:#0e0e12;color:var(--dim)}
     .m-url{flex:1;height:22px;border-radius:999px;background:#08080a;border:1px solid #1c1c20;display:flex;align-items:center;padding:0 12px;font-size:9.5px;color:var(--dim)}
-    .m-body{position:absolute;inset:72px 0 0;background:radial-gradient(120% 80% at 50% -10%,#141417 0%,#0a0a0d 60%);display:flex;flex-direction:column;align-items:center;padding-top:5%}
+    .m-body{position:absolute;inset:72px 0 0 0;background:radial-gradient(120% 80% at 50% -10%,#141417 0%,#0a0a0d 60%);display:flex;flex-direction:column;align-items:center;padding-top:5%}
     .m-clock{font-size:40px;font-weight:250;letter-spacing:1px}
     .m-greet{font-size:10px;color:var(--muted);margin:5px 0 16px}
     .m-search{width:56%;height:30px;border-radius:999px;background:rgba(14,14,17,.85);border:1px solid #26262b;display:flex;align-items:center;padding:0 14px;gap:8px;font-size:9.5px;color:var(--dim);margin-bottom:22px}
@@ -73,47 +88,99 @@
     .m-tile svg{width:20px;height:20px}
     .m-side{position:absolute;left:0;top:72px;bottom:0;width:34px;background:#08080a;border-right:1px solid #151517;display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:10px}
     .m-side i{width:20px;height:20px;border-radius:6px;display:block;color:#55565c}
+    .m-side i.on{color:var(--violet)}
     .m-side i svg{width:16px;height:16px}
 
     /* ===== Secciones ===== */
-    section{position:relative;z-index:1;padding:64px 0}
-    .sec-head{margin-bottom:40px}
-    h2{font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-0.02em;text-wrap:balance}
-    .sec-head .label{margin-bottom:12px;display:block}
+    section{position:relative;z-index:1;padding:60px 0}
+    .sec-head{margin-bottom:38px;max-width:640px}
+    h2{font-size:clamp(27px,3.5vw,40px);font-weight:800;letter-spacing:-0.025em;text-wrap:balance}
+    .sec-head .label{margin-bottom:13px;display:block}
+    .sec-head p{margin-top:14px;color:var(--muted);font-size:15.5px;line-height:1.6}
 
+    /* Spotlight (fila alterna con visual) */
+    .spot{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;padding:26px 0}
+    .spot.rev{grid-template-columns:1fr 1.05fr}
+    .spot.rev .spot-txt{order:2}
+    .spot .tag{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--violet);margin-bottom:16px}
+    .spot h3{font-size:clamp(23px,2.8vw,31px);font-weight:800;letter-spacing:-.02em;margin-bottom:14px;text-wrap:balance}
+    .spot p{color:var(--muted);font-size:15px;line-height:1.66;max-width:44ch}
+    .spot ul{list-style:none;margin-top:20px;display:flex;flex-direction:column;gap:11px}
+    .spot li{display:flex;gap:11px;align-items:flex-start;font-size:14px;color:var(--text)}
+    .spot li svg{width:18px;height:18px;color:var(--violet);flex-shrink:0;margin-top:1px}
+    .spot li span{color:var(--muted)}
+    .spot li b{color:var(--text);font-weight:600}
+    .visual{border-radius:16px;border:1px solid var(--line);background:linear-gradient(160deg,#111114,#0a0a0c);padding:22px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+
+    /* Visual AutoLoot: barra de pestañas con grupo */
+    .v-tabs{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .v-t{display:flex;align-items:center;gap:7px;height:30px;padding:0 12px;border-radius:9px;background:#17171b;border:1px solid #232327;font-size:12px;color:var(--muted)}
+    .v-t .d{width:8px;height:8px;border-radius:50%;background:#45464c}
+    .v-g{display:flex;align-items:center;gap:8px;height:30px;padding:0 12px;border-radius:9px;border:1px solid rgba(145,112,214,.45);background:rgba(120,90,190,.16);font-size:12px;color:#d9c9ff;font-weight:600}
+    .v-g svg{width:14px;height:14px}
+    .v-m{display:flex;align-items:center;gap:7px;height:30px;padding:0 11px;border-radius:9px;border:1px solid rgba(145,112,214,.25);background:rgba(120,90,190,.08);font-size:12px;color:#c9b8ef;animation:vslide .5s ease both}
+    .v-m:nth-child(3){animation-delay:.08s}.v-m:nth-child(4){animation-delay:.16s}
+    @keyframes vslide{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+    .v-toast{margin-top:18px;display:inline-flex;align-items:center;gap:9px;padding:10px 15px;border-radius:11px;background:#0d0d10;border:1px solid var(--line-2);font-size:13px;color:var(--text)}
+    .v-toast .pill{font-family:var(--mono);font-size:11px;color:var(--violet)}
+    .v-loot{margin-top:14px;display:flex;gap:10px}
+    .v-loot .box{flex:1;background:#0d0d10;border:1px solid var(--line);border-radius:11px;padding:12px 14px}
+    .v-loot .box .n{font-size:20px;font-weight:800}
+    .v-loot .box .l{font-family:var(--mono);font-size:10px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em}
+
+    /* Visual Rat Tool: popup */
+    .v-pop{max-width:280px;margin:0 auto}
+    .v-pop .h{font-weight:700;font-size:14px;margin-bottom:2px}
+    .v-pop .s{font-size:11px;color:var(--dim);margin-bottom:14px}
+    .v-in{height:34px;border-radius:9px;border:1px solid #2c2c33;background:#08080a;display:flex;align-items:center;padding:0 12px;font-size:11px;color:var(--dim);margin-bottom:10px}
+    .v-sel{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:12px}
+    .v-sel .q{border:1px solid #2c2c33;border-radius:8px;padding:5px 10px;font-size:12px;color:var(--text);background:#08080a}
+    .v-row{display:flex;gap:8px}
+    .v-row .b{flex:1;display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);background:#17171b;border-radius:9px;padding:10px;font-size:12px}
+    .v-row .b svg{width:14px;height:14px;color:var(--muted)}
+
+    /* Rejilla de características */
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:26px 24px;transition:border-color .2s,transform .2s}
-    .card:hover{border-color:#34353c;transform:translateY(-3px)}
-    .card .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;background:var(--panel-2);border:1px solid var(--line);color:var(--text)}
+    .card{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:24px;transition:border-color .2s,transform .2s,background .2s}
+    .card:hover{border-color:#34353c;transform:translateY(-3px);background:#141418}
+    .card .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;margin-bottom:15px;background:var(--panel-2);border:1px solid var(--line);color:var(--text)}
+    .card.hl .ic{background:rgba(120,90,190,.14);border-color:rgba(145,112,214,.35);color:var(--violet)}
     .card .ic svg{width:21px;height:21px}
-    .card h3{font-size:16px;margin-bottom:8px;font-weight:600}
-    .card p{font-size:13.5px;color:var(--muted);line-height:1.62}
+    .card h3{font-size:15.5px;margin-bottom:7px;font-weight:600}
+    .card p{font-size:13.5px;color:var(--muted);line-height:1.6}
+    .card .tagline{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--violet);margin-bottom:9px;display:none}
+    .card.hl .tagline{display:block}
 
     /* ===== Descarga ===== */
     #descargar{padding-bottom:80px}
-    .dl-panel{background:linear-gradient(160deg,#111114,#0a0a0c);border:1px solid var(--line);border-radius:22px;padding:56px;text-align:center}
+    .dl-panel{position:relative;background:linear-gradient(160deg,#111114,#0a0a0c);border:1px solid var(--line);border-radius:22px;padding:56px;text-align:center;overflow:hidden}
+    .dl-panel::before{content:"";position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:600px;height:400px;background:radial-gradient(50% 50% at 50% 50%,rgba(140,110,215,.12),transparent 70%);pointer-events:none}
+    .dl-panel>*{position:relative}
     .dl-panel .logo-big{width:76px;height:76px;margin:0 auto 22px}
     .dl-panel h2{margin-bottom:12px}
-    .dl-panel p{color:var(--muted);font-size:15px;max-width:46ch;margin:0 auto 30px}
+    .dl-panel p{color:var(--muted);font-size:15px;max-width:48ch;margin:0 auto 30px}
     .dl-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
     .reqs{margin-top:30px;display:flex;justify-content:center;gap:28px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--dim)}
     .reqs b{color:var(--muted);font-weight:500}
     .allver{margin-top:20px;font-size:13px}
     .allver a{color:var(--muted);border-bottom:1px solid var(--line)}
     .allver a:hover{color:var(--text);border-color:var(--text)}
+    .note{margin-top:26px;font-size:12px;color:var(--dim);max-width:52ch;margin-inline:auto;line-height:1.6}
 
     /* ===== Footer ===== */
-    footer{position:relative;z-index:1;border-top:1px solid rgba(35,35,39,.6);padding:34px 0 48px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;color:var(--dim);font-size:12.5px}
+    footer{position:relative;z-index:1;border-top:1px solid rgba(35,35,39,.6);padding:34px 0 48px}
     footer .studio{display:flex;align-items:center;gap:10px;color:var(--muted);font-weight:600}
     footer .studio .logo{width:18px;height:18px}
 
     @media (max-width:900px){
-      .hero{grid-template-columns:1fr;padding-top:52px}
+      .hero{grid-template-columns:1fr;padding-top:48px}
       .grid{grid-template-columns:1fr 1fr}
-      .dl-panel{padding:38px 24px}
+      .spot,.spot.rev{grid-template-columns:1fr;gap:28px}
+      .spot.rev .spot-txt{order:0}
+      .dl-panel{padding:40px 24px}
       .nav a.link{display:none}
     }
-    @media (max-width:560px){.grid{grid-template-columns:1fr}.m-tiles{grid-template-columns:repeat(4,44px)}}
+    @media (max-width:560px){.grid{grid-template-columns:1fr}.m-tiles{grid-template-columns:repeat(4,44px)}.stats{gap:22px}}
     @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   </style>
 </head>
@@ -131,6 +198,8 @@
     </defs>
   </svg>
 
+  <div class="glow"></div>
+
   <header>
     <div class="wrap nav">
       <a class="brand" href="../">
@@ -138,6 +207,7 @@
         Cobalt
       </a>
       <a class="link" href="#features">Características</a>
+      <a class="link" href="#autoloot">AutoLoot</a>
       <a class="link" href="#descargar">Descarga</a>
       <span class="spacer"></span>
       <a class="back" href="../">← iris.it.com</a>
@@ -149,8 +219,8 @@
     <div class="wrap hero">
       <div>
         <div class="eyebrow"><span class="dot"></span><span class="label">Iris Studio · Navegador</span></div>
-        <h1>Navega ligero.<br>Descarga todo.</h1>
-        <p class="lead">Cobalt es un navegador sobre motor Chromium con un hub personalizable, bloqueador de anuncios y Rat Tool para bajar vídeo y audio de YouTube, TikTok, X e Instagram. Monocromático, rápido y sin distracciones.</p>
+        <h1>Navega ligero.<br><span class="g">Descarga y reclama</span> todo.</h1>
+        <p class="lead">Cobalt es un navegador monocromático sobre Chromium con las herramientas que normalmente instalarías como extensiones — ya vienen dentro. Baja vídeo y audio, reclama puntos y drops de Twitch en segundo plano, guarda tus contraseñas y consume la mitad de RAM.</p>
         <div class="cta-row">
           <a id="dl-hero" class="btn btn-dl" href="https://github.com/DosaAKA2A/Cobalt/releases/latest">
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16" stroke="#0a0a0a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -159,18 +229,24 @@
           <a class="btn btn-ghost" href="#features">Ver qué incluye</a>
         </div>
         <div class="dl-meta"><b id="ver-hero">Última versión</b> · Windows 10/11 · 64 bits · Gratis</div>
+        <div class="stats">
+          <div class="stat"><div class="n">~900 MB</div><div class="l">RAM típica</div></div>
+          <div class="stat"><div class="n">0</div><div class="l">Extensiones necesarias</div></div>
+          <div class="stat"><div class="n">MIT</div><div class="l">Código abierto</div></div>
+        </div>
       </div>
 
       <div class="mock" aria-label="Vista previa de Cobalt">
         <div class="m-bar">
           <div class="m-tab"><span class="tdot"></span>Nueva pestaña</div>
+          <div class="m-group"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18.75a.75.75 0 0 0 .75-.75V9a.75.75 0 0 0-.75-.75H3.375A.75.75 0 0 0 2.625 9v1.5c0 .414.336.75.75.75Z"/></svg>AutoLoot · 3</div>
         </div>
         <div class="m-nav">
           <span>←</span><span>→</span><span>↻</span>
           <div class="m-url">Busca en Google o escribe una dirección</div>
         </div>
         <div class="m-side">
-          <i></i><i></i><i></i><i></i>
+          <i></i><i class="on"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0 0V21m-8.625-9.75h18.75a.75.75 0 0 0 .75-.75V9a.75.75 0 0 0-.75-.75H3.375A.75.75 0 0 0 2.625 9v1.5c0 .414.336.75.75.75Z"/></svg></i><i></i><i></i>
         </div>
         <div class="m-body">
           <div class="m-clock" id="mockclock">21:47</div>
@@ -188,42 +264,120 @@
       </div>
     </div>
 
+    <!-- ===== Spotlight: AutoLoot ===== -->
+    <section id="autoloot">
+      <div class="wrap">
+        <div class="spot">
+          <div class="spot-txt">
+            <div class="tag"><span class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--violet);display:inline-block"></span>Exclusivo de Cobalt</div>
+            <h3>AutoLoot: deja Twitch de fondo y no pierdas un solo drop.</h3>
+            <p>Activa AutoLoot en cualquier canal y Cobalt reclama por ti los puntos del canal y los drops, incluso con la pestaña en segundo plano. Mantiene el stream vivo cerrando el aviso de "¿sigues ahí?" y nunca duerme esas pestañas.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.75 10.5 18.75 19.5 5.25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Multicanal, sin estorbar.</b> Los canales en AutoLoot se colapsan en una sola pestaña de grupo que se despliega cuando la necesitas.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.75 10.5 18.75 19.5 5.25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Rat Loot.</b> Un clic: silencia el stream, baja la resolución al mínimo y activa AutoLoot en segundo plano para gastar mínimos recursos.</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.75 10.5 18.75 19.5 5.25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Panel de Loot.</b> Un registro con todo lo reclamado —puntos y drops— con canal y fecha.</span></li>
+            </ul>
+          </div>
+          <div class="visual">
+            <div class="v-tabs">
+              <div class="v-g"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0 0V21m-8.625-9.75h18.75a.75.75 0 0 0 .75-.75V9a.75.75 0 0 0-.75-.75H3.375A.75.75 0 0 0 2.625 9v1.5c0 .414.336.75.75.75Z"/></svg>AutoLoot · 3</div>
+              <div class="v-m">shroud</div>
+              <div class="v-m">pokimane</div>
+              <div class="v-m">summit1g</div>
+            </div>
+            <div class="v-toast"><span class="pill">✓ LOOT</span> Drop de Twitch reclamado</div>
+            <div class="v-loot">
+              <div class="box"><div class="n">128</div><div class="l">Puntos</div></div>
+              <div class="box"><div class="n">6</div><div class="l">Drops</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Spotlight: Rat Tool ===== -->
+    <section style="padding-top:20px">
+      <div class="wrap">
+        <div class="spot rev">
+          <div class="spot-txt">
+            <div class="tag">Descargas</div>
+            <h3>Rat Tool: baja vídeo y audio sin extensiones ni webs raras.</h3>
+            <p>Detecta el vídeo de la página o el enlace que copiaste y lo descarga en MP4 o MP3. Funciona con YouTube, TikTok (sin marca de agua), X e Instagram, y te deja elegir la resolución exacta.</p>
+            <ul>
+              <li><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.75 10.5 18.75 19.5 5.25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Selector de resolución</b> con las calidades reales del vídeo (4K, 1080p, 720p…).</span></li>
+              <li><svg viewBox="0 0 24 24" fill="none"><path d="M4.5 12.75 10.5 18.75 19.5 5.25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span><b>Recursos gráficos:</b> extrae y descarga todas las imágenes y vídeos de cualquier página.</span></li>
+            </ul>
+          </div>
+          <div class="visual">
+            <div class="v-pop">
+              <div class="h">Rat Tool</div>
+              <div class="s">Descargar vídeo o audio</div>
+              <div class="v-in">youtube.com/watch?v=…</div>
+              <div class="v-sel"><span>Resolución</span><span class="q">1080p ▾</span></div>
+              <div class="v-row">
+                <div class="b"><svg viewBox="0 0 24 24" fill="none"><path d="M3.375 19.5h17.25M2.25 5.625v12.75M21.75 5.625v12.75M6 5.625v12.75M18 5.625v12.75M2.25 5.625h19.5M7.125 12h9.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Vídeo MP4</div>
+                <div class="b"><svg viewBox="0 0 24 24" fill="none"><path d="M9 9l10.5-3M9 9v10.5A2.25 2.25 0 1 1 6.75 17.25M9 9l10.5-3m0 0v10.5A2.25 2.25 0 1 1 17.25 14.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Audio MP3</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section id="features">
       <div class="wrap">
         <div class="sec-head">
           <span class="label">Qué incluye</span>
           <h2>Herramientas que normalmente son extensiones — aquí vienen dentro.</h2>
+          <p>Sin instalar nada extra, sin permisos raros. Todo integrado, monocromático y pensado para consumir poco.</p>
         </div>
         <div class="grid">
-          <div class="card">
+          <div class="card hl">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3.375 19.5h17.25M2.25 5.625v12.75M21.75 5.625v12.75M6 5.625v12.75M18 5.625v12.75M2.25 5.625h19.5M3.375 4.5h17.25c.621 0 1.125.504 1.125 1.125M7.125 12h9.75" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="tagline">Estrella</div>
             <h3>Rat Tool</h3>
-            <p>Descarga vídeo (MP4) y audio (MP3) de YouTube, TikTok sin marca de agua, X e Instagram. Detecta el enlace copiado y el vídeo del feed automáticamente.</p>
+            <p>Descarga vídeo (MP4) y audio (MP3) de YouTube, TikTok sin marca de agua, X e Instagram, con selector de resolución y detección automática del enlace.</p>
+          </div>
+          <div class="card hl">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M21 11.25v8.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5v-8.25M12 4.875A2.625 2.625 0 1 0 9.375 7.5H12m0-2.625V7.5m0-2.625A2.625 2.625 0 1 1 14.625 7.5H12m0 0V21m-8.625-9.75h18.75a.75.75 0 0 0 .75-.75V9a.75.75 0 0 0-.75-.75H3.375A.75.75 0 0 0 2.625 9v1.5c0 .414.336.75.75.75Z"/></svg></div>
+            <div class="tagline">Exclusivo</div>
+            <h3>AutoLoot para Twitch</h3>
+            <p>Reclama puntos y drops en segundo plano, agrupa los canales en una sola pestaña y registra todo en el panel de Loot. Con Rat Loot para gastar mínimos recursos.</p>
+          </div>
+          <div class="card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M15.75 5.25a3 3 0 0 1 3 3m3 0a6 6 0 0 1-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1 1 21.75 8.25Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Gestor de contraseñas</h3>
+            <p>Guarda y autorrellena tus contraseñas cifradas con tu cuenta de Windows. Verlas requiere Windows Hello (PIN o biometría). Todo en local.</p>
           </div>
           <div class="card">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.75 11.25 15 15 9.75M12 2.714A11.25 11.25 0 0 1 3.6 6 11.96 11.96 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622A11.96 11.96 0 0 0 20.4 6 11.25 11.25 0 0 1 12 2.714Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
             <h3>Bloqueador de anuncios</h3>
-            <p>Bloqueo real, con un saltador de anuncios de YouTube ligero que no ralentiza la reproducción. Actívalo o permite anuncios por dominio.</p>
+            <p>Bloqueo real con un saltador de anuncios de YouTube que cierra el aviso anti-adblock y no rompe la reproducción. Permite anuncios por dominio.</p>
+          </div>
+          <div class="card">
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3.75 9.75h16.5M8.25 9.75V21M3.75 6.108V18a2.25 2.25 0 0 0 2.25 2.25h12a2.25 2.25 0 0 0 2.25-2.25V6.108M3.75 6.108A2.25 2.25 0 0 1 6 3.858h12a2.25 2.25 0 0 1 2.25 2.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Importa tus marcadores</h3>
+            <p>Trae tus favoritos de Chrome, Brave, Edge, Opera GX y Firefox de un clic — sí, también Firefox, leyendo su formato comprimido.</p>
           </div>
           <div class="card">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none"><rect x="3.75" y="3.75" width="6.75" height="6.75" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="3.75" width="6.75" height="6.75" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="3.75" y="13.5" width="6.75" height="6.75" rx="2" stroke="currentColor" stroke-width="1.6"/><rect x="13.5" y="13.5" width="6.75" height="6.75" rx="2" stroke="currentColor" stroke-width="1.6"/></svg></div>
-            <h3>Hub con widgets</h3>
-            <p>Personaliza tu inicio como la pantalla de un móvil: reloj, buscador, accesos, clima, región y notas en una grilla que se reorganiza sola.</p>
+            <h3>Hub personalizable</h3>
+            <p>Un inicio con widgets (reloj, buscador, accesos, clima, notas) y fondos a tu gusto — incluido uno transparente que deja ver tu escritorio.</p>
           </div>
           <div class="card">
             <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
             <h3>Ligero y con GPU</h3>
-            <p>Duerme las pestañas inactivas para liberar memoria y usa aceleración por hardware. Menos consumo, arranque directo a tu hub.</p>
+            <p>Alrededor de la mitad de RAM que otros navegadores. Duerme las pestañas inactivas, usa aceleración por hardware y arranca directo a tu hub.</p>
           </div>
           <div class="card">
-            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M3.98 8.223A10.48 10.48 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0 1 12 4.5c4.756 0 8.774 3.162 10.065 7.498a10.5 10.5 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.243 4.243L9.88 9.88" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <h3>Privacidad</h3>
-            <p>Navegación privada real, revelado de contenido sensible de X y bloqueo de claves de acceso para que Windows deje de pedirte el PIN.</p>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.75 3.75 0 0 1-1.043 3.296 3.75 3.75 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Privacidad y permisos</h3>
+            <p>Ventana privada real, sandbox con aislamiento de sitios, HTTPS por defecto y gestión de permisos por sitio (cámara, micrófono, ubicación…).</p>
           </div>
           <div class="card">
-            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M9 17.25v1.007a2.25 2.25 0 0 1-.659 1.591L7.5 21h9l-.841-.152A2.25 2.25 0 0 1 15 18.257V17.25m6-12v9a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 14.25v-9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 5.25m18 0V12a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 12V5.25" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-            <h3>Recursos y resoluciones</h3>
-            <p>Detecta y descarga las imágenes y vídeos de cualquier página, y previsualiza tu web en otras resoluciones de pantalla.</p>
+            <div class="ic"><svg viewBox="0 0 24 24" fill="none"><path d="M16.023 9.348h4.992V4.356M2.985 19.644v-4.992h4.992M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99M19.969 14.135a8.25 8.25 0 0 1-13.803 3.7l-3.181-3.182m0 4.99v-4.99" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3>Se actualiza solo</h3>
+            <p>Cada versión llega automáticamente desde GitHub, con verificación de integridad. También en Android (APK). Código abierto bajo licencia MIT.</p>
           </div>
         </div>
       </div>
@@ -253,18 +407,19 @@
             <span><b>Licencia:</b> MIT</span>
           </div>
           <div class="allver"><a href="https://github.com/DosaAKA2A/Cobalt/releases">Ver todas las versiones y notas →</a></div>
+          <p class="note">Cobalt no está firmado con certificado de código, así que Windows SmartScreen puede avisar la primera vez. Pulsa "Más información → Ejecutar de todas formas". El código es abierto y puedes revisarlo en GitHub.</p>
         </div>
       </div>
     </section>
   </main>
 
   <footer>
-    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;width:100%">
+    <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap">
       <a class="studio" href="../">
         <svg class="logo" viewBox="0 0 876.27 874.83"><use href="#cobaltPath" fill="url(#cobaltGrad)"/></svg>
         Cobalt · Iris Studio
       </a>
-      <div>© 2026 Iris Studio · <a href="https://github.com/DosaAKA2A/Cobalt" style="border-bottom:1px solid var(--line)">GitHub</a></div>
+      <div style="color:var(--dim);font-size:12.5px">© 2026 Iris Studio · <a href="https://github.com/DosaAKA2A/Cobalt" style="border-bottom:1px solid var(--line)">GitHub</a></div>
     </div>
   </footer>
 
@@ -285,7 +440,6 @@
         const rr=await fetch('https://api.github.com/repos/'+REPO+'/releases',{headers:{'Accept':'application/vnd.github+json'}});
         if(!rr.ok) throw 0;
         const rels=await rr.json();
-        // Windows: primer release (más nuevo) con un Setup .exe
         for(const rel of rels){
           const setup=(rel.assets||[]).find(a=>/setup.*\.exe$/i.test(a.name));
           if(!setup) continue;
@@ -298,7 +452,6 @@
           document.getElementById('ver-hero').textContent=rel.tag_name||'Última versión';
           break;
         }
-        // Android: primer release con un .apk
         for(const rel of rels){
           const apk=(rel.assets||[]).find(a=>/\.apk$/i.test(a.name));
           if(apk){ document.getElementById('dl-android').href=apk.browser_download_url; break; }
